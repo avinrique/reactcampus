@@ -278,7 +278,7 @@ function StickyTabBar({
     <>
       <div ref={sentinelRef} className="h-0" />
       <div
-        className={`sticky top-0 z-30 bg-white border-b border-gray-200 transition-shadow ${
+        className={`sticky top-[80px] z-30 bg-white border-b border-gray-200 transition-shadow ${
           isSticky ? 'shadow-md' : ''
         }`}
       >
