@@ -32,6 +32,16 @@ export interface FormField {
   leadFieldMapping: string | null;
 }
 
+export interface PageAssignment {
+  pageType: string;
+  entityId: string | null;
+  displayAs: 'popup' | 'inline' | 'slide_in';
+  trigger: 'immediate' | 'delay' | 'scroll' | 'exit_intent';
+  delaySeconds: number;
+  scrollPercent: number;
+  showOnce: boolean;
+}
+
 export interface DynamicForm {
   _id: string;
   id: string;
@@ -43,7 +53,7 @@ export interface DynamicForm {
   postSubmitAction: 'message' | 'redirect' | 'both';
   successMessage: string;
   redirectUrl: string;
-  assignedPages: { pageType: string; entityId: string | null }[];
+  assignedPages: PageAssignment[];
   visibility: {
     requiresAuth: boolean;
     allowedRoles: string[];
@@ -63,6 +73,7 @@ export interface CreateFormRequest {
   postSubmitAction?: string;
   successMessage?: string;
   redirectUrl?: string;
+  assignedPages?: PageAssignment[];
 }
 
 export interface UpdateFormRequest extends Partial<CreateFormRequest> {}

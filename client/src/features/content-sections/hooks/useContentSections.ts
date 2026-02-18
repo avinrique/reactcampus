@@ -7,6 +7,9 @@ import type { CreateContentSectionRequest, UpdateContentSectionRequest } from '@
 export function useContentSections(collegeId: string) {
   return useQuery({ queryKey: queryKeys.contentSections.byCollege(collegeId), queryFn: () => contentSectionApi.getByCollege(collegeId), enabled: !!collegeId });
 }
+export function useExamContentSections(examId: string) {
+  return useQuery({ queryKey: queryKeys.contentSections.byExam(examId), queryFn: () => contentSectionApi.getByExam(examId), enabled: !!examId });
+}
 export function useContentSection(id: string) {
   return useQuery({ queryKey: queryKeys.contentSections.detail(id), queryFn: () => contentSectionApi.getById(id), enabled: !!id });
 }

@@ -80,6 +80,10 @@ export const PERMISSIONS = {
   SEO_UPDATE: 'seo:update',
   SEO_DELETE: 'seo:delete',
 
+  // Site Settings
+  SITE_SETTINGS_READ: 'site-settings:read',
+  SITE_SETTINGS_UPDATE: 'site-settings:update',
+
   // Dashboard
   DASHBOARD_VIEW: 'dashboard:view',
   DASHBOARD_ANALYTICS: 'dashboard:analytics',
@@ -138,6 +142,10 @@ export const PERMISSION_GROUPS: Record<string, { label: string; permissions: str
   'SEO Management': {
     label: 'SEO Management',
     permissions: [PERMISSIONS.SEO_CREATE, PERMISSIONS.SEO_READ, PERMISSIONS.SEO_UPDATE, PERMISSIONS.SEO_DELETE],
+  },
+  'Site Settings': {
+    label: 'Site Settings',
+    permissions: [PERMISSIONS.SITE_SETTINGS_READ, PERMISSIONS.SITE_SETTINGS_UPDATE],
   },
   Dashboard: {
     label: 'Dashboard',

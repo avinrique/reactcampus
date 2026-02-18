@@ -12,6 +12,16 @@ export function usePublicForm(slug: string) {
 
 export function useSubmitForm(slug: string) {
   return useMutation({
-    mutationFn: (data: Record<string, any>) => publicFormApi.submit(slug, data),
+    mutationFn: (payload: { data: Record<string, any>; pageContext?: Record<string, any> }) =>
+      publicFormApi.submit(slug, payload),
+  });
+}
+
+export function usePageForms(pageType: string, entityId?: string) {
+  return useQuery({
+    queryKey: queryKeys.public.forms.forPage(pageType, entityId),
+    queryFn: () => publicFormApi.getForPage(pageType, entityId),
+    enabled: !!pageType,
+    staleTime: 5 * 60 * 1000,
   });
 }

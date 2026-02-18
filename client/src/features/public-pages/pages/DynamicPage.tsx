@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { MapPin, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
+import { MapPin, ChevronDown, ChevronUp, ExternalLink, ChevronRight } from 'lucide-react';
 import { usePublicPage } from '../hooks/usePublicPages';
 import { Spinner } from '@/components/ui/Spinner';
 
@@ -30,141 +30,152 @@ export default function DynamicPage() {
   const sortedBlocks = [...(page.contentBlocks || [])].sort((a, b) => a.order - b.order);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Page Title */}
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">{page.title}</h1>
-
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Main Column */}
-        <div className="flex-1 lg:w-[70%] space-y-6">
-          {/* Description */}
-          {page.description && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <div
-                className={descExpanded ? '' : 'line-clamp-4'}
-                dangerouslySetInnerHTML={{ __html: page.description }}
-              />
-              {page.description.length > 300 && (
-                <button
-                  onClick={() => setDescExpanded(!descExpanded)}
-                  className="text-blue-600 text-sm mt-2 flex items-center gap-1 hover:underline"
-                >
-                  {descExpanded ? (
-                    <>
-                      Read Less <ChevronUp className="h-4 w-4" />
-                    </>
-                  ) : (
-                    <>
-                      Read More <ChevronDown className="h-4 w-4" />
-                    </>
-                  )}
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Content Blocks */}
-          {sortedBlocks.map((block, blockIdx) => (
-            <div key={blockIdx} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-              {block.title && (
-                <div className="bg-blue-600 text-white px-6 py-3">
-                  <h2 className="text-lg font-semibold">{block.title}</h2>
-                </div>
-              )}
-              <div className="p-6">
-                {block.contentType === 'richtext' && (
-                  <div
-                    className="prose max-w-none"
-                    dangerouslySetInnerHTML={{ __html: typeof block.content === 'string' ? block.content : '' }}
-                  />
-                )}
-
-                {block.contentType === 'table' && <TableRenderer content={block.content} />}
-
-                {block.contentType === 'faq' && (
-                  <FaqRenderer content={block.content} blockIdx={blockIdx} expandedFaqs={expandedFaqs} toggleFaq={toggleFaq} />
-                )}
-
-                {block.contentType === 'list' && <ListRenderer content={block.content} />}
-              </div>
-            </div>
-          ))}
-
-          {/* College Listing */}
-          {page.collegeFilter?.enabled && (page as any).colleges?.length > 0 && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-              <div className="bg-blue-600 text-white px-6 py-3">
-                <h2 className="text-lg font-semibold">Colleges</h2>
-              </div>
-              <div className="p-6 space-y-4">
-                {(page as any).colleges.map((college: any) => (
-                  <Link
-                    key={college._id}
-                    to={`/colleges/${college.slug}`}
-                    className="block border rounded-lg p-4 hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{college.name}</h3>
-                        {college.location && (
-                          <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
-                            <MapPin className="h-3 w-3" />
-                            {college.location.city}
-                            {college.location.state ? `, ${college.location.state}` : ''}
-                          </p>
-                        )}
-                      </div>
-                      <div className="text-right text-sm">
-                        {college.ranking && (
-                          <span className="text-blue-600 font-medium">Rank #{college.ranking}</span>
-                        )}
-                        {college.established && (
-                          <p className="text-gray-500">Est. {college.established}</p>
-                        )}
-                        <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded capitalize text-xs">
-                          {college.type}
-                        </span>
-                      </div>
-                    </div>
-                    {college.fees && (college.fees.min > 0 || college.fees.max > 0) && (
-                      <p className="text-sm text-gray-600 mt-2">
-                        Fees: {college.fees.min?.toLocaleString()} - {college.fees.max?.toLocaleString()} INR
-                      </p>
-                    )}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
+    <div className="bg-gray-100 min-h-screen">
+      {/* Orange Header Banner */}
+      <div className="bg-gradient-to-r from-brand-500 to-brand-600 text-white">
+        <div className="max-w-7xl mx-auto px-4 py-10">
+          <nav className="flex items-center gap-1.5 text-sm text-brand-100 mb-3">
+            <Link to="/" className="hover:text-white transition-colors">Home</Link>
+            <ChevronRight className="w-3.5 h-3.5" />
+            <span className="text-white font-medium line-clamp-1">{page.title}</span>
+          </nav>
+          <h1 className="text-3xl md:text-4xl font-bold">{page.title}</h1>
         </div>
+      </div>
 
-        {/* Sidebar */}
-        {page.sidebarLinks && page.sidebarLinks.length > 0 && (
-          <aside className="lg:w-[30%] space-y-4">
-            {page.sidebarLinks.map((group, gIdx) => (
-              <div key={gIdx} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                {group.title && (
-                  <div className="bg-gray-100 px-4 py-3 border-b">
-                    <h3 className="font-semibold text-gray-800 text-sm">{group.title}</h3>
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Main Column */}
+          <div className="flex-1 lg:w-[70%] space-y-6">
+            {/* Description */}
+            {page.description && (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div
+                  className={descExpanded ? '' : 'line-clamp-4'}
+                  dangerouslySetInnerHTML={{ __html: page.description }}
+                />
+                {page.description.length > 300 && (
+                  <button
+                    onClick={() => setDescExpanded(!descExpanded)}
+                    className="text-brand-600 text-sm mt-2 flex items-center gap-1 hover:underline"
+                  >
+                    {descExpanded ? (
+                      <>
+                        Read Less <ChevronUp className="h-4 w-4" />
+                      </>
+                    ) : (
+                      <>
+                        Read More <ChevronDown className="h-4 w-4" />
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Content Blocks */}
+            {sortedBlocks.map((block, blockIdx) => (
+              <div key={blockIdx} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                {block.title && (
+                  <div className="bg-brand-500 text-white px-6 py-3">
+                    <h2 className="text-lg font-semibold">{block.title}</h2>
                   </div>
                 )}
-                <ul className="divide-y divide-gray-100">
-                  {group.links.map((link, lIdx) => (
-                    <li key={lIdx}>
-                      <Link
-                        to={link.url}
-                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-blue-600 hover:bg-blue-50 transition-colors"
-                      >
-                        <ExternalLink className="h-3 w-3 flex-shrink-0" />
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                <div className="p-6">
+                  {block.contentType === 'richtext' && (
+                    <div
+                      className="prose max-w-none"
+                      dangerouslySetInnerHTML={{ __html: typeof block.content === 'string' ? block.content : '' }}
+                    />
+                  )}
+
+                  {block.contentType === 'table' && <TableRenderer content={block.content} />}
+
+                  {block.contentType === 'faq' && (
+                    <FaqRenderer content={block.content} blockIdx={blockIdx} expandedFaqs={expandedFaqs} toggleFaq={toggleFaq} />
+                  )}
+
+                  {block.contentType === 'list' && <ListRenderer content={block.content} />}
+                </div>
               </div>
             ))}
-          </aside>
-        )}
+
+            {/* College Listing */}
+            {page.collegeFilter?.enabled && (page as any).colleges?.length > 0 && (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="bg-brand-500 text-white px-6 py-3">
+                  <h2 className="text-lg font-semibold">Colleges</h2>
+                </div>
+                <div className="p-6 space-y-4">
+                  {(page as any).colleges.map((college: any) => (
+                    <Link
+                      key={college._id}
+                      to={`/colleges/${college.slug}`}
+                      className="block border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-semibold text-gray-900">{college.name}</h3>
+                          {college.location && (
+                            <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                              <MapPin className="h-3 w-3" />
+                              {college.location.city}
+                              {college.location.state ? `, ${college.location.state}` : ''}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-right text-sm">
+                          {college.ranking && (
+                            <span className="text-brand-600 font-medium">Rank #{college.ranking}</span>
+                          )}
+                          {college.established && (
+                            <p className="text-gray-500">Est. {college.established}</p>
+                          )}
+                          <span className="px-2 py-0.5 bg-brand-50 text-brand-700 rounded capitalize text-xs">
+                            {college.type}
+                          </span>
+                        </div>
+                      </div>
+                      {college.fees && (college.fees.min > 0 || college.fees.max > 0) && (
+                        <p className="text-sm text-gray-600 mt-2">
+                          Fees: {college.fees.min?.toLocaleString()} - {college.fees.max?.toLocaleString()} INR
+                        </p>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Sidebar */}
+          {page.sidebarLinks && page.sidebarLinks.length > 0 && (
+            <aside className="lg:w-[30%] space-y-4">
+              {page.sidebarLinks.map((group, gIdx) => (
+                <div key={gIdx} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                  {group.title && (
+                    <div className="bg-gray-100 px-4 py-3 border-b">
+                      <h3 className="font-semibold text-gray-800 text-sm">{group.title}</h3>
+                    </div>
+                  )}
+                  <ul className="divide-y divide-gray-100">
+                    {group.links.map((link, lIdx) => (
+                      <li key={lIdx}>
+                        <Link
+                          to={link.url}
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm text-brand-600 hover:bg-brand-50 transition-colors"
+                        >
+                          <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </aside>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -274,7 +285,7 @@ function ListRenderer({ content }: { content: unknown }) {
     <ul className="space-y-2">
       {items.map((item, idx) => (
         <li key={idx} className="flex items-start gap-2 text-gray-700">
-          <span className="text-blue-500 mt-1.5 text-xs">&#9679;</span>
+          <span className="text-brand-500 mt-1.5 text-xs">&#9679;</span>
           <span dangerouslySetInnerHTML={{ __html: item }} />
         </li>
       ))}

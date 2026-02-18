@@ -6,6 +6,7 @@ import {
   Award, TrendingUp, GraduationCap, FileText, Home,
 } from 'lucide-react';
 import { usePublicCollege, usePublicCollegeReviews, usePublicCollegeSections } from '../hooks/usePublicColleges';
+import { PageFormOverlay } from '@/features/public-forms/components/PageFormOverlay';
 import { useMutation } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import { Spinner } from '@/components/ui/Spinner';
@@ -58,7 +59,7 @@ function ReadMoreText({ html, maxHeight = 200 }: { html: string; maxHeight?: num
       {needsTruncation && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="mt-2 text-orange-500 hover:text-orange-600 text-sm font-semibold flex items-center gap-1"
+          className="mt-2 text-brand-500 hover:text-brand-600 text-sm font-semibold flex items-center gap-1"
         >
           {expanded ? 'Read Less' : 'Read More'}
           <ChevronDown className={`w-4 h-4 transition-transform ${expanded ? 'rotate-180' : ''}`} />
@@ -90,7 +91,7 @@ function Breadcrumbs({ college }: { college: any }) {
         <span key={i} className="flex items-center gap-1.5">
           {i > 0 && <ChevronRight className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />}
           {crumb.to ? (
-            <Link to={crumb.to} className="hover:text-orange-500 transition-colors">
+            <Link to={crumb.to} className="hover:text-brand-500 transition-colors">
               {i === 0 ? <Home className="w-3.5 h-3.5" /> : crumb.label}
             </Link>
           ) : (
@@ -136,7 +137,7 @@ function HeroSection({
     stats.push({ label: 'Total Fees', value: `₹${maxFee}`, color: 'bg-green-500', icon: TrendingUp });
   }
   if (college.courses?.length) {
-    stats.push({ label: 'Courses', value: `${college.courses.length}+`, color: 'bg-orange-500', icon: GraduationCap });
+    stats.push({ label: 'Courses', value: `${college.courses.length}+`, color: 'bg-brand-500', icon: GraduationCap });
   }
   if (college.exams?.length) {
     stats.push({ label: 'Exams Accepted', value: `${college.exams.length}`, color: 'bg-purple-500', icon: FileText });
@@ -145,7 +146,7 @@ function HeroSection({
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-4">
       {/* Subtle top banner */}
-      <div className="h-10 bg-gradient-to-r from-orange-500 to-orange-400" />
+      <div className="h-10 bg-gradient-to-r from-brand-500 to-brand-400" />
 
       <div className="p-5 md:p-6">
         <div className="flex flex-col sm:flex-row sm:items-start gap-4">
@@ -154,7 +155,7 @@ function HeroSection({
             {college.logo ? (
               <img src={college.logo} alt={college.name} className="w-16 h-16 rounded-lg border border-gray-200 object-contain bg-white" />
             ) : (
-              <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center">
                 <Building2 className="w-8 h-8 text-white" />
               </div>
             )}
@@ -197,13 +198,13 @@ function HeroSection({
             {/* CTA Buttons */}
             <div className="flex flex-wrap gap-2 mt-3">
               <button
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors text-sm font-medium"
                 onClick={() => onTabChange('reviews')}
               >
                 <Phone className="w-3.5 h-3.5" />
                 Apply Now
               </button>
-              <button className="inline-flex items-center gap-1.5 px-4 py-2 border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 transition-colors text-sm font-medium">
+              <button className="inline-flex items-center gap-1.5 px-4 py-2 border border-brand-500 text-brand-500 rounded-lg hover:bg-brand-50 transition-colors text-sm font-medium">
                 <Download className="w-3.5 h-3.5" />
                 Download Brochure
               </button>
@@ -293,7 +294,7 @@ function StickyTabBar({
                 onClick={() => onTabChange(tab.key)}
                 className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeTab === tab.key
-                    ? 'border-orange-500 text-orange-600'
+                    ? 'border-brand-500 text-brand-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
@@ -325,7 +326,7 @@ function SectionRenderer({ section }: { section: ContentSection }) {
     <div className="mb-8 last:mb-0">
       {/* Orange left-border heading */}
       <h3 className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-4">
-        <span className="w-1 h-6 bg-orange-500 rounded-full flex-shrink-0" />
+        <span className="w-1 h-6 bg-brand-500 rounded-full flex-shrink-0" />
         {section.title}
       </h3>
 
@@ -337,7 +338,7 @@ function SectionRenderer({ section }: { section: ContentSection }) {
         <div className="overflow-x-auto rounded-lg border border-gray-200">
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
-              <tr className="bg-orange-500">
+              <tr className="bg-brand-500">
                 {content.headers.map((h: string, i: number) => (
                   <th key={i} className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">{h}</th>
                 ))}
@@ -345,7 +346,7 @@ function SectionRenderer({ section }: { section: ContentSection }) {
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
               {content.rows?.map((row: string[], ri: number) => (
-                <tr key={ri} className={ri % 2 === 0 ? 'bg-white' : 'bg-orange-50/40'}>
+                <tr key={ri} className={ri % 2 === 0 ? 'bg-white' : 'bg-brand-50/40'}>
                   {row.map((cell: string, ci: number) => (
                     <td key={ci} className={`px-4 py-3 text-sm ${ci === 0 ? 'font-medium text-gray-900' : 'text-gray-600'}`}>{cell}</td>
                   ))}
@@ -362,7 +363,7 @@ function SectionRenderer({ section }: { section: ContentSection }) {
             <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
               <button
                 onClick={() => toggleFaq(i)}
-                className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-orange-50 text-left transition-colors"
+                className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-brand-50 text-left transition-colors"
               >
                 <span className="font-medium text-sm text-gray-900">{item.question}</span>
                 <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${faqOpen.has(i) ? 'rotate-180' : ''}`} />
@@ -381,7 +382,7 @@ function SectionRenderer({ section }: { section: ContentSection }) {
         <ul className="space-y-2">
           {content?.items?.map((item: string, i: number) => (
             <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-              <span className="mt-1.5 h-2 w-2 rounded-full bg-orange-500 flex-shrink-0" />
+              <span className="mt-1.5 h-2 w-2 rounded-full bg-brand-500 flex-shrink-0" />
               <span dangerouslySetInnerHTML={{ __html: item }} />
             </li>
           ))}
@@ -439,12 +440,12 @@ function Sidebar({
         </h3>
         <p className="text-xs text-gray-500 mb-4">Get details on fees, admission, placements</p>
         <button
-          className="w-full py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium mb-2"
+          className="w-full py-2.5 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors text-sm font-medium mb-2"
           onClick={() => onTabChange('reviews')}
         >
           Apply Now
         </button>
-        <button className="w-full py-2.5 border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 transition-colors text-sm font-medium">
+        <button className="w-full py-2.5 border border-brand-500 text-brand-500 rounded-lg hover:bg-brand-50 transition-colors text-sm font-medium">
           Download Brochure
         </button>
       </div>
@@ -452,7 +453,7 @@ function Sidebar({
       {/* Quick Links */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
         <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-          <span className="w-1 h-5 bg-orange-500 rounded-full" />
+          <span className="w-1 h-5 bg-brand-500 rounded-full" />
           Quick Links
         </h3>
         <div className="space-y-1">
@@ -460,7 +461,7 @@ function Sidebar({
             <button
               key={tab.key}
               onClick={() => onTabChange(tab.key)}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors text-left"
+              className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-600 transition-colors text-left"
             >
               {tab.label}
               <ArrowRight className="w-3.5 h-3.5 text-gray-400" />
@@ -473,7 +474,7 @@ function Sidebar({
       {details.length > 0 && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
           <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <span className="w-1 h-5 bg-orange-500 rounded-full" />
+            <span className="w-1 h-5 bg-brand-500 rounded-full" />
             College Details
           </h3>
           <dl className="space-y-3">
@@ -491,7 +492,7 @@ function Sidebar({
                     href={college.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs font-medium text-orange-500 hover:text-orange-600 truncate block max-w-[160px]"
+                    className="text-xs font-medium text-brand-500 hover:text-brand-600 truncate block max-w-[160px]"
                   >
                     Visit Website
                   </a>
@@ -506,12 +507,12 @@ function Sidebar({
       {college.facilities?.length > 0 && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
           <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <span className="w-1 h-5 bg-orange-500 rounded-full" />
+            <span className="w-1 h-5 bg-brand-500 rounded-full" />
             Facilities
           </h3>
           <div className="flex flex-wrap gap-2">
             {college.facilities.map((f: string, i: number) => (
-              <span key={i} className="px-2.5 py-1 bg-orange-50 text-orange-700 text-xs rounded-full font-medium border border-orange-100">
+              <span key={i} className="px-2.5 py-1 bg-brand-50 text-brand-700 text-xs rounded-full font-medium border border-brand-100">
                 {f}
               </span>
             ))}
@@ -601,7 +602,7 @@ export default function CollegeDetailPage() {
         <Building2 className="w-16 h-16 text-gray-300 mb-4" />
         <h2 className="text-xl font-semibold text-gray-700 mb-2">College not found</h2>
         <p className="text-gray-500 mb-4">The college you're looking for doesn't exist or has been removed.</p>
-        <Link to="/colleges" className="text-orange-500 hover:text-orange-600 font-medium text-sm">
+        <Link to="/colleges" className="text-brand-500 hover:text-brand-600 font-medium text-sm">
           ← Back to Colleges
         </Link>
       </div>
@@ -641,7 +642,7 @@ export default function CollegeDetailPage() {
             {activeTab === 'courses' && !sectionsByTab['courses'] && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
                 <h2 className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-4">
-                  <span className="w-1 h-6 bg-orange-500 rounded-full flex-shrink-0" />
+                  <span className="w-1 h-6 bg-brand-500 rounded-full flex-shrink-0" />
                   Courses Offered
                 </h2>
                 {!col.courses?.length ? (
@@ -650,7 +651,7 @@ export default function CollegeDetailPage() {
                   <div className="overflow-x-auto rounded-lg border border-gray-200">
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead>
-                        <tr className="bg-orange-500">
+                        <tr className="bg-brand-500">
                           <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Course Name</th>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Level</th>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Duration</th>
@@ -659,9 +660,9 @@ export default function CollegeDetailPage() {
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-100">
                         {col.courses.map((course: any, i: number) => (
-                          <tr key={course._id} className={i % 2 === 0 ? 'bg-white' : 'bg-orange-50/40'}>
+                          <tr key={course._id} className={i % 2 === 0 ? 'bg-white' : 'bg-brand-50/40'}>
                             <td className="px-4 py-3 text-sm">
-                              <Link to={`/courses/${course.slug}`} className="font-medium text-orange-600 hover:text-orange-700">
+                              <Link to={`/courses/${course.slug}`} className="font-medium text-brand-600 hover:text-brand-700">
                                 {course.name}
                               </Link>
                             </td>
@@ -689,7 +690,7 @@ export default function CollegeDetailPage() {
                 {/* Write a Review */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
                   <h2 className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-4">
-                    <span className="w-1 h-6 bg-orange-500 rounded-full flex-shrink-0" />
+                    <span className="w-1 h-6 bg-brand-500 rounded-full flex-shrink-0" />
                     Write a Review
                   </h2>
                   {submitReview.isSuccess ? (
@@ -704,13 +705,13 @@ export default function CollegeDetailPage() {
                           type="text" required placeholder="Your Name"
                           value={reviewForm.authorName}
                           onChange={(e) => setReviewForm(p => ({ ...p, authorName: e.target.value }))}
-                          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                         />
                         <input
                           type="email" required placeholder="Your Email"
                           value={reviewForm.authorEmail}
                           onChange={(e) => setReviewForm(p => ({ ...p, authorEmail: e.target.value }))}
-                          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                         />
                       </div>
                       <div>
@@ -721,19 +722,19 @@ export default function CollegeDetailPage() {
                         type="text" required placeholder="Review Title"
                         value={reviewForm.title}
                         onChange={(e) => setReviewForm(p => ({ ...p, title: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                       />
                       <textarea
                         required placeholder="Write your review..."
                         value={reviewForm.content}
                         onChange={(e) => setReviewForm(p => ({ ...p, content: e.target.value }))}
                         rows={4}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                       />
                       <button
                         type="submit"
                         disabled={submitReview.isPending}
-                        className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 transition-colors text-sm font-medium"
+                        className="px-6 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 disabled:opacity-50 transition-colors text-sm font-medium"
                       >
                         {submitReview.isPending ? 'Submitting...' : 'Submit Review'}
                       </button>
@@ -747,7 +748,7 @@ export default function CollegeDetailPage() {
                 {/* Existing Reviews */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
                   <h2 className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-4">
-                    <span className="w-1 h-6 bg-orange-500 rounded-full flex-shrink-0" />
+                    <span className="w-1 h-6 bg-brand-500 rounded-full flex-shrink-0" />
                     Reviews
                   </h2>
                   {!reviewsData?.data.length ? (
@@ -791,6 +792,7 @@ export default function CollegeDetailPage() {
           <Sidebar college={col} tabs={tabs} onTabChange={handleTabChange} />
         </div>
       </div>
+      <PageFormOverlay pageType="college" entityId={col._id} />
     </div>
   );
 }

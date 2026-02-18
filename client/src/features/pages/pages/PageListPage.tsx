@@ -10,7 +10,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { PermissionGuard } from '@/components/guards/PermissionGuard';
 import { PERMISSIONS } from '@/config/permissions';
 import { PAGE_STATUS_COLORS } from '@/config/constants';
-import { Plus, Edit, Trash2, Globe } from 'lucide-react';
+import { Plus, Edit, Trash2, Globe, Eye } from 'lucide-react';
 import type { Page } from '@/types/page';
 
 export default function PageListPage() {
@@ -45,6 +45,12 @@ export default function PageListPage() {
       header: 'Actions',
       render: (p) => (
         <div className="flex gap-2">
+          <Link to={`/admin/pages/${p._id}`}>
+            <Button variant="ghost" size="sm">
+              <Eye className="h-4 w-4" />
+            </Button>
+          </Link>
+
           <PermissionGuard permission={PERMISSIONS.PAGE_UPDATE}>
             <Link to={`/admin/pages/${p._id}/edit`}>
               <Button variant="ghost" size="sm">

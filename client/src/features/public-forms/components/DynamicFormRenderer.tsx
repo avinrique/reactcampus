@@ -163,7 +163,7 @@ export default function DynamicFormRenderer() {
   if (!form) return <div className="text-center py-16 text-gray-500">Form not found.</div>;
 
   const onSubmit = (data: Record<string, any>) => {
-    submitMutation.mutate(data);
+    submitMutation.mutate({ data, pageContext: { pageType: 'page', url: window.location.href } });
   };
 
   if (submitMutation.isSuccess) {

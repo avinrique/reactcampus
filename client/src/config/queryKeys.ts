@@ -33,6 +33,7 @@ export const queryKeys = {
   contentSections: {
     all: ['content-sections'] as const,
     byCollege: (collegeId: string) => ['content-sections', 'college', collegeId] as const,
+    byExam: (examId: string) => ['content-sections', 'exam', examId] as const,
     detail: (id: string) => ['content-sections', id] as const,
   },
   forms: {
@@ -66,6 +67,9 @@ export const queryKeys = {
     list: (params: Record<string, unknown>) => ['pages', 'list', params] as const,
     detail: (id: string) => ['pages', id] as const,
   },
+  siteSettings: {
+    detail: ['site-settings'] as const,
+  },
   dashboard: {
     stats: ['dashboard', 'stats'] as const,
     pipeline: ['dashboard', 'pipeline'] as const,
@@ -85,13 +89,18 @@ export const queryKeys = {
     exams: {
       list: (params: Record<string, unknown>) => ['public', 'exams', 'list', params] as const,
       detail: (slug: string) => ['public', 'exams', slug] as const,
+      sections: (slug: string) => ['public', 'exams', slug, 'sections'] as const,
     },
     forms: {
       detail: (slug: string) => ['public', 'forms', slug] as const,
+      forPage: (pageType: string, entityId?: string) => ['public', 'forms', 'for-page', pageType, entityId ?? ''] as const,
     },
     pages: {
       list: (params: Record<string, unknown>) => ['public', 'pages', 'list', params] as const,
       detail: (slug: string) => ['public', 'pages', slug] as const,
+    },
+    siteSettings: {
+      detail: ['public', 'site-settings'] as const,
     },
   },
 };

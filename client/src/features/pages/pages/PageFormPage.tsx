@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { usePage, useCreatePage, useUpdatePage } from '../hooks/usePages';
 import { Button } from '@/components/ui/Button';
@@ -48,7 +48,9 @@ const FILTER_BY_OPTIONS = [
 
 export default function PageFormPage() {
   const { id } = useParams();
-  const isEdit = !!id;
+  const location = useLocation();
+  const isEdit = !!id && location.pathname.endsWith('/edit');
+  const isView = !!id && !location.pathname.endsWith('/edit');
   const navigate = useNavigate();
 
   const { data: page, isLoading } = usePage(id || '');
@@ -134,19 +136,19 @@ export default function PageFormPage() {
     }
   };
 
-  if (isEdit && isLoading) return <LoadingOverlay />;
+  if ((isEdit || isView) && isLoading) return <LoadingOverlay />;
 
   return (
     <div className="max-w-4xl">
-      <h1 className="text-2xl font-bold mb-6">{isEdit ? 'Edit Page' : 'Create Page'}</h1>
+      <h1 className="text-2xl font-bold mb-6">{isView ? 'View Page' : isEdit ? 'Edit Page' : 'Create Page'}</h1>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={isView ? (e) => e.preventDefault() : handleSubmit(onSubmit)} className="space-y-6">
         {/* Basic Info */}
         <Card>
           <div className="p-6 space-y-4">
             <h2 className="text-lg font-semibold">Basic Information</h2>
-            <Input label="Title" {...register('title', { required: true })} />
-            <Textarea label="Description (HTML supported)" {...register('description')} />
+            <Input label="Title" {...register('title', { required: true })} disabled={isView} />
+            <Textarea label="Description (HTML supported)" {...register('description')} disabled={isView} />
           </div>
         </Card>
 
@@ -155,47 +157,53 @@ export default function PageFormPage() {
           <div className="p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold">Content Blocks</h2>
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() =>
-                  appendBlock({ title: '', contentType: 'richtext', content: '', order: blockFields.length })
-                }
-              >
-                <Plus className="h-4 w-4 mr-1" /> Add Block
-              </Button>
+              {!isView && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() =>
+                    appendBlock({ title: '', contentType: 'richtext', content: '', order: blockFields.length })
+                  }
+                >
+                  <Plus className="h-4 w-4 mr-1" /> Add Block
+                </Button>
+              )}
             </div>
 
             {blockFields.map((field, index) => (
               <div key={field.id} className="border rounded-lg p-4 space-y-3 bg-gray-50">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-600">Block {index + 1}</span>
-                  <div className="flex gap-1">
-                    {index > 0 && (
-                      <Button type="button" variant="ghost" size="sm" onClick={() => swapBlocks(index, index - 1)}>
-                        <ChevronUp className="h-4 w-4" />
+                  {!isView && (
+                    <div className="flex gap-1">
+                      {index > 0 && (
+                        <Button type="button" variant="ghost" size="sm" onClick={() => swapBlocks(index, index - 1)}>
+                          <ChevronUp className="h-4 w-4" />
+                        </Button>
+                      )}
+                      {index < blockFields.length - 1 && (
+                        <Button type="button" variant="ghost" size="sm" onClick={() => swapBlocks(index, index + 1)}>
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                      )}
+                      <Button type="button" variant="ghost" size="sm" onClick={() => removeBlock(index)}>
+                        <Trash2 className="h-4 w-4 text-red-500" />
                       </Button>
-                    )}
-                    {index < blockFields.length - 1 && (
-                      <Button type="button" variant="ghost" size="sm" onClick={() => swapBlocks(index, index + 1)}>
-                        <ChevronDown className="h-4 w-4" />
-                      </Button>
-                    )}
-                    <Button type="button" variant="ghost" size="sm" onClick={() => removeBlock(index)}>
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
-                  </div>
+                    </div>
+                  )}
                 </div>
-                <Input label="Section Title" {...register(`contentBlocks.${index}.title`)} />
+                <Input label="Section Title" {...register(`contentBlocks.${index}.title`)} disabled={isView} />
                 <Select
                   label="Content Type"
                   options={CONTENT_TYPE_OPTIONS}
                   {...register(`contentBlocks.${index}.contentType`)}
+                  disabled={isView}
                 />
                 <Textarea
                   label="Content (HTML for richtext, JSON for table/faq/list)"
                   {...register(`contentBlocks.${index}.content`)}
+                  disabled={isView}
                 />
               </div>
             ))}
@@ -211,24 +219,24 @@ export default function PageFormPage() {
           <div className="p-6 space-y-4">
             <h2 className="text-lg font-semibold">College Listing</h2>
             <label className="flex items-center gap-2">
-              <input type="checkbox" {...register('collegeFilter.enabled')} className="rounded" />
+              <input type="checkbox" {...register('collegeFilter.enabled')} className="rounded" disabled={isView} />
               <span className="text-sm">Enable college listing on this page</span>
             </label>
 
             {collegeFilterEnabled && (
               <div className="space-y-3">
-                <Select label="Filter By" options={FILTER_BY_OPTIONS} {...register('collegeFilter.filterBy')} />
+                <Select label="Filter By" options={FILTER_BY_OPTIONS} {...register('collegeFilter.filterBy')} disabled={isView} />
                 {filterBy === 'course' && (
-                  <Input label="Course IDs (comma-separated)" {...register('collegeFilter.courses')} />
+                  <Input label="Course IDs (comma-separated)" {...register('collegeFilter.courses')} disabled={isView} />
                 )}
                 {filterBy === 'exam' && (
-                  <Input label="Exam IDs (comma-separated)" {...register('collegeFilter.exams')} />
+                  <Input label="Exam IDs (comma-separated)" {...register('collegeFilter.exams')} disabled={isView} />
                 )}
                 {filterBy === 'type' && (
-                  <Input label="College Type (e.g. public, private)" {...register('collegeFilter.collegeType')} />
+                  <Input label="College Type (e.g. public, private)" {...register('collegeFilter.collegeType')} disabled={isView} />
                 )}
-                {filterBy === 'state' && <Input label="State" {...register('collegeFilter.state')} />}
-                {filterBy === 'city' && <Input label="City" {...register('collegeFilter.city')} />}
+                {filterBy === 'state' && <Input label="State" {...register('collegeFilter.state')} disabled={isView} />}
+                {filterBy === 'city' && <Input label="City" {...register('collegeFilter.city')} disabled={isView} />}
               </div>
             )}
           </div>
@@ -239,14 +247,16 @@ export default function PageFormPage() {
           <div className="p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold">Sidebar Links</h2>
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => appendSidebar({ title: '', links: [{ label: '', url: '' }] })}
-              >
-                <Plus className="h-4 w-4 mr-1" /> Add Group
-              </Button>
+              {!isView && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => appendSidebar({ title: '', links: [{ label: '', url: '' }] })}
+                >
+                  <Plus className="h-4 w-4 mr-1" /> Add Group
+                </Button>
+              )}
             </div>
 
             {sidebarFields.map((group, groupIndex) => (
@@ -256,6 +266,7 @@ export default function PageFormPage() {
                 register={register}
                 control={control}
                 onRemove={() => removeSidebar(groupIndex)}
+                readOnly={isView}
               />
             ))}
 
@@ -269,19 +280,21 @@ export default function PageFormPage() {
         <Card>
           <div className="p-6 space-y-4">
             <h2 className="text-lg font-semibold">SEO Meta</h2>
-            <Input label="Meta Title" {...register('metaTitle')} />
-            <Textarea label="Meta Description" {...register('metaDescription')} />
-            <Input label="Meta Keywords (comma-separated)" {...register('metaKeywords')} />
+            <Input label="Meta Title" {...register('metaTitle')} disabled={isView} />
+            <Textarea label="Meta Description" {...register('metaDescription')} disabled={isView} />
+            <Input label="Meta Keywords (comma-separated)" {...register('metaKeywords')} disabled={isView} />
           </div>
         </Card>
 
         {/* Actions */}
         <div className="flex gap-3">
-          <Button type="submit" isLoading={createPage.isPending || updatePage.isPending}>
-            {isEdit ? 'Update Page' : 'Create Page'}
-          </Button>
+          {!isView && (
+            <Button type="submit" isLoading={createPage.isPending || updatePage.isPending}>
+              {isEdit ? 'Update Page' : 'Create Page'}
+            </Button>
+          )}
           <Button variant="secondary" type="button" onClick={() => navigate('/admin/pages')}>
-            Cancel
+            {isView ? 'Back to Pages' : 'Cancel'}
           </Button>
         </div>
       </form>
@@ -294,11 +307,13 @@ function SidebarGroupEditor({
   register,
   control,
   onRemove,
+  readOnly,
 }: {
   groupIndex: number;
   register: any;
   control: any;
   onRemove: () => void;
+  readOnly?: boolean;
 }) {
   const {
     fields: linkFields,
@@ -310,29 +325,35 @@ function SidebarGroupEditor({
     <div className="border rounded-lg p-4 space-y-3 bg-gray-50">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-gray-600">Group {groupIndex + 1}</span>
-        <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
-          <Trash2 className="h-4 w-4 text-red-500" />
-        </Button>
+        {!readOnly && (
+          <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
+            <Trash2 className="h-4 w-4 text-red-500" />
+          </Button>
+        )}
       </div>
-      <Input label="Group Title" {...register(`sidebarLinks.${groupIndex}.title`)} />
+      <Input label="Group Title" {...register(`sidebarLinks.${groupIndex}.title`)} disabled={readOnly} />
 
       {linkFields.map((link, linkIndex) => (
         <div key={link.id} className="flex gap-2 items-end">
           <div className="flex-1">
-            <Input label="Label" {...register(`sidebarLinks.${groupIndex}.links.${linkIndex}.label`)} />
+            <Input label="Label" {...register(`sidebarLinks.${groupIndex}.links.${linkIndex}.label`)} disabled={readOnly} />
           </div>
           <div className="flex-1">
-            <Input label="URL" {...register(`sidebarLinks.${groupIndex}.links.${linkIndex}.url`)} />
+            <Input label="URL" {...register(`sidebarLinks.${groupIndex}.links.${linkIndex}.url`)} disabled={readOnly} />
           </div>
-          <Button type="button" variant="ghost" size="sm" onClick={() => removeLink(linkIndex)}>
-            <Trash2 className="h-4 w-4 text-red-500" />
-          </Button>
+          {!readOnly && (
+            <Button type="button" variant="ghost" size="sm" onClick={() => removeLink(linkIndex)}>
+              <Trash2 className="h-4 w-4 text-red-500" />
+            </Button>
+          )}
         </div>
       ))}
 
-      <Button type="button" variant="secondary" size="sm" onClick={() => appendLink({ label: '', url: '' })}>
-        <Plus className="h-4 w-4 mr-1" /> Add Link
-      </Button>
+      {!readOnly && (
+        <Button type="button" variant="secondary" size="sm" onClick={() => appendLink({ label: '', url: '' })}>
+          <Plus className="h-4 w-4 mr-1" /> Add Link
+        </Button>
+      )}
     </div>
   );
 }

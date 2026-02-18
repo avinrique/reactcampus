@@ -11,7 +11,7 @@ export default function SubmissionListPage() {
   const [page, setPage] = useState(1); const [detail, setDetail] = useState<FormSubmission | null>(null);
   const { data, isLoading } = useSubmissions({ page, limit: 20 });
   const columns: Column<FormSubmission>[] = [
-    { key: 'form', header: 'Form', render: (s) => typeof s.form === 'object' ? (s.form as any).title : s.form },
+    { key: 'form', header: 'Form', render: (s) => s.form && typeof s.form === 'object' ? (s.form as any).title : (s.form || 'Deleted Form') },
     { key: 'createdAt', header: 'Submitted', render: (s) => new Date(s.createdAt).toLocaleString() },
     { key: 'actions', header: '', render: (s) => <Button variant="ghost" size="sm" onClick={() => setDetail(s)}><Eye className="h-4 w-4" /></Button> },
   ];

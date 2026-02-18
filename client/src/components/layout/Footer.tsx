@@ -5,6 +5,8 @@ const EXPLORE_LINKS = [
   { label: 'Colleges', to: '/colleges' },
   { label: 'Courses', to: '/courses' },
   { label: 'Exams', to: '/exams' },
+  { label: 'About Us', to: '/about' },
+  { label: 'Contact Us', to: '/contact' },
 ];
 
 const TOP_COLLEGES = [
@@ -29,11 +31,11 @@ export function Footer() {
           {/* Brand */}
           <div>
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
                 <GraduationCap className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold text-white">
-                React<span className="text-orange-500">Campus</span>
+                Campus<span className="text-brand-500">Option</span>
               </span>
             </Link>
             <p className="text-sm leading-relaxed mb-4">
@@ -41,16 +43,16 @@ export function Footer() {
             </p>
             <div className="space-y-2 text-sm">
               <p className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-orange-500 flex-shrink-0" />
-                info@reactcampus.com
+                <Mail className="w-4 h-4 text-brand-500 flex-shrink-0" />
+                info@campusoption.com
               </p>
               <p className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-orange-500 flex-shrink-0" />
-                +91 98765 43210
+                <Phone className="w-4 h-4 text-brand-500 flex-shrink-0" />
+                080-42401736
               </p>
-              <p className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-orange-500 flex-shrink-0" />
-                Bangalore, India
+              <p className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 text-brand-500 flex-shrink-0 mt-0.5" />
+                4th Floor, Niran Arcade, New BEL Road, Bangalore 560094
               </p>
             </div>
           </div>
@@ -58,13 +60,13 @@ export function Footer() {
           {/* Explore */}
           <div>
             <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
-              <span className="w-1 h-4 bg-orange-500 rounded-full" />
+              <span className="w-1 h-4 bg-brand-500 rounded-full" />
               Explore
             </h4>
             <ul className="space-y-2.5 text-sm">
               {EXPLORE_LINKS.map(link => (
                 <li key={link.to}>
-                  <Link to={link.to} className="hover:text-orange-400 transition-colors">
+                  <Link to={link.to} className="hover:text-brand-400 transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -75,13 +77,13 @@ export function Footer() {
           {/* Top Colleges */}
           <div>
             <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
-              <span className="w-1 h-4 bg-orange-500 rounded-full" />
+              <span className="w-1 h-4 bg-brand-500 rounded-full" />
               Top Colleges
             </h4>
             <ul className="space-y-2.5 text-sm">
               {TOP_COLLEGES.map(link => (
                 <li key={link.to}>
-                  <Link to={link.to} className="hover:text-orange-400 transition-colors">
+                  <Link to={link.to} className="hover:text-brand-400 transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -92,13 +94,13 @@ export function Footer() {
           {/* Top Exams */}
           <div>
             <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
-              <span className="w-1 h-4 bg-orange-500 rounded-full" />
+              <span className="w-1 h-4 bg-brand-500 rounded-full" />
               Top Exams
             </h4>
             <ul className="space-y-2.5 text-sm">
               {TOP_EXAMS.map(link => (
                 <li key={link.to}>
-                  <Link to={link.to} className="hover:text-orange-400 transition-colors">
+                  <Link to={link.to} className="hover:text-brand-400 transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -111,10 +113,10 @@ export function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm">
-          <p>&copy; {new Date().getFullYear()} ReactCampus. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Campus Option. All rights reserved.</p>
           <div className="flex items-center gap-4">
-            <span className="hover:text-orange-400 cursor-pointer transition-colors">Privacy Policy</span>
-            <span className="hover:text-orange-400 cursor-pointer transition-colors">Terms of Use</span>
+            <Link to="/pages/privacy-policy" className="hover:text-brand-400 transition-colors">Privacy Policy</Link>
+            <Link to="/pages/terms-of-use" className="hover:text-brand-400 transition-colors">Terms of Use</Link>
           </div>
         </div>
       </div>

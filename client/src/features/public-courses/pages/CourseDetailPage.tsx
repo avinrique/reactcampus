@@ -4,6 +4,7 @@ import {
   ArrowRight, ExternalLink, Award, CheckCircle, Building2,
 } from 'lucide-react';
 import { usePublicCourse } from '../hooks/usePublicCourses';
+import { PageFormOverlay } from '@/features/public-forms/components/PageFormOverlay';
 import { Spinner } from '@/components/ui/Spinner';
 
 export default function CourseDetailPage() {
@@ -24,7 +25,7 @@ export default function CourseDetailPage() {
         <BookOpen className="w-16 h-16 text-gray-300 mb-4" />
         <h2 className="text-xl font-semibold text-gray-700 mb-2">Course not found</h2>
         <p className="text-gray-500 mb-4">The course you're looking for doesn't exist or has been removed.</p>
-        <Link to="/courses" className="text-orange-500 hover:text-orange-600 font-medium text-sm">
+        <Link to="/courses" className="text-brand-500 hover:text-brand-600 font-medium text-sm">
           ← Back to Courses
         </Link>
       </div>
@@ -49,7 +50,7 @@ export default function CourseDetailPage() {
     });
   }
   if (course.specializations?.length) {
-    stats.push({ label: 'Specializations', value: `${course.specializations.length}+`, color: 'bg-orange-500', icon: Award });
+    stats.push({ label: 'Specializations', value: `${course.specializations.length}+`, color: 'bg-brand-500', icon: Award });
   }
 
   return (
@@ -59,19 +60,19 @@ export default function CourseDetailPage() {
         <div className="max-w-7xl mx-auto px-4 pt-4 pb-6">
           {/* Breadcrumbs */}
           <nav className="flex items-center gap-1.5 text-sm text-gray-500 mb-4 flex-wrap">
-            <Link to="/" className="hover:text-orange-500 transition-colors"><Home className="w-3.5 h-3.5" /></Link>
+            <Link to="/" className="hover:text-brand-500 transition-colors"><Home className="w-3.5 h-3.5" /></Link>
             <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
-            <Link to="/courses" className="hover:text-orange-500 transition-colors">Courses</Link>
+            <Link to="/courses" className="hover:text-brand-500 transition-colors">Courses</Link>
             <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
             <span className="text-gray-800 font-medium truncate max-w-[250px]">{course.name}</span>
           </nav>
 
           {/* Header card */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="h-2 bg-gradient-to-r from-orange-500 to-orange-400" />
+            <div className="h-2 bg-gradient-to-r from-brand-500 to-brand-400" />
             <div className="p-5 md:p-6">
               <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                <div className="w-14 h-14 rounded-lg bg-orange-500 flex items-center justify-center flex-shrink-0">
+                <div className="w-14 h-14 rounded-lg bg-brand-500 flex items-center justify-center flex-shrink-0">
                   <BookOpen className="w-7 h-7 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -87,11 +88,11 @@ export default function CourseDetailPage() {
                     </div>
                   )}
                   <div className="flex flex-wrap gap-2 mt-3">
-                    <button className="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium">
+                    <button className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors text-sm font-medium">
                       <GraduationCap className="w-3.5 h-3.5" />
                       Apply Now
                     </button>
-                    <button className="inline-flex items-center gap-1.5 px-4 py-2 border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 transition-colors text-sm font-medium">
+                    <button className="inline-flex items-center gap-1.5 px-4 py-2 border border-brand-500 text-brand-500 rounded-lg hover:bg-brand-50 transition-colors text-sm font-medium">
                       <ExternalLink className="w-3.5 h-3.5" />
                       Download Brochure
                     </button>
@@ -132,7 +133,7 @@ export default function CourseDetailPage() {
             {course.description && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-4">
-                  <span className="w-1 h-6 bg-orange-500 rounded-full flex-shrink-0" />
+                  <span className="w-1 h-6 bg-brand-500 rounded-full flex-shrink-0" />
                   About this Course
                 </h2>
                 <p className="text-sm text-gray-700 leading-relaxed">{course.description}</p>
@@ -143,7 +144,7 @@ export default function CourseDetailPage() {
             {course.eligibility && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-4">
-                  <span className="w-1 h-6 bg-orange-500 rounded-full flex-shrink-0" />
+                  <span className="w-1 h-6 bg-brand-500 rounded-full flex-shrink-0" />
                   Eligibility Criteria
                 </h2>
                 <p className="text-sm text-gray-700 leading-relaxed">{course.eligibility}</p>
@@ -154,13 +155,13 @@ export default function CourseDetailPage() {
             {course.fees?.amount > 0 && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-4">
-                  <span className="w-1 h-6 bg-orange-500 rounded-full flex-shrink-0" />
+                  <span className="w-1 h-6 bg-brand-500 rounded-full flex-shrink-0" />
                   Fee Structure
                 </h2>
                 <div className="overflow-x-auto rounded-lg border border-gray-200">
                   <table className="min-w-full">
                     <thead>
-                      <tr className="bg-orange-500">
+                      <tr className="bg-brand-500">
                         <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase">Fee Type</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase">Amount</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase">Frequency</th>
@@ -184,13 +185,13 @@ export default function CourseDetailPage() {
             {course.specializations?.length > 0 && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-4">
-                  <span className="w-1 h-6 bg-orange-500 rounded-full flex-shrink-0" />
+                  <span className="w-1 h-6 bg-brand-500 rounded-full flex-shrink-0" />
                   Specializations
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {course.specializations.map((spec: string, i: number) => (
-                    <div key={i} className="flex items-center gap-2 px-3 py-2.5 bg-orange-50 rounded-lg border border-orange-100">
-                      <CheckCircle className="w-4 h-4 text-orange-500 flex-shrink-0" />
+                    <div key={i} className="flex items-center gap-2 px-3 py-2.5 bg-brand-50 rounded-lg border border-brand-100">
+                      <CheckCircle className="w-4 h-4 text-brand-500 flex-shrink-0" />
                       <span className="text-sm text-gray-800 font-medium">{spec}</span>
                     </div>
                   ))}
@@ -205,10 +206,10 @@ export default function CourseDetailPage() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
               <h3 className="font-semibold text-gray-900 mb-1">Interested in this course?</h3>
               <p className="text-xs text-gray-500 mb-4">Get details on fees, eligibility, and colleges</p>
-              <button className="w-full py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium mb-2">
+              <button className="w-full py-2.5 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors text-sm font-medium mb-2">
                 Apply Now
               </button>
-              <button className="w-full py-2.5 border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 transition-colors text-sm font-medium">
+              <button className="w-full py-2.5 border border-brand-500 text-brand-500 rounded-lg hover:bg-brand-50 transition-colors text-sm font-medium">
                 Download Brochure
               </button>
             </div>
@@ -216,7 +217,7 @@ export default function CourseDetailPage() {
             {/* Course Details */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
               <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <span className="w-1 h-5 bg-orange-500 rounded-full" />
+                <span className="w-1 h-5 bg-brand-500 rounded-full" />
                 Course Details
               </h3>
               <dl className="space-y-3">
@@ -248,27 +249,27 @@ export default function CourseDetailPage() {
             {/* Quick Links */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
               <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <span className="w-1 h-5 bg-orange-500 rounded-full" />
+                <span className="w-1 h-5 bg-brand-500 rounded-full" />
                 Explore More
               </h3>
               <div className="space-y-1">
                 <Link
                   to="/courses"
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-600 transition-colors"
                 >
                   All Courses
                   <ArrowRight className="w-3.5 h-3.5 text-gray-400" />
                 </Link>
                 <Link
                   to="/colleges"
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-600 transition-colors"
                 >
                   Colleges
                   <ArrowRight className="w-3.5 h-3.5 text-gray-400" />
                 </Link>
                 <Link
                   to="/exams"
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-600 transition-colors"
                 >
                   Entrance Exams
                   <ArrowRight className="w-3.5 h-3.5 text-gray-400" />
@@ -278,6 +279,7 @@ export default function CourseDetailPage() {
           </div>
         </div>
       </div>
+      {course && <PageFormOverlay pageType="course" entityId={course._id} />}
     </div>
   );
 }

@@ -11,6 +11,8 @@ const ExamListingPage = lazy(() => import('@/features/public-exams/pages/ExamLis
 const ExamDetailPage = lazy(() => import('@/features/public-exams/pages/ExamDetailPage'));
 const DynamicFormRenderer = lazy(() => import('@/features/public-forms/components/DynamicFormRenderer'));
 const DynamicPage = lazy(() => import('@/features/public-pages/pages/DynamicPage'));
+const AboutPage = lazy(() => import('@/features/public-about/pages/AboutPage'));
+const ContactPage = lazy(() => import('@/features/public-contact/pages/ContactPage'));
 
 export const publicRoutes: RouteObject = {
   element: <PublicLayout />,
@@ -22,6 +24,8 @@ export const publicRoutes: RouteObject = {
     { path: 'courses/:slug', element: <CourseDetailPage /> },
     { path: 'exams', element: <ExamListingPage /> },
     { path: 'exams/:slug', element: <ExamDetailPage /> },
+    { path: 'about', element: <AboutPage /> },
+    { path: 'contact', element: <ContactPage /> },
     { path: 'forms/:slug', element: <DynamicFormRenderer /> },
     { path: 'pages/:slug', element: <DynamicPage /> },
   ],

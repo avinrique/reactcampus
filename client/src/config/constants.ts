@@ -59,6 +59,6 @@ export const PAGE_STATUS_COLORS: Record<string, string> = {
 export const PRIORITY_COLORS: Record<string, string> = {
   low: 'bg-gray-100 text-gray-800',
   medium: 'bg-blue-100 text-blue-800',
-  high: 'bg-orange-100 text-orange-800',
+  high: 'bg-brand-100 text-brand-800',
   urgent: 'bg-red-100 text-red-800',
 };

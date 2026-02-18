@@ -47,15 +47,15 @@ export default function ExamListingPage() {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-orange-500 to-orange-400 text-white">
+      <div className="bg-gradient-to-r from-brand-500 to-brand-400 text-white">
         <div className="max-w-7xl mx-auto px-4 py-8">
-          <nav className="flex items-center gap-1.5 text-sm text-orange-100 mb-4">
+          <nav className="flex items-center gap-1.5 text-sm text-brand-100 mb-4">
             <Link to="/" className="hover:text-white transition-colors"><Home className="w-3.5 h-3.5" /></Link>
             <ChevronRight className="w-3.5 h-3.5" />
             <span className="text-white font-medium">Exams</span>
           </nav>
           <h1 className="text-2xl md:text-3xl font-bold mb-2">Explore Entrance Exams</h1>
-          <p className="text-orange-100 text-sm md:text-base">
+          <p className="text-brand-100 text-sm md:text-base">
             Browse {data?.pagination?.total ? `${data.pagination.total}+` : ''} exams. Find eligibility, dates, and exam patterns.
           </p>
         </div>
@@ -73,10 +73,10 @@ export default function ExamListingPage() {
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   placeholder="Search exams by name..."
-                  className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 />
               </div>
-              <button type="submit" className="px-5 py-2.5 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-600 transition-colors">
+              <button type="submit" className="px-5 py-2.5 bg-brand-500 text-white text-sm font-medium rounded-lg hover:bg-brand-600 transition-colors">
                 Search
               </button>
             </form>
@@ -84,14 +84,14 @@ export default function ExamListingPage() {
               onClick={() => setShowFilters(!showFilters)}
               className={`inline-flex items-center gap-2 px-4 py-2.5 border rounded-lg text-sm font-medium transition-colors ${
                 showFilters || hasFilters
-                  ? 'border-orange-500 text-orange-600 bg-orange-50'
+                  ? 'border-brand-500 text-brand-600 bg-brand-50'
                   : 'border-gray-300 text-gray-700 hover:bg-gray-50'
               }`}
             >
               <SlidersHorizontal className="w-4 h-4" />
               Filters
               {hasFilters && (
-                <span className="w-5 h-5 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center">
+                <span className="w-5 h-5 bg-brand-500 text-white text-xs rounded-full flex items-center justify-center">
                   {[examType, search].filter(Boolean).length}
                 </span>
               )}
@@ -106,7 +106,7 @@ export default function ExamListingPage() {
                   <select
                     value={examType}
                     onChange={(e) => updateParam('examType', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent capitalize"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent capitalize"
                   >
                     <option value="">All Types</option>
                     {EXAM_TYPES.map((t) => (
@@ -118,7 +118,7 @@ export default function ExamListingPage() {
               {hasFilters && (
                 <button
                   onClick={clearFilters}
-                  className="mt-3 text-sm text-orange-500 hover:text-orange-600 font-medium flex items-center gap-1"
+                  className="mt-3 text-sm text-brand-500 hover:text-brand-600 font-medium flex items-center gap-1"
                 >
                   <X className="w-3.5 h-3.5" /> Clear All Filters
                 </button>
@@ -132,13 +132,13 @@ export default function ExamListingPage() {
           <div className="flex flex-wrap items-center gap-2 mb-4">
             <span className="text-xs text-gray-500 font-medium">Active:</span>
             {search && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-orange-50 text-orange-700 text-xs rounded-full border border-orange-200">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-brand-50 text-brand-700 text-xs rounded-full border border-brand-200">
                 &ldquo;{search}&rdquo;
                 <button onClick={() => { updateParam('search', ''); setSearchInput(''); }}><X className="w-3 h-3" /></button>
               </span>
             )}
             {examType && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-orange-50 text-orange-700 text-xs rounded-full border border-orange-200 capitalize">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-brand-50 text-brand-700 text-xs rounded-full border border-brand-200 capitalize">
                 {examType.replace('_', ' ')}
                 <button onClick={() => updateParam('examType', '')}><X className="w-3 h-3" /></button>
               </span>
@@ -163,7 +163,7 @@ export default function ExamListingPage() {
             <h3 className="text-lg font-semibold text-gray-700 mb-1">No exams found</h3>
             <p className="text-sm text-gray-500 mb-4">Try adjusting your filters or search terms.</p>
             {hasFilters && (
-              <button onClick={clearFilters} className="text-orange-500 hover:text-orange-600 text-sm font-medium">
+              <button onClick={clearFilters} className="text-brand-500 hover:text-brand-600 text-sm font-medium">
                 Clear All Filters
               </button>
             )}
@@ -185,7 +185,7 @@ export default function ExamListingPage() {
                           <FileText className="w-6 h-6 text-white" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-gray-900 group-hover:text-orange-600 transition-colors text-base mb-1">
+                          <h3 className="font-semibold text-gray-900 group-hover:text-brand-600 transition-colors text-base mb-1">
                             {exam.name}
                           </h3>
 
@@ -220,7 +220,7 @@ export default function ExamListingPage() {
 
                           {exam.importantDates?.length > 0 && (
                             <div className="mt-2 pt-2 border-t border-gray-100">
-                              <span className="text-xs text-orange-500 font-medium">
+                              <span className="text-xs text-brand-500 font-medium">
                                 {exam.importantDates.length} important date{exam.importantDates.length > 1 ? 's' : ''} listed
                               </span>
                             </div>

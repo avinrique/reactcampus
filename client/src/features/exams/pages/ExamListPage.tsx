@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/Badge';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { PermissionGuard } from '@/components/guards/PermissionGuard';
 import { PERMISSIONS } from '@/config/permissions';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, FileText } from 'lucide-react';
 import type { Exam } from '@/types/exam';
 
 export default function ExamListPage() {
@@ -20,7 +20,7 @@ export default function ExamListPage() {
     { key: 'name', header: 'Name' }, { key: 'examType', header: 'Type', render: (e) => <span className="capitalize">{e.examType}</span> },
     { key: 'conductedBy', header: 'Conducted By', render: (e) => e.conductedBy || '-' },
     { key: 'isActive', header: 'Status', render: (e) => <Badge variant={e.isActive ? 'success' : 'danger'}>{e.isActive ? 'Active' : 'Inactive'}</Badge> },
-    { key: 'actions', header: 'Actions', render: (e) => (<div className="flex gap-2"><PermissionGuard permission={PERMISSIONS.EXAM_UPDATE}><Link to={`/admin/exams/${e._id}/edit`}><Button variant="ghost" size="sm"><Edit className="h-4 w-4" /></Button></Link></PermissionGuard><PermissionGuard permission={PERMISSIONS.EXAM_DELETE}><Button variant="ghost" size="sm" onClick={() => setDeleteId(e._id)}><Trash2 className="h-4 w-4 text-red-500" /></Button></PermissionGuard></div>) },
+    { key: 'actions', header: 'Actions', render: (e) => (<div className="flex gap-2"><PermissionGuard permission={PERMISSIONS.EXAM_UPDATE}><Link to={`/admin/exams/${e._id}/sections`} title="Manage Content Sections"><Button variant="ghost" size="sm"><FileText className="h-4 w-4 text-blue-500" /></Button></Link></PermissionGuard><PermissionGuard permission={PERMISSIONS.EXAM_UPDATE}><Link to={`/admin/exams/${e._id}/edit`}><Button variant="ghost" size="sm"><Edit className="h-4 w-4" /></Button></Link></PermissionGuard><PermissionGuard permission={PERMISSIONS.EXAM_DELETE}><Button variant="ghost" size="sm" onClick={() => setDeleteId(e._id)}><Trash2 className="h-4 w-4 text-red-500" /></Button></PermissionGuard></div>) },
   ];
   return (
     <div className="space-y-4">

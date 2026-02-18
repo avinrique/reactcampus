@@ -7,6 +7,10 @@ export const contentSectionApi = {
     const res = await api.get<ApiResponse<ContentSection[]>>('/content-sections', { params: { college: collegeId } });
     return res.data.data;
   },
+  getByExam: async (examId: string) => {
+    const res = await api.get<ApiResponse<ContentSection[]>>('/content-sections', { params: { exam: examId } });
+    return res.data.data;
+  },
   getById: async (id: string) => {
     const res = await api.get<ApiResponse<ContentSection>>(`/content-sections/${id}`);
     return res.data.data;

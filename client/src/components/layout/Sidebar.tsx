@@ -17,6 +17,7 @@ import {
   ChevronRight,
   BookOpen,
   Newspaper,
+  Settings2,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 
@@ -45,6 +46,7 @@ const navItems: NavItem[] = [
   { label: 'Users', path: '/admin/users', icon: <Users className="h-5 w-5" />, permission: PERMISSIONS.USER_READ },
   { label: 'Roles', path: '/admin/roles', icon: <Shield className="h-5 w-5" />, permission: PERMISSIONS.ROLE_READ },
   { label: 'Submissions', path: '/admin/submissions', icon: <MessageSquare className="h-5 w-5" />, permission: PERMISSIONS.FORM_VIEW_SUBMISSIONS },
+  { label: 'Site Settings', path: '/admin/site-settings', icon: <Settings2 className="h-5 w-5" />, permission: PERMISSIONS.SITE_SETTINGS_READ },
 ];
 
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
@@ -60,7 +62,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       )}
     >
       <div className="flex items-center justify-between p-4 border-b border-gray-700">
-        {!collapsed && <span className="text-lg font-bold">ReactCampus</span>}
+        {!collapsed && <span className="text-lg font-bold">CampusOption</span>}
         <button onClick={onToggle} className="text-gray-400 hover:text-white">
           {collapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
         </button>

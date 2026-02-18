@@ -16,3 +16,11 @@ export function usePublicExam(slug: string) {
     enabled: !!slug,
   });
 }
+
+export function usePublicExamSections(slug: string) {
+  return useQuery({
+    queryKey: queryKeys.public.exams.sections(slug),
+    queryFn: () => publicExamApi.getSections(slug),
+    enabled: !!slug,
+  });
+}

@@ -3,7 +3,8 @@ import type { ContentType } from '@/config/constants';
 export interface ContentSection {
   _id: string;
   id: string;
-  college: string;
+  college?: string;
+  exam?: string;
   sectionKey: string;
   title: string;
   content: unknown;
@@ -15,7 +16,8 @@ export interface ContentSection {
 }
 
 export interface CreateContentSectionRequest {
-  college: string;
+  college?: string;
+  exam?: string;
   sectionKey: string;
   title: string;
   content?: unknown;
