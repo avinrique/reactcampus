@@ -7,6 +7,7 @@ const examSchema = new mongoose.Schema(
     slug: { type: String, required: true, unique: true, lowercase: true },
     conductedBy: { type: String, trim: true, default: '' },
     examType: { type: String, enum: EXAM_TYPES, required: true },
+    categories: [{ type: String }],
     pattern: {
       mode: { type: String, enum: ['online', 'offline', 'both'], default: 'online' },
       duration: { type: String, default: '' },
@@ -23,6 +24,10 @@ const examSchema = new mongoose.Schema(
     eligibility: { type: String, default: '' },
     description: { type: String, default: '' },
     website: { type: String, default: '' },
+    pageFeatures: {
+      faq: { type: Boolean, default: true },
+      discussion: { type: Boolean, default: false },
+    },
     isActive: { type: Boolean, default: true },
     deletedAt: { type: Date, default: null },
   },

@@ -51,7 +51,7 @@ export default function PageListPage() {
             </Button>
           </Link>
 
-          <PermissionGuard permission={PERMISSIONS.PAGE_UPDATE}>
+          <PermissionGuard anyPermission={[PERMISSIONS.PAGE_UPDATE, PERMISSIONS.PAGE_UPDATE_ASSIGNED]}>
             <Link to={`/admin/pages/${p._id}/edit`}>
               <Button variant="ghost" size="sm">
                 <Edit className="h-4 w-4" />
@@ -59,7 +59,7 @@ export default function PageListPage() {
             </Link>
           </PermissionGuard>
 
-          <PermissionGuard permission={PERMISSIONS.PAGE_PUBLISH}>
+          <PermissionGuard anyPermission={[PERMISSIONS.PAGE_PUBLISH, PERMISSIONS.PAGE_PUBLISH_ASSIGNED]}>
             <Button
               variant="ghost"
               size="sm"
@@ -74,7 +74,7 @@ export default function PageListPage() {
             </Button>
           </PermissionGuard>
 
-          <PermissionGuard permission={PERMISSIONS.PAGE_DELETE}>
+          <PermissionGuard anyPermission={[PERMISSIONS.PAGE_DELETE, PERMISSIONS.PAGE_DELETE_ASSIGNED]}>
             <Button variant="ghost" size="sm" onClick={() => setDeleteId(p._id)}>
               <Trash2 className="h-4 w-4 text-red-500" />
             </Button>

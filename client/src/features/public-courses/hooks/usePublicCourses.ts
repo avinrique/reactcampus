@@ -16,3 +16,19 @@ export function usePublicCourse(slug: string) {
     enabled: !!slug,
   });
 }
+
+export function usePublicCourseColleges(slug: string) {
+  return useQuery({
+    queryKey: [...queryKeys.public.courses.detail(slug), 'colleges'] as const,
+    queryFn: () => publicCourseApi.getColleges(slug),
+    enabled: !!slug,
+  });
+}
+
+export function usePublicCourseSections(slug: string) {
+  return useQuery({
+    queryKey: queryKeys.public.courses.sections(slug),
+    queryFn: () => publicCourseApi.getSections(slug),
+    enabled: !!slug,
+  });
+}

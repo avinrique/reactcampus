@@ -19,6 +19,10 @@ const createCourse = {
     }),
     description: Joi.string().max(5000).allow(''),
     eligibility: Joi.string().max(2000).allow(''),
+    pageFeatures: Joi.object({
+      faq: Joi.boolean(),
+      discussion: Joi.boolean(),
+    }),
   }),
 };
 
@@ -42,6 +46,10 @@ const updateCourse = {
     }),
     description: Joi.string().max(5000).allow(''),
     eligibility: Joi.string().max(2000).allow(''),
+    pageFeatures: Joi.object({
+      faq: Joi.boolean(),
+      discussion: Joi.boolean(),
+    }),
   }).min(1),
 };
 

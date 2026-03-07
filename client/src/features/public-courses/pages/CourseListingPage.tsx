@@ -9,6 +9,16 @@ import { Spinner } from '@/components/ui/Spinner';
 import { Pagination } from '@/components/ui/Pagination';
 import { COURSE_LEVELS } from '@/config/constants';
 
+const STREAM_BORDER_COLORS: Record<string, string> = {
+  engineering: 'border-l-blue-500',
+  medical: 'border-l-red-500',
+  management: 'border-l-amber-500',
+  law: 'border-l-emerald-500',
+  arts: 'border-l-purple-500',
+  science: 'border-l-cyan-500',
+  commerce: 'border-l-teal-500',
+};
+
 export default function CourseListingPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get('page')) || 1;
@@ -49,23 +59,23 @@ export default function CourseListingPage() {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-brand-500 to-brand-400 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <nav className="flex items-center gap-1.5 text-sm text-brand-100 mb-4">
+      <div className="bg-gradient-to-br from-brand-800 via-brand-700 to-brand-600 bg-noise text-white relative">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 py-10 md:py-14">
+          <nav className="flex items-center gap-1.5 text-sm text-brand-200 mb-4">
             <Link to="/" className="hover:text-white transition-colors"><Home className="w-3.5 h-3.5" /></Link>
             <ChevronRight className="w-3.5 h-3.5" />
             <span className="text-white font-medium">Courses</span>
           </nav>
           <h1 className="text-2xl md:text-3xl font-bold mb-2">Explore Courses</h1>
-          <p className="text-brand-100 text-sm md:text-base">
+          <p className="text-brand-200 text-sm md:text-base">
             Browse {data?.pagination?.total ? `${data.pagination.total}+` : ''} courses. Filter by level, stream, and more.
           </p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Search & Filter Bar */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+        {/* Search & Filter Bar - overlapping banner */}
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-4 mb-6 -mt-6 relative z-20">
           <div className="flex flex-col md:flex-row gap-3">
             <form onSubmit={handleSearch} className="flex gap-2 flex-1">
               <div className="relative flex-1">
@@ -75,10 +85,10 @@ export default function CourseListingPage() {
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   placeholder="Search courses by name..."
-                  className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                  className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent"
                 />
               </div>
-              <button type="submit" className="px-5 py-2.5 bg-brand-500 text-white text-sm font-medium rounded-lg hover:bg-brand-600 transition-colors">
+              <button type="submit" className="px-5 py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-sm font-medium rounded-lg hover:from-brand-600 hover:to-brand-700 transition-all shadow-md shadow-brand-500/20">
                 Search
               </button>
             </form>
@@ -101,14 +111,14 @@ export default function CourseListingPage() {
           </div>
 
           {showFilters && (
-            <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className="mt-4 pt-4 border-t border-gray-100 animate-scale-in">
               <div className="flex flex-wrap gap-3">
                 <div className="flex-1 min-w-[150px]">
                   <label className="block text-xs font-medium text-gray-500 mb-1.5">Level</label>
                   <select
                     value={level}
                     onChange={(e) => updateParam('level', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent capitalize"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent capitalize"
                   >
                     <option value="">All Levels</option>
                     {COURSE_LEVELS.map((l) => (
@@ -123,7 +133,7 @@ export default function CourseListingPage() {
                     value={stream}
                     onChange={(e) => updateParam('stream', e.target.value)}
                     placeholder="e.g. Engineering"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -141,7 +151,7 @@ export default function CourseListingPage() {
 
         {/* Active Filter Tags */}
         {hasFilters && (
-          <div className="flex flex-wrap items-center gap-2 mb-4">
+          <div className="flex flex-wrap items-center gap-2 mb-4 animate-scale-in">
             <span className="text-xs text-gray-500 font-medium">Active:</span>
             {search && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-brand-50 text-brand-700 text-xs rounded-full border border-brand-200">
@@ -189,48 +199,45 @@ export default function CourseListingPage() {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-              {data.data.map((course) => (
-                <Link
-                  key={course._id}
-                  to={`/courses/${course.slug}`}
-                  className="group bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all overflow-hidden"
-                >
-                  <div className="h-1.5 bg-gradient-to-r from-brand-500 to-brand-400" />
-                  <div className="p-5">
-                    <div className="flex items-start justify-between gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-lg bg-brand-500 flex items-center justify-center flex-shrink-0">
-                        <BookOpen className="w-5 h-5 text-white" />
+              {data.data.map((course) => {
+                const streamKey = (course.stream || '').toLowerCase();
+                const borderColor = STREAM_BORDER_COLORS[streamKey] || 'border-l-brand-500';
+                return (
+                  <Link
+                    key={course._id}
+                    to={`/courses/${course.slug}`}
+                    className={`group bg-white rounded-xl shadow-sm border border-gray-200 border-l-4 ${borderColor} card-hover overflow-hidden`}
+                  >
+                    <div className="p-5">
+                      <h3 className="font-bold text-gray-900 text-base group-hover:text-brand-600 transition-colors mb-2">
+                        {course.name}
+                      </h3>
+                      <div className="flex flex-wrap gap-1.5 mb-3">
+                        <span className="px-2 py-0.5 bg-brand-50 text-brand-700 text-xs rounded-full font-medium capitalize border border-brand-100">
+                          {course.level}
+                        </span>
+                        {course.stream && (
+                          <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-full font-medium capitalize border border-blue-100">
+                            {course.stream}
+                          </span>
+                        )}
                       </div>
-                      <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-brand-500 transition-colors mt-1" />
-                    </div>
-                    <h3 className="font-semibold text-gray-900 text-sm group-hover:text-brand-600 transition-colors mb-2">
-                      {course.name}
-                    </h3>
-                    <div className="flex flex-wrap gap-1.5 mb-3">
-                      <span className="px-2 py-0.5 bg-brand-50 text-brand-700 text-xs rounded-full font-medium capitalize">
-                        {course.level}
-                      </span>
-                      {course.stream && (
-                        <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-full font-medium capitalize">
-                          {course.stream}
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-100 text-xs text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {course.duration.value} {course.duration.unit}
                         </span>
-                      )}
+                        {course.fees?.amount > 0 && (
+                          <span className="flex items-center gap-1 text-green-600 font-semibold bg-green-50 px-2 py-0.5 rounded-full border border-green-100">
+                            <IndianRupee className="w-3 h-3" />
+                            {(course.fees.amount / 100000).toFixed(1)}L / {course.fees.per}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between pt-3 border-t border-gray-100 text-xs text-gray-500">
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {course.duration.value} {course.duration.unit}
-                      </span>
-                      {course.fees?.amount > 0 && (
-                        <span className="flex items-center gap-1 text-green-600 font-medium">
-                          <IndianRupee className="w-3 h-3" />
-                          {(course.fees.amount / 100000).toFixed(1)}L / {course.fees.per}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
             {data.pagination && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">

@@ -8,8 +8,12 @@ const createSEO = asyncHandler(async (req, res) => {
 });
 
 const getSEOEntries = asyncHandler(async (req, res) => {
-  const result = await seoService.getSEOEntries(req.query);
-  ApiResponse.success(res, 'SEO entries retrieved successfully', result);
+  const result = await seoService.getSEOEntries(req.query, {
+    page: req.query.page,
+    limit: req.query.limit,
+    sort: req.query.sort,
+  });
+  ApiResponse.paginated(res, 'SEO entries retrieved successfully', result);
 });
 
 const getSEOById = asyncHandler(async (req, res) => {

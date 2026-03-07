@@ -24,10 +24,11 @@ const create = async (data, userId = null) => {
 };
 
 /**
- * Get all content sections for a college, ordered by their order field.
+ * Get all content sections for a college or exam, ordered by their order field.
  */
-const getByCollege = async (collegeId) => {
-  const sections = await ContentSection.find({ college: collegeId }).sort({ order: 1 });
+const getByCollege = async (collegeId, examId, courseId) => {
+  const filter = courseId ? { course: courseId } : examId ? { exam: examId } : { college: collegeId };
+  const sections = await ContentSection.find(filter).sort({ order: 1 });
   return sections;
 };
 

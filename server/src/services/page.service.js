@@ -41,6 +41,10 @@ const getPages = async (query = {}, options = {}) => {
     filter.status = query.status;
   }
 
+  if (options.assignedContentIds) {
+    filter._id = { $in: options.assignedContentIds };
+  }
+
   return paginate(Page, filter, {
     page: options.page,
     limit: options.limit,

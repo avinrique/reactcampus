@@ -57,6 +57,11 @@ const dynamicFormSchema = new mongoose.Schema(
       {
         pageType: { type: String, required: true },
         entityId: { type: mongoose.Schema.Types.ObjectId, default: null },
+        displayAs: { type: String, enum: ['popup', 'inline', 'slide_in'], default: 'popup' },
+        trigger: { type: String, enum: ['immediate', 'delay', 'scroll', 'exit_intent'], default: 'delay' },
+        delaySeconds: { type: Number, default: 5, min: 0, max: 300 },
+        scrollPercent: { type: Number, default: 50, min: 0, max: 100 },
+        showOnce: { type: Boolean, default: true },
       },
     ],
     visibility: {

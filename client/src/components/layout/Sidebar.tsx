@@ -12,12 +12,15 @@ import {
   Shield,
   Star,
   Search,
+  Tag,
   MessageSquare,
+  MessageCircle,
   ChevronLeft,
   ChevronRight,
   BookOpen,
   Newspaper,
   Settings2,
+  UserCheck,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 
@@ -31,17 +34,21 @@ interface NavItem {
   path: string;
   icon: ReactNode;
   permission?: string;
+  anyPermission?: string[];
 }
 
 const navItems: NavItem[] = [
   { label: 'Dashboard', path: '/admin', icon: <LayoutDashboard className="h-5 w-5" />, permission: PERMISSIONS.DASHBOARD_VIEW },
-  { label: 'Colleges', path: '/admin/colleges', icon: <Building2 className="h-5 w-5" />, permission: PERMISSIONS.COLLEGE_READ },
+  { label: 'Categories', path: '/admin/categories', icon: <Tag className="h-5 w-5" />, permission: PERMISSIONS.CATEGORY_READ },
+  { label: 'Colleges', path: '/admin/colleges', icon: <Building2 className="h-5 w-5" />, anyPermission: [PERMISSIONS.COLLEGE_READ, PERMISSIONS.COLLEGE_READ_ASSIGNED] },
   { label: 'Courses', path: '/admin/courses', icon: <GraduationCap className="h-5 w-5" />, permission: PERMISSIONS.COURSE_READ },
   { label: 'Exams', path: '/admin/exams', icon: <BookOpen className="h-5 w-5" />, permission: PERMISSIONS.EXAM_READ },
-  { label: 'Pages', path: '/admin/pages', icon: <Newspaper className="h-5 w-5" />, permission: PERMISSIONS.PAGE_READ },
+  { label: 'Pages', path: '/admin/pages', icon: <Newspaper className="h-5 w-5" />, anyPermission: [PERMISSIONS.PAGE_READ, PERMISSIONS.PAGE_READ_ASSIGNED] },
   { label: 'Forms', path: '/admin/forms', icon: <FileText className="h-5 w-5" />, permission: PERMISSIONS.FORM_READ },
   { label: 'Leads', path: '/admin/leads', icon: <ClipboardList className="h-5 w-5" />, permission: PERMISSIONS.LEAD_READ },
   { label: 'Reviews', path: '/admin/reviews', icon: <Star className="h-5 w-5" />, permission: PERMISSIONS.REVIEW_READ },
+  { label: 'Discussions', path: '/admin/discussions', icon: <MessageCircle className="h-5 w-5" />, permission: PERMISSIONS.DISCUSSION_READ },
+  { label: 'Assignments', path: '/admin/assignments', icon: <UserCheck className="h-5 w-5" />, permission: PERMISSIONS.ASSIGNMENT_READ },
   { label: 'SEO', path: '/admin/seo', icon: <Search className="h-5 w-5" />, permission: PERMISSIONS.SEO_READ },
   { label: 'Users', path: '/admin/users', icon: <Users className="h-5 w-5" />, permission: PERMISSIONS.USER_READ },
   { label: 'Roles', path: '/admin/roles', icon: <Shield className="h-5 w-5" />, permission: PERMISSIONS.ROLE_READ },
@@ -50,9 +57,12 @@ const navItems: NavItem[] = [
 ];
 
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
-  const { hasPermission } = useAuth();
+  const { hasPermission, hasAnyPermission } = useAuth();
 
-  const visibleItems = navItems.filter((item) => !item.permission || hasPermission(item.permission));
+  const visibleItems = navItems.filter((item) => {
+    if (item.anyPermission) return hasAnyPermission(...item.anyPermission);
+    return !item.permission || hasPermission(item.permission);
+  });
 
   return (
     <aside

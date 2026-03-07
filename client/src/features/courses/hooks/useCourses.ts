@@ -22,3 +22,6 @@ export function useDeleteCourse() {
   const qc = useQueryClient(); const toast = useToast();
   return useMutation({ mutationFn: (id: string) => courseApi.delete(id), onSuccess: () => { qc.invalidateQueries({ queryKey: queryKeys.courses.all }); toast.success('Course deleted'); }, onError: (err: any) => toast.error(err.response?.data?.message || 'Failed') });
 }
+export function useCourseColleges(courseId: string) {
+  return useQuery({ queryKey: [...queryKeys.courses.detail(courseId), 'colleges'] as const, queryFn: () => courseApi.getColleges(courseId), enabled: !!courseId });
+}

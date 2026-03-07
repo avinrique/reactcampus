@@ -13,7 +13,7 @@ module.exports = {
     refreshExpiry: process.env.JWT_REFRESH_EXPIRY || '7d',
   },
   admin: {
-    email: process.env.ADMIN_EMAIL || 'admin@reactcampus.com',
+    email: process.env.ADMIN_EMAIL || 'admin@campusoption.com',
     password: process.env.ADMIN_PASSWORD || 'Admin@123456',
     firstName: process.env.ADMIN_FIRST_NAME || 'Super',
     lastName: process.env.ADMIN_LAST_NAME || 'Admin',

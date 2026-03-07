@@ -8,6 +8,7 @@ export const FORM_FIELD_TYPES = ['text', 'email', 'phone', 'number', 'dropdown',
 export const LEAD_STATUSES = ['new', 'contacted', 'qualified', 'converted', 'lost', 'closed'] as const;
 export const LEAD_PRIORITIES = ['low', 'medium', 'high', 'urgent'] as const;
 export const REVIEW_STATUSES = ['pending', 'approved', 'rejected'] as const;
+export const DISCUSSION_STATUSES = ['pending', 'approved', 'rejected'] as const;
 export const SEO_TARGET_TYPES = ['college', 'course', 'exam', 'page'] as const;
 export const PAGE_STATUSES = ['draft', 'published', 'archived'] as const;
 export const EXAM_MODES = ['online', 'offline', 'both'] as const;
@@ -26,6 +27,7 @@ export type FormFieldType = (typeof FORM_FIELD_TYPES)[number];
 export type LeadStatus = (typeof LEAD_STATUSES)[number];
 export type LeadPriority = (typeof LEAD_PRIORITIES)[number];
 export type ReviewStatus = (typeof REVIEW_STATUSES)[number];
+export type DiscussionStatus = (typeof DISCUSSION_STATUSES)[number];
 export type PageStatus = (typeof PAGE_STATUSES)[number];
 export type SeoTargetType = (typeof SEO_TARGET_TYPES)[number];
 
@@ -45,6 +47,12 @@ export const COLLEGE_STATUS_COLORS: Record<string, string> = {
 };
 
 export const REVIEW_STATUS_COLORS: Record<string, string> = {
+  pending: 'bg-yellow-100 text-yellow-800',
+  approved: 'bg-green-100 text-green-800',
+  rejected: 'bg-red-100 text-red-800',
+};
+
+export const DISCUSSION_STATUS_COLORS: Record<string, string> = {
   pending: 'bg-yellow-100 text-yellow-800',
   approved: 'bg-green-100 text-green-800',
   rejected: 'bg-red-100 text-red-800',

@@ -188,7 +188,25 @@ const submitForm = async (formId, { data, pageContext, submittedBy, ip, userAgen
 /* ------------------------------------------------------------------ */
 
 /**
+ * Auto-detect lead field from common field name patterns when no explicit mapping set.
+ */
+const AUTO_LEAD_FIELD_PATTERNS = {
+  name: /^(name|full[_\s-]?name|your[_\s-]?name|student[_\s-]?name)$/i,
+  email: /^(email|e[_\s-]?mail|email[_\s-]?address|your[_\s-]?email)$/i,
+  phone: /^(phone|mobile|contact|phone[_\s-]?number|mobile[_\s-]?number|contact[_\s-]?number)$/i,
+  message: /^(message|query|comment|remarks|description)$/i,
+};
+
+const _guessLeadField = (fieldName) => {
+  for (const [leadField, pattern] of Object.entries(AUTO_LEAD_FIELD_PATTERNS)) {
+    if (pattern.test(fieldName)) return leadField;
+  }
+  return null;
+};
+
+/**
  * Create a Lead from form submission using leadFieldMapping on each field.
+ * Falls back to auto-detection from field names when no explicit mapping exists.
  */
 const _createLeadFromSubmission = async (form, data, submission) => {
   const leadData = {
@@ -202,10 +220,24 @@ const _createLeadFromSubmission = async (form, data, submission) => {
 
   const mappedKeys = new Set();
 
+  // First pass: use explicit leadFieldMapping
   for (const field of form.fields) {
     if (field.leadFieldMapping && data[field.name] !== undefined) {
       leadData[field.leadFieldMapping] = data[field.name];
       mappedKeys.add(field.name);
+    }
+  }
+
+  // Second pass: auto-detect from field name or label when no explicit mappings exist
+  const hasExplicitMappings = mappedKeys.size > 0;
+  if (!hasExplicitMappings) {
+    for (const field of form.fields) {
+      if (mappedKeys.has(field.name) || data[field.name] === undefined) continue;
+      const guessed = _guessLeadField(field.name) || _guessLeadField(field.label);
+      if (guessed && leadData[guessed] === undefined) {
+        leadData[guessed] = data[field.name];
+        mappedKeys.add(field.name);
+      }
     }
   }
 

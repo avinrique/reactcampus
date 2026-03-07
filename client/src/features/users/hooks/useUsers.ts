@@ -24,7 +24,7 @@ export function useDeleteUser() {
 }
 export function useActivateUser() {
   const qc = useQueryClient(); const toast = useToast();
-  return useMutation({ mutationFn: (id: string) => userApi.activate(id), onSuccess: () => { qc.invalidateQueries({ queryKey: queryKeys.users.all }); toast.success('User status updated'); }, onError: (err: any) => toast.error(err.response?.data?.message || 'Failed') });
+  return useMutation({ mutationFn: (id: string) => userApi.activate(id), onSuccess: (user) => { qc.invalidateQueries({ queryKey: queryKeys.users.all }); toast.success(user?.isActive ? 'User activated' : 'User deactivated'); }, onError: (err: any) => toast.error(err.response?.data?.message || 'Failed') });
 }
 export function useAssignRoles() {
   const qc = useQueryClient(); const toast = useToast();

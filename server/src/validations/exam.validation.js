@@ -6,6 +6,7 @@ const createExam = {
   body: Joi.object({
     name: Joi.string().trim().min(1).max(300).required(),
     examType: Joi.string().valid('national', 'state', 'university', 'institutional').required(),
+    categories: Joi.array().items(Joi.string().max(100)),
     conductedBy: Joi.string().trim().max(300).allow(''),
     pattern: Joi.object({
       mode: Joi.string().valid('online', 'offline', 'both').default('online'),
@@ -29,6 +30,10 @@ const createExam = {
     eligibility: Joi.string().max(2000).allow(''),
     description: Joi.string().max(5000).allow(''),
     website: Joi.string().uri().allow(''),
+    pageFeatures: Joi.object({
+      faq: Joi.boolean(),
+      discussion: Joi.boolean(),
+    }),
   }),
 };
 
@@ -39,6 +44,7 @@ const updateExam = {
   body: Joi.object({
     name: Joi.string().trim().min(1).max(300),
     examType: Joi.string().valid('national', 'state', 'university', 'institutional'),
+    categories: Joi.array().items(Joi.string().max(100)),
     conductedBy: Joi.string().trim().max(300).allow(''),
     pattern: Joi.object({
       mode: Joi.string().valid('online', 'offline', 'both').default('online'),
@@ -62,6 +68,10 @@ const updateExam = {
     eligibility: Joi.string().max(2000).allow(''),
     description: Joi.string().max(5000).allow(''),
     website: Joi.string().uri().allow(''),
+    pageFeatures: Joi.object({
+      faq: Joi.boolean(),
+      discussion: Joi.boolean(),
+    }),
   }).min(1),
 };
 

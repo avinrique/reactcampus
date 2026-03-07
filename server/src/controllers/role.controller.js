@@ -8,8 +8,12 @@ const createRole = asyncHandler(async (req, res) => {
 });
 
 const getRoles = asyncHandler(async (req, res) => {
-  const result = await roleService.getRoles(req.query);
-  ApiResponse.success(res, 'Roles retrieved successfully', result);
+  const result = await roleService.getRoles(req.query, {
+    page: req.query.page,
+    limit: req.query.limit,
+    sort: req.query.sort,
+  });
+  ApiResponse.paginated(res, 'Roles retrieved successfully', result);
 });
 
 const getRoleById = asyncHandler(async (req, res) => {

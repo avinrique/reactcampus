@@ -8,8 +8,12 @@ const submitReview = asyncHandler(async (req, res) => {
 });
 
 const getReviews = asyncHandler(async (req, res) => {
-  const result = await reviewService.getReviews(req.query);
-  ApiResponse.success(res, 'Reviews retrieved successfully', result);
+  const result = await reviewService.getReviews(req.query, {
+    page: req.query.page,
+    limit: req.query.limit,
+    sort: req.query.sort,
+  });
+  ApiResponse.paginated(res, 'Reviews retrieved successfully', result);
 });
 
 const getReviewById = asyncHandler(async (req, res) => {

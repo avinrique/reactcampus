@@ -8,11 +8,17 @@ const createPage = asyncHandler(async (req, res) => {
 });
 
 const getPages = asyncHandler(async (req, res) => {
-  const result = await pageService.getPages(req.query, {
+  const options = {
     page: req.query.page,
     limit: req.query.limit,
     sort: req.query.sort,
-  });
+  };
+
+  if (req.assignmentScope === 'assigned') {
+    options.assignedContentIds = req.assignedContentIds;
+  }
+
+  const result = await pageService.getPages(req.query, options);
   ApiResponse.paginated(res, 'Pages retrieved successfully', result);
 });
 

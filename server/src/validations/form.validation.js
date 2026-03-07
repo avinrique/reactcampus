@@ -28,10 +28,20 @@ const fieldSchema = Joi.object({
   options: Joi.array().items(fieldOptionSchema),
   order: Joi.number().integer().min(0),
   conditionalOn: Joi.object({
-    fieldName: Joi.string().trim().max(200),
+    fieldName: Joi.string().trim().max(200).allow(null, ''),
     value: Joi.any(),
-  }),
+  }).allow(null),
   leadFieldMapping: Joi.string().valid('name', 'email', 'phone', 'college', 'course', 'message').allow(null),
+});
+
+const pageAssignmentSchema = Joi.object({
+  pageType: Joi.string().trim().min(1).max(100).required(),
+  entityId: objectId.allow(null),
+  displayAs: Joi.string().valid('popup', 'inline', 'slide_in'),
+  trigger: Joi.string().valid('immediate', 'delay', 'scroll', 'exit_intent'),
+  delaySeconds: Joi.number().integer().min(0).max(300),
+  scrollPercent: Joi.number().integer().min(0).max(100),
+  showOnce: Joi.boolean(),
 });
 
 const createForm = {
@@ -43,6 +53,7 @@ const createForm = {
     postSubmitAction: Joi.string().valid('message', 'redirect', 'both'),
     successMessage: Joi.string().max(1000).allow(''),
     redirectUrl: Joi.string().uri().allow(''),
+    assignedPages: Joi.array().items(pageAssignmentSchema),
     visibility: Joi.object({
       requiresAuth: Joi.boolean(),
       allowedRoles: Joi.array().items(objectId),
@@ -62,6 +73,7 @@ const updateForm = {
     postSubmitAction: Joi.string().valid('message', 'redirect', 'both'),
     successMessage: Joi.string().max(1000).allow(''),
     redirectUrl: Joi.string().uri().allow(''),
+    assignedPages: Joi.array().items(pageAssignmentSchema),
     visibility: Joi.object({
       requiresAuth: Joi.boolean(),
       allowedRoles: Joi.array().items(objectId),
@@ -83,14 +95,7 @@ const assignPages = {
     id: objectId.required(),
   }),
   body: Joi.object({
-    assignedPages: Joi.array()
-      .items(
-        Joi.object({
-          pageType: Joi.string().trim().min(1).max(100).required(),
-          entityId: objectId.allow(null),
-        })
-      )
-      .required(),
+    assignedPages: Joi.array().items(pageAssignmentSchema).required(),
   }),
 };
 

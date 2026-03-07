@@ -4,7 +4,9 @@ const objectId = Joi.string().pattern(/^[0-9a-fA-F]{24}$/);
 
 const createContentSection = {
   body: Joi.object({
-    college: objectId.required(),
+    college: objectId,
+    exam: objectId,
+    course: objectId,
     sectionKey: Joi.string().trim().min(1).max(200).required(),
     title: Joi.string().trim().min(1).max(300).required(),
     content: Joi.any(),
@@ -29,8 +31,10 @@ const updateContentSection = {
 
 const listContentSections = {
   query: Joi.object({
-    college: objectId.required(),
-  }),
+    college: objectId,
+    exam: objectId,
+    course: objectId,
+  }).or('college', 'exam', 'course'),
 };
 
 const getContentSection = {

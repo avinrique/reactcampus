@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { usePublicCollege, usePublicCollegeReviews, usePublicCollegeSections } from '../hooks/usePublicColleges';
 import { PageFormOverlay } from '@/features/public-forms/components/PageFormOverlay';
+import { DiscussionSection } from '@/components/sections/DiscussionSection';
 import { useMutation } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import { Spinner } from '@/components/ui/Spinner';
@@ -18,16 +19,21 @@ import type { ContentSection } from '@/types/contentSection';
 
 const TAB_LABELS: Record<string, string> = {
   overview: 'Overview',
+  about: 'About',
   'courses-fee': 'Courses & Fees',
   placements: 'Placements',
   admission: 'Admission',
+  admissions: 'Admissions',
+  'campus-life': 'Campus life',
   cutoff: 'Cutoff',
   scholarship: 'Scholarship',
   faculty: 'Faculty',
   infrastructure: 'Infrastructure',
 };
 
-const TAB_ORDER = ['overview', 'courses-fee', 'placements', 'admission', 'cutoff', 'scholarship', 'faculty', 'infrastructure'];
+const TAB_ORDER = ['placements', 'about', 'admissions', 'campus-life', 'overview', 'courses-fee', 'admission', 'cutoff', 'scholarship', 'faculty', 'infrastructure'];
+
+const SIDEBAR_ACCENTS = ['border-l-brand-500', 'border-l-accent-500', 'border-l-gray-400', 'border-l-emerald-500'];
 
 // ─── ReadMoreText ───────────────────────────────────────────────────────────────
 
@@ -126,100 +132,101 @@ function HeroSection({
   if (college.accreditation) quickInfoParts.push(college.accreditation);
   if (college.affiliation) quickInfoParts.push(college.affiliation);
 
-  const stats: { label: string; value: string; color: string; icon: any }[] = [];
+  const stats: { label: string; value: string; color: string; ringColor: string; icon: any }[] = [];
   if (college.ranking) {
-    stats.push({ label: 'NIRF Ranking', value: `#${college.ranking}`, color: 'bg-blue-500', icon: Award });
+    stats.push({ label: 'NIRF Ranking', value: `#${college.ranking}`, color: 'bg-blue-500', ringColor: 'ring-blue-100', icon: Award });
   }
   if (college.fees?.max > 0) {
     const maxFee = college.fees.max >= 100000
       ? `${(college.fees.max / 100000).toFixed(1)}L`
       : `${(college.fees.max / 1000).toFixed(0)}K`;
-    stats.push({ label: 'Total Fees', value: `₹${maxFee}`, color: 'bg-green-500', icon: TrendingUp });
+    stats.push({ label: 'Total Fees', value: `₹${maxFee}`, color: 'bg-green-500', ringColor: 'ring-green-100', icon: TrendingUp });
   }
   if (college.courses?.length) {
-    stats.push({ label: 'Courses', value: `${college.courses.length}+`, color: 'bg-brand-500', icon: GraduationCap });
+    stats.push({ label: 'Courses', value: `${college.courses.length}+`, color: 'bg-brand-500', ringColor: 'ring-brand-100', icon: GraduationCap });
   }
   if (college.exams?.length) {
-    stats.push({ label: 'Exams Accepted', value: `${college.exams.length}`, color: 'bg-purple-500', icon: FileText });
+    stats.push({ label: 'Exams Accepted', value: `${college.exams.length}`, color: 'bg-purple-500', ringColor: 'ring-purple-100', icon: FileText });
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-4">
-      {/* Subtle top banner */}
-      <div className="h-10 bg-gradient-to-r from-brand-500 to-brand-400" />
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-4">
+      {/* Taller top banner */}
+      {college.coverImage ? (
+        <div className="h-40 md:h-52 bg-gray-200 relative overflow-hidden rounded-t-xl">
+          <img src={college.coverImage} alt="" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+        </div>
+      ) : (
+        <div className="h-28 bg-gradient-to-r from-brand-600 via-brand-500 to-brand-400 rounded-t-xl" />
+      )}
 
       <div className="p-5 md:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-          {/* Logo */}
-          <div className="flex-shrink-0">
-            {college.logo ? (
-              <img src={college.logo} alt={college.name} className="w-16 h-16 rounded-lg border border-gray-200 object-contain bg-white" />
-            ) : (
-              <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center">
-                <Building2 className="w-8 h-8 text-white" />
+        {/* Logo - overlapping banner */}
+        <div className={`relative z-10 ${college.coverImage ? '-mt-16 mb-3' : '-mt-14 mb-3'}`}>
+          {college.logo ? (
+            <img src={college.logo} alt={college.name} className="w-20 h-20 rounded-xl ring-4 ring-white shadow-lg object-cover bg-white" />
+          ) : (
+            <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center ring-4 ring-white shadow-lg">
+              <Building2 className="w-10 h-10 text-white" />
+            </div>
+          )}
+        </div>
+
+        {/* Info - always below the banner */}
+        <div>
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight">{college.name}</h1>
+              {college.location && (
+                <p className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+                  <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+                  {college.location.city}{college.location.state ? `, ${college.location.state}` : ''}
+                </p>
+              )}
+            </div>
+            {avgRating && (
+              <div className="flex-shrink-0 bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-xl px-3 py-1.5 text-center shadow-lg shadow-green-500/20">
+                <div className="text-lg font-bold leading-none">{avgRating}</div>
+                <div className="text-[10px] mt-0.5 opacity-90">{reviewsData.data.length} reviews</div>
               </div>
             )}
           </div>
 
-          {/* Info */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight">{college.name}</h1>
-                {college.location && (
-                  <p className="flex items-center gap-1 text-sm text-gray-500 mt-1">
-                    <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-                    {college.location.city}{college.location.state ? `, ${college.location.state}` : ''}
-                  </p>
-                )}
-              </div>
-
-              {/* Rating badge */}
-              {avgRating && (
-                <div className="flex-shrink-0 bg-green-500 text-white rounded-lg px-3 py-1.5 text-center">
-                  <div className="text-lg font-bold leading-none">{avgRating}</div>
-                  <div className="text-[10px] mt-0.5 opacity-90">{reviewsData.data.length} reviews</div>
-                </div>
-              )}
+          {quickInfoParts.length > 0 && (
+            <div className="flex items-center flex-wrap gap-x-2 gap-y-1 mt-2">
+              {quickInfoParts.map((part, i) => (
+                <span key={i} className="flex items-center gap-2 text-xs text-gray-600">
+                  {i > 0 && <span className="text-gray-300">|</span>}
+                  {part}
+                </span>
+              ))}
             </div>
+          )}
 
-            {/* Quick info bar */}
-            {quickInfoParts.length > 0 && (
-              <div className="flex items-center flex-wrap gap-x-2 gap-y-1 mt-2">
-                {quickInfoParts.map((part, i) => (
-                  <span key={i} className="flex items-center gap-2 text-xs text-gray-600">
-                    {i > 0 && <span className="text-gray-300">|</span>}
-                    {part}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {/* CTA Buttons */}
-            <div className="flex flex-wrap gap-2 mt-3">
-              <button
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors text-sm font-medium"
-                onClick={() => onTabChange('reviews')}
+          <div className="flex flex-wrap gap-2 mt-3">
+            <button
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg shadow-md shadow-brand-500/20 hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm font-medium"
+              onClick={() => onTabChange('reviews')}
+            >
+              <Phone className="w-3.5 h-3.5" />
+              Apply Now
+            </button>
+            <button className="inline-flex items-center gap-1.5 px-4 py-2 border border-brand-500 text-brand-500 rounded-lg hover:bg-brand-50 transition-colors text-sm font-medium">
+              <Download className="w-3.5 h-3.5" />
+              Download Brochure
+            </button>
+            {college.website && (
+              <a
+                href={college.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
               >
-                <Phone className="w-3.5 h-3.5" />
-                Apply Now
-              </button>
-              <button className="inline-flex items-center gap-1.5 px-4 py-2 border border-brand-500 text-brand-500 rounded-lg hover:bg-brand-50 transition-colors text-sm font-medium">
-                <Download className="w-3.5 h-3.5" />
-                Download Brochure
-              </button>
-              {college.website && (
-                <a
-                  href={college.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  Website
-                </a>
-              )}
-            </div>
+                <ExternalLink className="w-3.5 h-3.5" />
+                Website
+              </a>
+            )}
           </div>
         </div>
       </div>
@@ -232,13 +239,13 @@ function HeroSection({
             return (
               <div
                 key={i}
-                className={`flex items-center gap-3 px-4 py-3 ${i > 0 ? 'border-l border-gray-100' : ''}`}
+                className={`flex items-center gap-3 px-4 py-4 ${i > 0 ? 'border-l border-gray-100' : ''}`}
               >
-                <div className={`${stat.color} w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0`}>
+                <div className={`${stat.color} w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ring-4 ${stat.ringColor}`}>
                   <Icon className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-gray-900">{stat.value}</div>
+                  <div className="text-base font-bold text-gray-900">{stat.value}</div>
                   <div className="text-[11px] text-gray-500">{stat.label}</div>
                 </div>
               </div>
@@ -279,7 +286,7 @@ function StickyTabBar({
     <>
       <div ref={sentinelRef} className="h-0" />
       <div
-        className={`sticky top-[80px] z-30 bg-white border-b border-gray-200 transition-shadow ${
+        className={`sticky top-[64px] z-30 bg-white border-b border-gray-200 transition-shadow ${
           isSticky ? 'shadow-md' : ''
         }`}
       >
@@ -292,9 +299,9 @@ function StickyTabBar({
               <button
                 key={tab.key}
                 onClick={() => onTabChange(tab.key)}
-                className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                className={`px-5 py-3 text-sm font-medium border-b-[3px] transition-colors whitespace-nowrap ${
                   activeTab === tab.key
-                    ? 'border-brand-500 text-brand-600'
+                    ? 'border-brand-500 text-brand-600 bg-brand-50/50 rounded-t-lg'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
@@ -331,14 +338,14 @@ function SectionRenderer({ section }: { section: ContentSection }) {
       </h3>
 
       {section.contentType === 'richtext' && (
-        <ReadMoreText html={content?.body || ''} maxHeight={200} />
+        <ReadMoreText html={typeof content === 'string' ? content : (content?.body || '')} maxHeight={200} />
       )}
 
       {section.contentType === 'table' && content?.headers && (
         <div className="overflow-x-auto rounded-lg border border-gray-200">
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
-              <tr className="bg-brand-500">
+              <tr className="bg-gray-900">
                 {content.headers.map((h: string, i: number) => (
                   <th key={i} className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">{h}</th>
                 ))}
@@ -346,7 +353,7 @@ function SectionRenderer({ section }: { section: ContentSection }) {
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
               {content.rows?.map((row: string[], ri: number) => (
-                <tr key={ri} className={ri % 2 === 0 ? 'bg-white' : 'bg-brand-50/40'}>
+                <tr key={ri} className={ri % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                   {row.map((cell: string, ci: number) => (
                     <td key={ci} className={`px-4 py-3 text-sm ${ci === 0 ? 'font-medium text-gray-900' : 'text-gray-600'}`}>{cell}</td>
                   ))}
@@ -434,13 +441,13 @@ function Sidebar({
   return (
     <div className="w-full lg:w-80 flex-shrink-0 space-y-4">
       {/* CTA Card */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+      <div className={`bg-white rounded-xl shadow-sm border border-gray-200 border-l-4 ${SIDEBAR_ACCENTS[0]} p-5`}>
         <h3 className="font-semibold text-gray-900 mb-1">
           Interested in {college.name.length > 30 ? college.name.slice(0, 30) + '...' : college.name}?
         </h3>
         <p className="text-xs text-gray-500 mb-4">Get details on fees, admission, placements</p>
         <button
-          className="w-full py-2.5 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors text-sm font-medium mb-2"
+          className="w-full py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg shadow-md shadow-brand-500/20 hover:shadow-lg transition-all text-sm font-medium mb-2"
           onClick={() => onTabChange('reviews')}
         >
           Apply Now
@@ -451,9 +458,9 @@ function Sidebar({
       </div>
 
       {/* Quick Links */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+      <div className={`bg-white rounded-xl shadow-sm border border-gray-200 border-l-4 ${SIDEBAR_ACCENTS[1]} p-5`}>
         <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-          <span className="w-1 h-5 bg-brand-500 rounded-full" />
+          <span className="w-1 h-5 bg-accent-500 rounded-full" />
           Quick Links
         </h3>
         <div className="space-y-1">
@@ -472,9 +479,9 @@ function Sidebar({
 
       {/* College Details */}
       {details.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <div className={`bg-white rounded-xl shadow-sm border border-gray-200 border-l-4 ${SIDEBAR_ACCENTS[2]} p-5`}>
           <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <span className="w-1 h-5 bg-brand-500 rounded-full" />
+            <span className="w-1 h-5 bg-gray-400 rounded-full" />
             College Details
           </h3>
           <dl className="space-y-3">
@@ -505,14 +512,14 @@ function Sidebar({
 
       {/* Facilities */}
       {college.facilities?.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <div className={`bg-white rounded-xl shadow-sm border border-gray-200 border-l-4 ${SIDEBAR_ACCENTS[3]} p-5`}>
           <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <span className="w-1 h-5 bg-brand-500 rounded-full" />
+            <span className="w-1 h-5 bg-emerald-500 rounded-full" />
             Facilities
           </h3>
           <div className="flex flex-wrap gap-2">
             {college.facilities.map((f: string, i: number) => (
-              <span key={i} className="px-2.5 py-1 bg-brand-50 text-brand-700 text-xs rounded-full font-medium border border-brand-100">
+              <span key={i} className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs rounded-full font-medium border border-emerald-100">
                 {f}
               </span>
             ))}
@@ -528,7 +535,7 @@ function Sidebar({
 export default function CollegeDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { data: college, isLoading } = usePublicCollege(slug!);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('');
   const [reviewPage, setReviewPage] = useState(1);
   const { data: reviewsData } = usePublicCollegeReviews(slug!, { page: reviewPage });
   const { data: sections } = usePublicCollegeSections(slug!);
@@ -568,6 +575,8 @@ export default function CollegeDetailPage() {
     });
 
     for (const key of sorted) {
+      // Filter out FAQ tabs if pageFeatures.faq is false
+      if (key === 'faq' && college && (college as any).pageFeatures?.faq === false) continue;
       tabList.push({ key, label: TAB_LABELS[key] || key.charAt(0).toUpperCase() + key.slice(1).replace(/-/g, ' ') });
     }
 
@@ -576,8 +585,20 @@ export default function CollegeDetailPage() {
     }
     tabList.push({ key: 'reviews', label: 'Reviews' });
 
+    // Add Discussion tab if enabled
+    if (college && (college as any).pageFeatures?.discussion === true) {
+      tabList.push({ key: 'discussion', label: 'Discussion' });
+    }
+
     return tabList;
-  }, [contentTabs]);
+  }, [contentTabs, college]);
+
+  // Auto-select first tab when tabs are loaded
+  useEffect(() => {
+    if (tabs.length > 0 && !activeTab) {
+      setActiveTab(tabs[0].key);
+    }
+  }, [tabs, activeTab]);
 
   const handleTabChange = useCallback((tab: string) => {
     setActiveTab(tab);
@@ -651,7 +672,7 @@ export default function CollegeDetailPage() {
                   <div className="overflow-x-auto rounded-lg border border-gray-200">
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead>
-                        <tr className="bg-brand-500">
+                        <tr className="bg-gray-900">
                           <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Course Name</th>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Level</th>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Duration</th>
@@ -660,7 +681,7 @@ export default function CollegeDetailPage() {
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-100">
                         {col.courses.map((course: any, i: number) => (
-                          <tr key={course._id} className={i % 2 === 0 ? 'bg-white' : 'bg-brand-50/40'}>
+                          <tr key={course._id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                             <td className="px-4 py-3 text-sm">
                               <Link to={`/courses/${course.slug}`} className="font-medium text-brand-600 hover:text-brand-700">
                                 {course.name}
@@ -684,6 +705,11 @@ export default function CollegeDetailPage() {
               </div>
             )}
 
+            {/* Discussion tab */}
+            {activeTab === 'discussion' && college && (
+              <DiscussionSection entityType="college" entityId={college._id} slug={slug!} />
+            )}
+
             {/* Reviews tab */}
             {activeTab === 'reviews' && (
               <div className="space-y-4" id="review-section">
@@ -705,36 +731,36 @@ export default function CollegeDetailPage() {
                           type="text" required placeholder="Your Name"
                           value={reviewForm.authorName}
                           onChange={(e) => setReviewForm(p => ({ ...p, authorName: e.target.value }))}
-                          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
                         />
                         <input
                           type="email" required placeholder="Your Email"
                           value={reviewForm.authorEmail}
                           onChange={(e) => setReviewForm(p => ({ ...p, authorEmail: e.target.value }))}
-                          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Rating</label>
-                        <StarRating rating={reviewForm.rating} interactive onChange={(v) => setReviewForm(p => ({ ...p, rating: v }))} />
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                        <StarRating rating={reviewForm.rating} interactive size="lg" onChange={(v) => setReviewForm(p => ({ ...p, rating: v }))} />
                       </div>
                       <input
                         type="text" required placeholder="Review Title"
                         value={reviewForm.title}
                         onChange={(e) => setReviewForm(p => ({ ...p, title: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
                       />
                       <textarea
                         required placeholder="Write your review..."
                         value={reviewForm.content}
                         onChange={(e) => setReviewForm(p => ({ ...p, content: e.target.value }))}
                         rows={4}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
                       />
                       <button
                         type="submit"
                         disabled={submitReview.isPending}
-                        className="px-6 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 disabled:opacity-50 transition-colors text-sm font-medium"
+                        className="px-6 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg shadow-md shadow-brand-500/20 hover:shadow-lg disabled:opacity-50 transition-all text-sm font-medium"
                       >
                         {submitReview.isPending ? 'Submitting...' : 'Submit Review'}
                       </button>
@@ -755,25 +781,28 @@ export default function CollegeDetailPage() {
                     <p className="text-gray-500 text-sm">No reviews yet. Be the first to review!</p>
                   ) : (
                     <div className="space-y-4">
-                      {reviewsData.data.map((review) => (
-                        <div key={review._id} className="border-b border-gray-100 pb-4 last:border-0">
-                          <div className="flex items-center justify-between mb-2">
-                            <div>
-                              <span className="font-medium text-gray-900">{review.authorName}</span>
-                              <div className="flex items-center gap-1 mt-0.5">
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                  <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                                ))}
+                      {reviewsData.data.map((review) => {
+                        const ratingColor = review.rating >= 4 ? 'border-l-green-500' : review.rating >= 3 ? 'border-l-amber-500' : 'border-l-red-400';
+                        return (
+                          <div key={review._id} className={`border-l-4 ${ratingColor} pl-4 pb-4 border-b border-gray-100 last:border-b-0`}>
+                            <div className="flex items-center justify-between mb-2">
+                              <div>
+                                <span className="font-medium text-gray-900">{review.authorName}</span>
+                                <div className="flex items-center gap-1 mt-0.5">
+                                  {Array.from({ length: 5 }).map((_, i) => (
+                                    <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                                  ))}
+                                </div>
                               </div>
+                              <span className="text-xs text-gray-500">
+                                {new Date(review.createdAt).toLocaleDateString()}
+                              </span>
                             </div>
-                            <span className="text-xs text-gray-500">
-                              {new Date(review.createdAt).toLocaleDateString()}
-                            </span>
+                            {review.title && <h4 className="font-medium text-gray-800 mb-1">{review.title}</h4>}
+                            <p className="text-sm text-gray-600">{review.content}</p>
                           </div>
-                          {review.title && <h4 className="font-medium text-gray-800 mb-1">{review.title}</h4>}
-                          <p className="text-sm text-gray-600">{review.content}</p>
-                        </div>
-                      ))}
+                        );
+                      })}
                       {reviewsData.pagination && (
                         <Pagination
                           page={reviewsData.pagination.page}

@@ -57,7 +57,7 @@ const colleges = [
 ];
 
 const seedColleges = async () => {
-  const admin = await User.findOne({ email: 'admin@reactcampus.com' });
+  const admin = await User.findOne({ email: 'admin@campusoption.com' });
 
   for (const data of colleges) {
     const slug = slugify(data.name, { lower: true, strict: true });

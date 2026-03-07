@@ -20,4 +20,8 @@ export const courseApi = {
     return res.data.data;
   },
   delete: async (id: string) => { await api.delete(`/courses/${id}`); },
+  getColleges: async (courseId: string) => {
+    const res = await api.get<ApiResponse<any[]>>(`/courses/${courseId}/colleges`);
+    return res.data.data;
+  },
 };

@@ -8,6 +8,11 @@ const FORM_FIELD_TYPES = ['text', 'email', 'phone', 'number', 'dropdown', 'check
 const LEAD_STATUSES = ['new', 'contacted', 'qualified', 'converted', 'lost', 'closed'];
 const LEAD_PRIORITIES = ['low', 'medium', 'high', 'urgent'];
 const REVIEW_STATUSES = ['pending', 'approved', 'rejected'];
+const DISCUSSION_STATUSES = ['pending', 'approved', 'rejected'];
+
+const CONTENT_ASSIGNMENT_TYPES = ['college', 'page'];
+const CONTENT_ASSIGNMENT_SCOPES = ['individual', 'category'];
+const CONTENT_ASSIGNMENT_ACTIONS = ['read', 'update', 'delete', 'publish'];
 
 module.exports = {
   COLLEGE_STATUS,
@@ -20,4 +25,8 @@ module.exports = {
   LEAD_STATUSES,
   LEAD_PRIORITIES,
   REVIEW_STATUSES,
+  DISCUSSION_STATUSES,
+  CONTENT_ASSIGNMENT_TYPES,
+  CONTENT_ASSIGNMENT_SCOPES,
+  CONTENT_ASSIGNMENT_ACTIONS,
 };

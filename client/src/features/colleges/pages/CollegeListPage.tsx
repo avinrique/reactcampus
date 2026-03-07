@@ -10,7 +10,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { PermissionGuard } from '@/components/guards/PermissionGuard';
 import { PERMISSIONS } from '@/config/permissions';
 import { COLLEGE_STATUS_COLORS } from '@/config/constants';
-import { Plus, Edit, Trash2, Globe, FileText } from 'lucide-react';
+import { Plus, Edit, Trash2, Globe, FileText, Eye } from 'lucide-react';
 import type { College } from '@/types/college';
 
 export default function CollegeListPage() {
@@ -26,10 +26,11 @@ export default function CollegeListPage() {
     { key: 'location', header: 'City', render: (c) => c.location?.city || '-' },
     { key: 'actions', header: 'Actions', render: (c) => (
       <div className="flex gap-2">
-        <PermissionGuard permission={PERMISSIONS.COLLEGE_UPDATE}><Link to={`/admin/colleges/${c._id}/edit`}><Button variant="ghost" size="sm"><Edit className="h-4 w-4" /></Button></Link></PermissionGuard>
+        <Link to={`/admin/colleges/${c._id}`}><Button variant="ghost" size="sm"><Eye className="h-4 w-4" /></Button></Link>
+        <PermissionGuard anyPermission={[PERMISSIONS.COLLEGE_UPDATE, PERMISSIONS.COLLEGE_UPDATE_ASSIGNED]}><Link to={`/admin/colleges/${c._id}/edit`}><Button variant="ghost" size="sm"><Edit className="h-4 w-4" /></Button></Link></PermissionGuard>
         <PermissionGuard permission={PERMISSIONS.CONTENT_SECTION_READ}><Link to={`/admin/colleges/${c._id}/sections`}><Button variant="ghost" size="sm"><FileText className="h-4 w-4" /></Button></Link></PermissionGuard>
-        <PermissionGuard permission={PERMISSIONS.COLLEGE_PUBLISH}><Button variant="ghost" size="sm" onClick={() => publishCollege.mutate({ id: c._id, data: { status: c.status === 'published' ? 'draft' : 'published' } })}><Globe className={`h-4 w-4 ${c.status === 'published' ? 'text-green-600' : 'text-gray-400'}`} /></Button></PermissionGuard>
-        <PermissionGuard permission={PERMISSIONS.COLLEGE_DELETE}><Button variant="ghost" size="sm" onClick={() => setDeleteId(c._id)}><Trash2 className="h-4 w-4 text-red-500" /></Button></PermissionGuard>
+        <PermissionGuard anyPermission={[PERMISSIONS.COLLEGE_PUBLISH, PERMISSIONS.COLLEGE_PUBLISH_ASSIGNED]}><Button variant="ghost" size="sm" onClick={() => publishCollege.mutate({ id: c._id, data: { status: c.status === 'published' ? 'draft' : 'published' } })}><Globe className={`h-4 w-4 ${c.status === 'published' ? 'text-green-600' : 'text-gray-400'}`} /></Button></PermissionGuard>
+        <PermissionGuard anyPermission={[PERMISSIONS.COLLEGE_DELETE, PERMISSIONS.COLLEGE_DELETE_ASSIGNED]}><Button variant="ghost" size="sm" onClick={() => setDeleteId(c._id)}><Trash2 className="h-4 w-4 text-red-500" /></Button></PermissionGuard>
       </div>
     )},
   ];

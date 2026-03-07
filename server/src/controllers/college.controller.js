@@ -8,11 +8,17 @@ const createCollege = asyncHandler(async (req, res) => {
 });
 
 const getColleges = asyncHandler(async (req, res) => {
-  const result = await collegeService.getColleges(req.query, {
+  const options = {
     page: req.query.page,
     limit: req.query.limit,
     sort: req.query.sort,
-  });
+  };
+
+  if (req.assignmentScope === 'assigned') {
+    options.assignedContentIds = req.assignedContentIds;
+  }
+
+  const result = await collegeService.getColleges(req.query, options);
   ApiResponse.paginated(res, 'Colleges retrieved successfully', result);
 });
 

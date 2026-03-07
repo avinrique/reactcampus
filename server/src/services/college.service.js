@@ -53,6 +53,10 @@ const getColleges = async (query = {}, options = {}) => {
     filter['location.state'] = { $regex: query.state, $options: 'i' };
   }
 
+  if (options.assignedContentIds) {
+    filter._id = { $in: options.assignedContentIds };
+  }
+
   return paginate(College, filter, {
     page: options.page,
     limit: options.limit,

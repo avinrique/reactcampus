@@ -26,11 +26,13 @@ export interface Exam {
   slug: string;
   conductedBy: string;
   examType: ExamType;
+  categories: string[];
   pattern: ExamPattern;
   importantDates: ImportantDate[];
   eligibility: string;
   description: string;
   website: string;
+  pageFeatures?: { faq: boolean; discussion: boolean };
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -39,12 +41,14 @@ export interface Exam {
 export interface CreateExamRequest {
   name: string;
   examType: ExamType;
+  categories?: string[];
   conductedBy?: string;
   pattern?: Partial<ExamPattern>;
   importantDates?: ImportantDate[];
   eligibility?: string;
   description?: string;
   website?: string;
+  pageFeatures?: { faq?: boolean; discussion?: boolean };
 }
 
 export interface UpdateExamRequest extends Partial<CreateExamRequest> {

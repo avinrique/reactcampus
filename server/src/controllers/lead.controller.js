@@ -92,7 +92,44 @@ const addNote = asyncHandler(async (req, res) => {
 const exportLeads = asyncHandler(async (req, res) => {
   const filter = buildLeadFilter(req.query);
   const leads = await leadService.exportLeads(filter);
-  res.status(200).json(leads);
+
+  const csvHeader = 'Name,Email,Phone,Status,Priority,Assigned To,College,Course,Tags,Created At';
+  const csvRows = leads.map((lead) => {
+    const assignedName = lead.assignedTo
+      ? `${lead.assignedTo.firstName} ${lead.assignedTo.lastName}`
+      : '';
+    const collegeName = lead.college ? lead.college.name : '';
+    const courseName = lead.course ? lead.course.name : '';
+    const tags = (lead.tags || []).join('; ');
+    const createdAt = new Date(lead.createdAt).toISOString();
+
+    return [
+      lead.name,
+      lead.email,
+      lead.phone,
+      lead.status,
+      lead.priority,
+      assignedName,
+      collegeName,
+      courseName,
+      tags,
+      createdAt,
+    ]
+      .map((field) => `"${String(field || '').replace(/"/g, '""')}"`)
+      .join(',');
+  });
+
+  const csv = [csvHeader, ...csvRows].join('\n');
+
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename=leads.csv');
+  res.status(200).send(csv);
+});
+
+const bulkAction = asyncHandler(async (req, res) => {
+  const { ids, action, value } = req.body;
+  const count = await leadService.bulkAction(ids, action, value, req.user._id);
+  ApiResponse.success(res, `Bulk ${action} completed for ${count} leads`, { count });
 });
 
 const getLeadStats = asyncHandler(async (req, res) => {
@@ -111,4 +148,5 @@ module.exports = {
   addNote,
   exportLeads,
   getLeadStats,
+  bulkAction,
 };

@@ -5,6 +5,7 @@ export interface ContentSection {
   id: string;
   college?: string;
   exam?: string;
+  course?: string;
   sectionKey: string;
   title: string;
   content: unknown;
@@ -18,6 +19,7 @@ export interface ContentSection {
 export interface CreateContentSectionRequest {
   college?: string;
   exam?: string;
+  course?: string;
   sectionKey: string;
   title: string;
   content?: unknown;

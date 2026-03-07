@@ -14,8 +14,12 @@ const submitForm = asyncHandler(async (req, res) => {
 });
 
 const getSubmissions = asyncHandler(async (req, res) => {
-  const result = await submissionService.getSubmissions(req.query);
-  ApiResponse.success(res, 'Submissions retrieved successfully', result);
+  const result = await submissionService.getSubmissions(req.query, {
+    page: req.query.page,
+    limit: req.query.limit,
+    sort: req.query.sort,
+  });
+  ApiResponse.paginated(res, 'Submissions retrieved successfully', result);
 });
 
 const getSubmissionById = asyncHandler(async (req, res) => {

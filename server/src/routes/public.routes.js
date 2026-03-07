@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const router = require('express').Router();
 const asyncHandler = require('../middlewares/asyncHandler');
 const validate = require('../middlewares/validateRequest');
@@ -12,19 +13,39 @@ const SEO = require('../models/SEO.model');
 const submissionService = require('../services/submission.service');
 const reviewCtrl = require('../controllers/review.controller');
 const reviewSchema = require('../validations/review.validation');
+const Discussion = require('../models/Discussion.model');
+const discussionCtrl = require('../controllers/discussion.controller');
+const discussionSchema = require('../validations/discussion.validation');
+const Lead = require('../models/Lead.model');
+const siteSettingsService = require('../services/siteSettings.service');
+const siteSettingsSchema = require('../validations/siteSettings.validation');
 const ApiResponse = require('../utils/ApiResponse');
 const ApiError = require('../utils/ApiError');
+
+// List active categories
+router.get(
+  '/categories',
+  asyncHandler(async (req, res) => {
+    const Category = require('../models/Category.model');
+    const categories = await Category.find({ isActive: true }).sort({ order: 1, name: 1 });
+    ApiResponse.success(res, 'Categories retrieved successfully', categories);
+  })
+);
 
 // List published colleges
 router.get(
   '/colleges',
   asyncHandler(async (req, res) => {
-    const { type, city, state, search, page = 1, limit = 20 } = req.query;
+    const { type, category, city, state, search, page = 1, limit = 20 } = req.query;
+    // Express qs parser turns "location.city" into req.query.location = { city: ... }
+    const qCity = city || req.query.location?.city;
+    const qState = state || req.query.location?.state;
     const filter = { status: 'published' };
 
     if (type) filter.type = type;
-    if (city) filter['location.city'] = city;
-    if (state) filter['location.state'] = state;
+    if (category) filter.categories = { $in: Array.isArray(category) ? category : [category] };
+    if (qCity) filter['location.city'] = { $regex: qCity, $options: 'i' };
+    if (qState) filter['location.state'] = { $regex: qState, $options: 'i' };
     if (search) filter.$text = { $search: search };
 
     const skip = (parseInt(page, 10) - 1) * parseInt(limit, 10);
@@ -112,6 +133,20 @@ router.get(
   })
 );
 
+// Get visible content sections for an exam by slug
+router.get(
+  '/exams/:slug/sections',
+  asyncHandler(async (req, res) => {
+    const exam = await Exam.findOne({ slug: req.params.slug, isActive: true });
+    if (!exam) {
+      throw new ApiError(404, 'Exam not found');
+    }
+
+    const sections = await ContentSection.find({ exam: exam._id, isVisible: true }).sort({ order: 1 });
+    ApiResponse.success(res, 'Content sections retrieved successfully', sections);
+  })
+);
+
 // List active courses
 router.get(
   '/courses',
@@ -157,15 +192,46 @@ router.get(
   })
 );
 
+// List colleges offering a course
+router.get(
+  '/courses/:slug/colleges',
+  asyncHandler(async (req, res) => {
+    const course = await Course.findOne({ slug: req.params.slug, isActive: true });
+    if (!course) {
+      throw new ApiError(404, 'Course not found');
+    }
+    const colleges = await College.find({ courses: course._id, status: 'published' })
+      .select('name slug type location ranking established fees logo accreditation')
+      .sort({ ranking: 1, name: 1 })
+      .limit(50);
+    ApiResponse.success(res, 'Colleges retrieved successfully', colleges);
+  })
+);
+
+// Get visible content sections for a course by slug
+router.get(
+  '/courses/:slug/sections',
+  asyncHandler(async (req, res) => {
+    const course = await Course.findOne({ slug: req.params.slug, isActive: true });
+    if (!course) {
+      throw new ApiError(404, 'Course not found');
+    }
+
+    const sections = await ContentSection.find({ course: course._id, isVisible: true }).sort({ order: 1 });
+    ApiResponse.success(res, 'Content sections retrieved successfully', sections);
+  })
+);
+
 // List active exams
 router.get(
   '/exams',
   asyncHandler(async (req, res) => {
-    const { search, examType, page = 1, limit = 20 } = req.query;
+    const { search, examType, category, page = 1, limit = 20 } = req.query;
     const filter = { isActive: true };
 
     if (search) filter.$text = { $search: search };
     if (examType) filter.examType = examType;
+    if (category) filter.categories = { $in: Array.isArray(category) ? category : [category] };
 
     const skip = (parseInt(page, 10) - 1) * parseInt(limit, 10);
     const limitNum = parseInt(limit, 10);
@@ -198,6 +264,56 @@ router.get(
       throw new ApiError(404, 'Exam not found');
     }
     ApiResponse.success(res, 'Exam retrieved successfully', exam);
+  })
+);
+
+// Get forms assigned to a specific page type + entity
+router.get(
+  '/forms/for-page',
+  asyncHandler(async (req, res) => {
+    const { pageType, entityId } = req.query;
+    if (!pageType) throw new ApiError(400, 'pageType is required');
+
+    const allType = `all_${pageType}s`; // e.g. 'college' -> 'all_colleges'
+
+    const query = {
+      isPublished: true,
+      $or: [
+        { 'assignedPages.pageType': allType },
+        { 'assignedPages.pageType': 'homepage', ...(pageType === 'homepage' ? {} : { _id: { $exists: false } }) },
+      ],
+    };
+
+    if (pageType === 'homepage') {
+      query.$or = [{ 'assignedPages.pageType': 'homepage' }];
+    } else if (entityId) {
+      query.$or.push({
+        'assignedPages': {
+          $elemMatch: {
+            pageType,
+            entityId: new mongoose.Types.ObjectId(entityId),
+          },
+        },
+      });
+    }
+
+    const forms = await DynamicForm.find(query).select(
+      'title slug description fields postSubmitAction successMessage redirectUrl assignedPages'
+    );
+
+    const result = forms.map((form) => {
+      const assignment =
+        form.assignedPages.find((p) => p.pageType === allType) ||
+        form.assignedPages.find((p) => p.pageType === 'homepage' && pageType === 'homepage') ||
+        form.assignedPages.find(
+          (p) => p.pageType === pageType && entityId && p.entityId && p.entityId.toString() === entityId
+        );
+
+      const { assignedPages, ...formData } = form.toObject();
+      return { ...formData, displayConfig: assignment || null };
+    }).filter((f) => f.displayConfig);
+
+    ApiResponse.success(res, 'Forms retrieved successfully', result);
   })
 );
 
@@ -244,6 +360,96 @@ router.post(
 
 // Submit review (public)
 router.post('/reviews', validate(reviewSchema.submitReview), reviewCtrl.submitReview);
+
+// Submit discussion (public)
+router.post('/discussions', optionalAuth, validate(discussionSchema.submitDiscussion), discussionCtrl.submitDiscussion);
+
+// Get approved discussions for a college by slug
+router.get(
+  '/colleges/:slug/discussions',
+  asyncHandler(async (req, res) => {
+    const college = await College.findOne({ slug: req.params.slug, status: 'published' });
+    if (!college) throw new ApiError(404, 'College not found');
+    if (college.pageFeatures && college.pageFeatures.discussion === false) {
+      return ApiResponse.success(res, 'Discussions disabled', []);
+    }
+
+    const { page = 1, limit = 20 } = req.query;
+    const skip = (parseInt(page, 10) - 1) * parseInt(limit, 10);
+    const limitNum = parseInt(limit, 10);
+    const filter = { college: college._id, status: 'approved' };
+
+    const [docs, total] = await Promise.all([
+      Discussion.find(filter).skip(skip).limit(limitNum).sort({ createdAt: -1 }),
+      Discussion.countDocuments(filter),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: 'Discussions retrieved successfully',
+      data: docs,
+      pagination: { total, page: parseInt(page, 10), limit: limitNum, pages: Math.ceil(total / limitNum) },
+    });
+  })
+);
+
+// Get approved discussions for a course by slug
+router.get(
+  '/courses/:slug/discussions',
+  asyncHandler(async (req, res) => {
+    const course = await Course.findOne({ slug: req.params.slug, isActive: true });
+    if (!course) throw new ApiError(404, 'Course not found');
+    if (course.pageFeatures && course.pageFeatures.discussion === false) {
+      return ApiResponse.success(res, 'Discussions disabled', []);
+    }
+
+    const { page = 1, limit = 20 } = req.query;
+    const skip = (parseInt(page, 10) - 1) * parseInt(limit, 10);
+    const limitNum = parseInt(limit, 10);
+    const filter = { course: course._id, status: 'approved' };
+
+    const [docs, total] = await Promise.all([
+      Discussion.find(filter).skip(skip).limit(limitNum).sort({ createdAt: -1 }),
+      Discussion.countDocuments(filter),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: 'Discussions retrieved successfully',
+      data: docs,
+      pagination: { total, page: parseInt(page, 10), limit: limitNum, pages: Math.ceil(total / limitNum) },
+    });
+  })
+);
+
+// Get approved discussions for an exam by slug
+router.get(
+  '/exams/:slug/discussions',
+  asyncHandler(async (req, res) => {
+    const exam = await Exam.findOne({ slug: req.params.slug, isActive: true });
+    if (!exam) throw new ApiError(404, 'Exam not found');
+    if (exam.pageFeatures && exam.pageFeatures.discussion === false) {
+      return ApiResponse.success(res, 'Discussions disabled', []);
+    }
+
+    const { page = 1, limit = 20 } = req.query;
+    const skip = (parseInt(page, 10) - 1) * parseInt(limit, 10);
+    const limitNum = parseInt(limit, 10);
+    const filter = { exam: exam._id, status: 'approved' };
+
+    const [docs, total] = await Promise.all([
+      Discussion.find(filter).skip(skip).limit(limitNum).sort({ createdAt: -1 }),
+      Discussion.countDocuments(filter),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: 'Discussions retrieved successfully',
+      data: docs,
+      pagination: { total, page: parseInt(page, 10), limit: limitNum, pages: Math.ceil(total / limitNum) },
+    });
+  })
+);
 
 // List published pages
 router.get(
@@ -353,6 +559,36 @@ router.get(
       throw new ApiError(404, 'SEO data not found');
     }
     ApiResponse.success(res, 'SEO data retrieved successfully', seo);
+  })
+);
+
+// Get public site settings
+router.get(
+  '/site-settings',
+  asyncHandler(async (req, res) => {
+    const settings = await siteSettingsService.getPublicSiteSettings();
+    ApiResponse.success(res, 'Site settings retrieved successfully', settings);
+  })
+);
+
+// Submit contact form
+router.post(
+  '/contact',
+  validate(siteSettingsSchema.submitContact),
+  asyncHandler(async (req, res) => {
+    const { name, email, phone, message } = req.body;
+
+    await Lead.create({
+      name,
+      email,
+      phone: phone || '',
+      data: { message },
+      source: { channel: 'contact_form' },
+      status: 'new',
+      statusHistory: [{ to: 'new', changedAt: new Date() }],
+    });
+
+    ApiResponse.created(res, 'Your message has been sent successfully');
   })
 );
 

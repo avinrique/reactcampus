@@ -19,6 +19,7 @@ export interface Course {
   };
   description: string;
   eligibility: string;
+  pageFeatures?: { faq: boolean; discussion: boolean };
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -33,6 +34,7 @@ export interface CreateCourseRequest {
   fees?: { amount: number; currency?: string; per?: string };
   description?: string;
   eligibility?: string;
+  pageFeatures?: { faq?: boolean; discussion?: boolean };
 }
 
 export interface UpdateCourseRequest extends Partial<CreateCourseRequest> {

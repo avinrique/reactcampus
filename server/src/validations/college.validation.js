@@ -6,7 +6,10 @@ const createCollege = {
   body: Joi.object({
     name: Joi.string().trim().min(1).max(300).required(),
     type: Joi.string().valid('public', 'private', 'deemed', 'autonomous').required(),
+    categories: Joi.array().items(Joi.string().max(100)),
     description: Joi.string().max(5000).allow(''),
+    logo: Joi.string().max(2000).allow(''),
+    coverImage: Joi.string().max(2000).allow(''),
     location: Joi.object({
       address: Joi.string().max(500).allow(''),
       city: Joi.string().max(100).allow(''),
@@ -30,6 +33,10 @@ const createCollege = {
     accreditation: Joi.string().max(300).allow(''),
     affiliation: Joi.string().max(300).allow(''),
     facilities: Joi.array().items(Joi.string().max(100)),
+    pageFeatures: Joi.object({
+      faq: Joi.boolean(),
+      discussion: Joi.boolean(),
+    }),
   }),
 };
 
@@ -40,7 +47,10 @@ const updateCollege = {
   body: Joi.object({
     name: Joi.string().trim().min(1).max(300),
     type: Joi.string().valid('public', 'private', 'deemed', 'autonomous'),
+    categories: Joi.array().items(Joi.string().max(100)),
     description: Joi.string().max(5000).allow(''),
+    logo: Joi.string().max(2000).allow(''),
+    coverImage: Joi.string().max(2000).allow(''),
     location: Joi.object({
       address: Joi.string().max(500).allow(''),
       city: Joi.string().max(100).allow(''),
@@ -64,6 +74,10 @@ const updateCollege = {
     accreditation: Joi.string().max(300).allow(''),
     affiliation: Joi.string().max(300).allow(''),
     facilities: Joi.array().items(Joi.string().max(100)),
+    pageFeatures: Joi.object({
+      faq: Joi.boolean(),
+      discussion: Joi.boolean(),
+    }),
   }).min(1),
 };
 

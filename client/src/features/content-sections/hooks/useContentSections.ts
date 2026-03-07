@@ -10,6 +10,9 @@ export function useContentSections(collegeId: string) {
 export function useExamContentSections(examId: string) {
   return useQuery({ queryKey: queryKeys.contentSections.byExam(examId), queryFn: () => contentSectionApi.getByExam(examId), enabled: !!examId });
 }
+export function useCourseContentSections(courseId: string) {
+  return useQuery({ queryKey: queryKeys.contentSections.byCourse(courseId), queryFn: () => contentSectionApi.getByCourse(courseId), enabled: !!courseId });
+}
 export function useContentSection(id: string) {
   return useQuery({ queryKey: queryKeys.contentSections.detail(id), queryFn: () => contentSectionApi.getById(id), enabled: !!id });
 }

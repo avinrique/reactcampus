@@ -19,6 +19,10 @@ const courseSchema = new mongoose.Schema(
     },
     description: { type: String, default: '' },
     eligibility: { type: String, default: '' },
+    pageFeatures: {
+      faq: { type: Boolean, default: true },
+      discussion: { type: Boolean, default: false },
+    },
     isActive: { type: Boolean, default: true },
     deletedAt: { type: Date, default: null },
   },

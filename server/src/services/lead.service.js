@@ -304,6 +304,48 @@ const exportLeads = async (query = {}) => {
   return leads;
 };
 
+/**
+ * Perform bulk actions on multiple leads.
+ */
+const bulkAction = async (ids, action, value, userId = null) => {
+  const leads = await Lead.find({ _id: { $in: ids }, deletedAt: null });
+  let count = 0;
+
+  for (const lead of leads) {
+    if (action === 'changeStatus') {
+      const previousStatus = lead.status;
+      lead.status = value;
+      lead.statusHistory.push({
+        from: previousStatus,
+        to: value,
+        changedBy: userId,
+        changedAt: new Date(),
+        note: 'Bulk status change',
+      });
+      await lead.save();
+      count++;
+    } else if (action === 'assign') {
+      lead.assignedTo = value;
+      await lead.save();
+      count++;
+    } else if (action === 'delete') {
+      lead.deletedAt = new Date();
+      await lead.save();
+      count++;
+    }
+  }
+
+  await AuditLog.create({
+    user: userId,
+    action: `bulk_${action}`,
+    resource: 'lead',
+    resourceId: null,
+    details: { ids, action, value, affectedCount: count },
+  });
+
+  return count;
+};
+
 module.exports = {
   createLead,
   getLeads,
@@ -315,4 +357,5 @@ module.exports = {
   addNote,
   getLeadStats,
   exportLeads,
+  bulkAction,
 };

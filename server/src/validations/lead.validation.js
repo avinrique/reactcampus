@@ -94,6 +94,14 @@ const exportLeads = {
   }),
 };
 
+const bulkAction = {
+  body: Joi.object({
+    ids: Joi.array().items(objectId.required()).min(1).required(),
+    action: Joi.string().valid('changeStatus', 'assign', 'delete').required(),
+    value: Joi.string().allow('').default(''),
+  }),
+};
+
 module.exports = {
   createLead,
   updateLead,
@@ -104,4 +112,5 @@ module.exports = {
   getLead,
   deleteLead,
   exportLeads,
+  bulkAction,
 };

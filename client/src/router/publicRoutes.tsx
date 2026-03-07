@@ -13,6 +13,7 @@ const DynamicFormRenderer = lazy(() => import('@/features/public-forms/component
 const DynamicPage = lazy(() => import('@/features/public-pages/pages/DynamicPage'));
 const AboutPage = lazy(() => import('@/features/public-about/pages/AboutPage'));
 const ContactPage = lazy(() => import('@/features/public-contact/pages/ContactPage'));
+const LoanPage = lazy(() => import('@/features/public-pages/pages/LoanPage'));
 
 export const publicRoutes: RouteObject = {
   element: <PublicLayout />,
@@ -25,6 +26,7 @@ export const publicRoutes: RouteObject = {
     { path: 'exams', element: <ExamListingPage /> },
     { path: 'exams/:slug', element: <ExamDetailPage /> },
     { path: 'about', element: <AboutPage /> },
+    { path: 'loan', element: <LoanPage /> },
     { path: 'contact', element: <ContactPage /> },
     { path: 'forms/:slug', element: <DynamicFormRenderer /> },
     { path: 'pages/:slug', element: <DynamicPage /> },

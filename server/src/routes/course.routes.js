@@ -7,6 +7,7 @@ const { authorize } = require('../middlewares/authorize');
 
 router.post('/', authenticate, authorize('course:create'), validate(schema.createCourse), ctrl.createCourse);
 router.get('/', authenticate, authorize('course:read'), ctrl.getCourses);
+router.get('/:id/colleges', authenticate, authorize('course:read'), ctrl.getCollegesByCourse);
 router.get('/:id', authenticate, authorize('course:read'), ctrl.getCourseById);
 router.patch('/:id', authenticate, authorize('course:update'), validate(schema.updateCourse), ctrl.updateCourse);
 router.delete('/:id', authenticate, authorize('course:delete'), ctrl.deleteCourse);

@@ -11,16 +11,16 @@ const AuditLog = require('../models/AuditLog.model');
  * Returns total counts for colleges, courses, exams, leads, users, and forms.
  */
 const getStats = async () => {
-  const [colleges, courses, exams, leads, users, forms] = await Promise.all([
+  const [totalColleges, publishedColleges, totalCourses, totalExams, totalLeads, totalUsers] = await Promise.all([
     College.countDocuments({ deletedAt: null }),
+    College.countDocuments({ deletedAt: null, status: 'published' }),
     Course.countDocuments({ deletedAt: null }),
     Exam.countDocuments({ deletedAt: null }),
     Lead.countDocuments({ deletedAt: null }),
     User.countDocuments({ deletedAt: null }),
-    DynamicForm.countDocuments({ deletedAt: null }),
   ]);
 
-  return { colleges, courses, exams, leads, users, forms };
+  return { totalColleges, publishedColleges, totalCourses, totalExams, totalLeads, totalUsers };
 };
 
 /**
@@ -53,7 +53,17 @@ const getRecentActivity = async () => {
     .limit(20)
     .populate('user', 'firstName lastName email');
 
-  return entries;
+  return entries.map((entry) => {
+    const userName = entry.user
+      ? `${entry.user.firstName} ${entry.user.lastName}`
+      : 'System';
+    return {
+      type: entry.action,
+      message: `${userName} ${entry.action} a ${entry.resource}`,
+      timestamp: entry.createdAt,
+      user: userName,
+    };
+  });
 };
 
 module.exports = {

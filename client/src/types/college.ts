@@ -2,12 +2,18 @@ import type { CollegeStatus, CollegeType } from '@/config/constants';
 import type { Course } from './course';
 import type { Exam } from './exam';
 
+export interface PageFeatures {
+  faq: boolean;
+  discussion: boolean;
+}
+
 export interface College {
   _id: string;
   id: string;
   name: string;
   slug: string;
   type: CollegeType;
+  categories: string[];
   description: string;
   logo: string;
   coverImage: string;
@@ -21,6 +27,7 @@ export interface College {
   accreditation: string;
   affiliation: string;
   facilities: string[];
+  pageFeatures?: PageFeatures;
   status: CollegeStatus;
   createdBy: string;
   createdAt: string;
@@ -47,6 +54,7 @@ export interface CollegeFees {
 export interface CreateCollegeRequest {
   name: string;
   type: CollegeType;
+  categories?: string[];
   description?: string;
   logo?: string;
   coverImage?: string;
@@ -58,6 +66,7 @@ export interface CreateCollegeRequest {
   accreditation?: string;
   affiliation?: string;
   facilities?: string[];
+  pageFeatures?: Partial<PageFeatures>;
 }
 
 export interface UpdateCollegeRequest extends Partial<CreateCollegeRequest> {

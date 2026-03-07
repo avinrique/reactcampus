@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/Badge';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { PermissionGuard } from '@/components/guards/PermissionGuard';
 import { PERMISSIONS } from '@/config/permissions';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, FileText } from 'lucide-react';
 import type { Course } from '@/types/course';
 
 export default function CourseListPage() {
@@ -22,7 +22,7 @@ export default function CourseListPage() {
     { key: 'duration', header: 'Duration', render: (c) => `${c.duration.value} ${c.duration.unit}` },
     { key: 'stream', header: 'Stream', render: (c) => c.stream || '-' },
     { key: 'isActive', header: 'Status', render: (c) => <Badge variant={c.isActive ? 'success' : 'danger'}>{c.isActive ? 'Active' : 'Inactive'}</Badge> },
-    { key: 'actions', header: 'Actions', render: (c) => (<div className="flex gap-2"><PermissionGuard permission={PERMISSIONS.COURSE_UPDATE}><Link to={`/admin/courses/${c._id}/edit`}><Button variant="ghost" size="sm"><Edit className="h-4 w-4" /></Button></Link></PermissionGuard><PermissionGuard permission={PERMISSIONS.COURSE_DELETE}><Button variant="ghost" size="sm" onClick={() => setDeleteId(c._id)}><Trash2 className="h-4 w-4 text-red-500" /></Button></PermissionGuard></div>) },
+    { key: 'actions', header: 'Actions', render: (c) => (<div className="flex gap-2"><Link to={`/admin/courses/${c._id}`}><Button variant="ghost" size="sm"><Eye className="h-4 w-4" /></Button></Link><PermissionGuard permission={PERMISSIONS.CONTENT_SECTION_READ}><Link to={`/admin/courses/${c._id}/sections`}><Button variant="ghost" size="sm" title="Content Sections"><FileText className="h-4 w-4" /></Button></Link></PermissionGuard><PermissionGuard permission={PERMISSIONS.COURSE_UPDATE}><Link to={`/admin/courses/${c._id}/edit`}><Button variant="ghost" size="sm"><Edit className="h-4 w-4" /></Button></Link></PermissionGuard><PermissionGuard permission={PERMISSIONS.COURSE_DELETE}><Button variant="ghost" size="sm" onClick={() => setDeleteId(c._id)}><Trash2 className="h-4 w-4 text-red-500" /></Button></PermissionGuard></div>) },
   ];
   return (
     <div className="space-y-4">

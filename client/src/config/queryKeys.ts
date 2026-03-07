@@ -30,10 +30,16 @@ export const queryKeys = {
     list: (params: Record<string, unknown>) => ['exams', 'list', params] as const,
     detail: (id: string) => ['exams', id] as const,
   },
+  categories: {
+    all: ['categories'] as const,
+    list: (params: Record<string, unknown>) => ['categories', 'list', params] as const,
+    detail: (id: string) => ['categories', id] as const,
+  },
   contentSections: {
     all: ['content-sections'] as const,
     byCollege: (collegeId: string) => ['content-sections', 'college', collegeId] as const,
     byExam: (examId: string) => ['content-sections', 'exam', examId] as const,
+    byCourse: (courseId: string) => ['content-sections', 'course', courseId] as const,
     detail: (id: string) => ['content-sections', id] as const,
   },
   forms: {
@@ -57,6 +63,11 @@ export const queryKeys = {
     list: (params: Record<string, unknown>) => ['reviews', 'list', params] as const,
     detail: (id: string) => ['reviews', id] as const,
   },
+  discussions: {
+    all: ['discussions'] as const,
+    list: (params: Record<string, unknown>) => ['discussions', 'list', params] as const,
+    detail: (id: string) => ['discussions', id] as const,
+  },
   seo: {
     all: ['seo'] as const,
     list: (params: Record<string, unknown>) => ['seo', 'list', params] as const,
@@ -66,6 +77,11 @@ export const queryKeys = {
     all: ['pages'] as const,
     list: (params: Record<string, unknown>) => ['pages', 'list', params] as const,
     detail: (id: string) => ['pages', id] as const,
+  },
+  contentAssignments: {
+    all: ['content-assignments'] as const,
+    list: (params: Record<string, unknown>) => ['content-assignments', 'list', params] as const,
+    detail: (id: string) => ['content-assignments', id] as const,
   },
   siteSettings: {
     detail: ['site-settings'] as const,
@@ -81,15 +97,22 @@ export const queryKeys = {
       detail: (slug: string) => ['public', 'colleges', slug] as const,
       reviews: (slug: string, params: Record<string, unknown>) => ['public', 'colleges', slug, 'reviews', params] as const,
       sections: (slug: string) => ['public', 'colleges', slug, 'sections'] as const,
+      discussions: (slug: string, params: Record<string, unknown>) => ['public', 'colleges', slug, 'discussions', params] as const,
     },
     courses: {
       list: (params: Record<string, unknown>) => ['public', 'courses', 'list', params] as const,
       detail: (slug: string) => ['public', 'courses', slug] as const,
+      sections: (slug: string) => ['public', 'courses', slug, 'sections'] as const,
+      discussions: (slug: string, params: Record<string, unknown>) => ['public', 'courses', slug, 'discussions', params] as const,
     },
     exams: {
       list: (params: Record<string, unknown>) => ['public', 'exams', 'list', params] as const,
       detail: (slug: string) => ['public', 'exams', slug] as const,
       sections: (slug: string) => ['public', 'exams', slug, 'sections'] as const,
+      discussions: (slug: string, params: Record<string, unknown>) => ['public', 'exams', slug, 'discussions', params] as const,
+    },
+    categories: {
+      list: ['public', 'categories', 'list'] as const,
     },
     forms: {
       detail: (slug: string) => ['public', 'forms', slug] as const,

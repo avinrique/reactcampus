@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useContentSections, useExamContentSections, useCreateContentSection, useUpdateContentSection, useDeleteContentSection } from '../hooks/useContentSections';
+import { useContentSections, useExamContentSections, useCourseContentSections, useCreateContentSection, useUpdateContentSection, useDeleteContentSection } from '../hooks/useContentSections';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
@@ -44,8 +44,18 @@ const EXAM_TAB_OPTIONS = [
   { label: 'Custom...', value: '__custom__' },
 ];
 
+const COURSE_TAB_OPTIONS = [
+  { label: 'Overview', value: 'overview' },
+  { label: 'Syllabus', value: 'syllabus' },
+  { label: 'Eligibility', value: 'eligibility' },
+  { label: 'Career Prospects', value: 'career-prospects' },
+  { label: 'Admission Process', value: 'admission-process' },
+  { label: 'Custom...', value: '__custom__' },
+];
+
 const COLLEGE_TAB_ORDER = ['overview', 'courses-fee', 'placements', 'admission', 'cutoff', 'scholarship', 'faculty', 'infrastructure'];
 const EXAM_TAB_ORDER = ['overview', 'syllabus', 'exam-pattern', 'application-process', 'preparation-tips', 'result', 'answer-key', 'cutoff'];
+const COURSE_TAB_ORDER = ['overview', 'syllabus', 'eligibility', 'career-prospects', 'admission-process'];
 
 // Keep TAB_OPTIONS/TAB_ORDER as aliases for backwards compatibility in tabLabel
 const TAB_OPTIONS = [...COLLEGE_TAB_OPTIONS, ...EXAM_TAB_OPTIONS.filter(t => !COLLEGE_TAB_OPTIONS.find(c => c.value === t.value))];
@@ -525,23 +535,114 @@ function getContentPreview(section: ContentSection): string {
   }
 }
 
+// ─── View Content Renderer ──────────────────────────────────────────────────
+
+function ViewContentRenderer({ section }: { section: ContentSection }) {
+  const content = section.content as any;
+
+  switch (section.contentType) {
+    case 'richtext': {
+      const html = typeof content === 'string' ? content : (content?.body || '');
+      return html ? (
+        <div className="prose prose-sm max-w-none text-gray-700" dangerouslySetInnerHTML={{ __html: html }} />
+      ) : (
+        <p className="text-gray-400 text-sm italic">No content</p>
+      );
+    }
+    case 'table': {
+      const headers = content?.headers || [];
+      const rows = content?.rows || [];
+      if (!headers.length) return <p className="text-gray-400 text-sm italic">Empty table</p>;
+      return (
+        <div className="overflow-x-auto rounded-lg border border-gray-200">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr className="bg-gray-50">
+                {headers.map((h: string, i: number) => (
+                  <th key={i} className="px-4 py-2 text-left text-xs font-semibold text-gray-600">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {rows.map((row: string[], ri: number) => (
+                <tr key={ri} className={ri % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                  {row.map((cell: string, ci: number) => (
+                    <td key={ci} className="px-4 py-2 text-sm text-gray-700">{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+    case 'faq': {
+      const items = content?.items || [];
+      if (!items.length) return <p className="text-gray-400 text-sm italic">No FAQ items</p>;
+      return (
+        <div className="space-y-3">
+          {items.map((item: { question: string; answer: string }, i: number) => (
+            <div key={i} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+              <p className="font-medium text-sm text-gray-800">Q{i + 1}: {item.question}</p>
+              <p className="text-sm text-gray-600 mt-1">{item.answer}</p>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    case 'list': {
+      const items = content?.items || [];
+      if (!items.length) return <p className="text-gray-400 text-sm italic">No list items</p>;
+      return (
+        <ul className="space-y-1.5">
+          {items.map((item: string, i: number) => (
+            <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+              <span className="text-brand-500 mt-0.5">&#9679;</span>
+              {item}
+            </li>
+          ))}
+        </ul>
+      );
+    }
+    case 'gallery': {
+      const images = content?.images || [];
+      if (!images.length) return <p className="text-gray-400 text-sm italic">No images</p>;
+      return (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {images.map((img: { url: string; caption: string }, i: number) => (
+            <div key={i} className="rounded-lg overflow-hidden border border-gray-200">
+              <img src={img.url} alt={img.caption || ''} className="w-full h-32 object-cover" />
+              {img.caption && <p className="text-xs text-gray-500 p-2">{img.caption}</p>}
+            </div>
+          ))}
+        </div>
+      );
+    }
+    default:
+      return <p className="text-sm text-gray-500 whitespace-pre-wrap">{typeof content === 'string' ? content : JSON.stringify(content, null, 2)}</p>;
+  }
+}
+
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
 export default function ContentSectionListPage() {
-  const { collegeId, examId } = useParams();
+  const { collegeId, examId, courseId } = useParams();
+  const isCourse = !!courseId;
   const isExam = !!examId;
-  const resourceId = examId || collegeId || '';
-  const collegeResult = useContentSections(isExam ? '' : resourceId);
+  const resourceId = courseId || examId || collegeId || '';
+  const collegeResult = useContentSections(!isExam && !isCourse ? resourceId : '');
   const examResult = useExamContentSections(isExam ? resourceId : '');
-  const { data: sections, isLoading } = isExam ? examResult : collegeResult;
-  const tabOptions = isExam ? EXAM_TAB_OPTIONS : COLLEGE_TAB_OPTIONS;
-  const tabOrder = isExam ? EXAM_TAB_ORDER : COLLEGE_TAB_ORDER;
-  const backLink = isExam ? '/admin/exams' : '/admin/colleges';
-  const pageSubtitle = isExam ? 'Manage tabs and content blocks for this exam' : 'Manage tabs and content blocks for this college';
+  const courseResult = useCourseContentSections(isCourse ? resourceId : '');
+  const { data: sections, isLoading } = isCourse ? courseResult : isExam ? examResult : collegeResult;
+  const tabOptions = isCourse ? COURSE_TAB_OPTIONS : isExam ? EXAM_TAB_OPTIONS : COLLEGE_TAB_OPTIONS;
+  const tabOrder = isCourse ? COURSE_TAB_ORDER : isExam ? EXAM_TAB_ORDER : COLLEGE_TAB_ORDER;
+  const backLink = isCourse ? '/admin/courses' : isExam ? '/admin/exams' : '/admin/colleges';
+  const pageSubtitle = isCourse ? 'Manage tabs and content blocks for this course' : isExam ? 'Manage tabs and content blocks for this exam' : 'Manage tabs and content blocks for this college';
   const createSection = useCreateContentSection();
   const updateSection = useUpdateContentSection();
   const deleteSection = useDeleteContentSection();
   const [editSection, setEditSection] = useState<ContentSection | null>(null);
+  const [viewTab, setViewTab] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [collapsedTabs, setCollapsedTabs] = useState<Set<string>>(new Set());
@@ -614,7 +715,7 @@ export default function ContentSectionListPage() {
     if (!sectionKey || !formTitle.trim()) return;
     createSection.mutate(
       {
-        ...(isExam ? { exam: examId! } : { college: collegeId! }),
+        ...(isCourse ? { course: courseId! } : isExam ? { exam: examId! } : { college: collegeId! }),
         sectionKey,
         title: formTitle,
         contentType: formContentType as any,
@@ -694,17 +795,22 @@ export default function ContentSectionListPage() {
         const isCollapsed = collapsedTabs.has(key);
         return (
           <div key={key} className="border border-gray-200 rounded-lg overflow-hidden">
-            <button
-              onClick={() => toggleTab(key)}
-              className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors"
-            >
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between px-4 py-3 bg-gray-50">
+              <button
+                onClick={() => toggleTab(key)}
+                className="flex items-center gap-2 hover:bg-gray-100 rounded-lg px-2 py-1 -mx-2 transition-colors"
+              >
                 {isCollapsed ? <ChevronRight className="h-4 w-4 text-gray-500" /> : <ChevronDown className="h-4 w-4 text-gray-500" />}
                 <span className="font-semibold text-gray-800">{tabLabel(key)}</span>
                 <span className="text-xs text-gray-500 bg-gray-200 px-2 py-0.5 rounded-full">{items.length} block{items.length !== 1 ? 's' : ''}</span>
+              </button>
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="sm" onClick={() => setViewTab(key)} title="View all content">
+                  <Eye className="h-4 w-4 text-brand-500" />
+                </Button>
+                <span className="text-xs text-gray-400 font-mono">{key}</span>
               </div>
-              <span className="text-xs text-gray-400 font-mono">{key}</span>
-            </button>
+            </div>
             {!isCollapsed && (
               <div className="divide-y divide-gray-100">
                 {items.map((s) => {
@@ -754,6 +860,31 @@ export default function ContentSectionListPage() {
           </div>
         );
       })}
+
+      {/* View Modal */}
+      <Modal
+        isOpen={!!viewTab}
+        onClose={() => setViewTab(null)}
+        title={viewTab ? tabLabel(viewTab) : ''}
+        size="xl"
+      >
+        {viewTab && grouped[viewTab] && (
+          <div className="space-y-6">
+            {grouped[viewTab].map((s) => (
+              <div key={s._id}>
+                <h3 className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
+                  <span className="w-1 h-6 bg-brand-500 rounded-full flex-shrink-0" />
+                  {s.title}
+                </h3>
+                <ViewContentRenderer section={s} />
+              </div>
+            ))}
+            <div className="flex pt-2 border-t border-gray-100">
+              <Button variant="secondary" onClick={() => setViewTab(null)}>Close</Button>
+            </div>
+          </div>
+        )}
+      </Modal>
 
       {/* Create / Edit Modal */}
       <Modal

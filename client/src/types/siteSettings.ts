@@ -18,6 +18,46 @@ export interface CtaButton {
   icon: string;
 }
 
+export interface SectionVisibility {
+  featuredColleges: boolean;
+  featuredCourses: boolean;
+  featuredExams: boolean;
+  browseByStream: boolean;
+  whyChooseUs: boolean;
+  cta: boolean;
+}
+
+export interface FooterLink {
+  label: string;
+  to: string;
+}
+
+export interface FooterSection {
+  title: string;
+  links: FooterLink[];
+}
+
+export interface SocialLink {
+  platform: string;
+  url: string;
+  label: string;
+}
+
+export interface FooterNewsletter {
+  enabled: boolean;
+  title: string;
+  subtitle: string;
+}
+
+export interface FooterSettings {
+  tagline: string;
+  sections: FooterSection[];
+  socialLinks: SocialLink[];
+  bottomLinks: FooterLink[];
+  copyrightText: string;
+  newsletter: FooterNewsletter;
+}
+
 export interface SiteSettings {
   _id: string;
   hero: {
@@ -31,6 +71,7 @@ export interface SiteSettings {
   featuredColleges: any[];
   featuredCourses: any[];
   featuredExams: any[];
+  sectionVisibility: SectionVisibility;
   cta: {
     title: string;
     subtitle: string;
@@ -47,6 +88,7 @@ export interface SiteSettings {
     mission: string;
     vision: string;
   };
+  footer?: FooterSettings;
   updatedBy?: { _id: string; firstName: string; lastName: string } | string;
   createdAt: string;
   updatedAt: string;
@@ -58,9 +100,11 @@ export interface UpdateSiteSettingsRequest {
   featuredColleges?: string[];
   featuredCourses?: string[];
   featuredExams?: string[];
+  sectionVisibility?: Partial<SectionVisibility>;
   cta?: Partial<SiteSettings['cta']>;
   contact?: Partial<SiteSettings['contact']>;
   about?: Partial<SiteSettings['about']>;
+  footer?: Partial<FooterSettings>;
 }
 
 export interface ContactFormData {

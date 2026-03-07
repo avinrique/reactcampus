@@ -12,6 +12,8 @@ import { PERMISSIONS } from '@/config/permissions';
 import { Plus, Edit, Trash2, ToggleLeft, ToggleRight } from 'lucide-react';
 import type { User } from '@/types/user';
 
+const isSuperAdmin = (user: User) => user.roles?.some((r: any) => r.name === 'super_admin');
+
 export default function UserListPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -22,15 +24,15 @@ export default function UserListPage() {
   const handleSearch = useCallback((val: string) => { setSearch(val); setPage(1); }, []);
 
   const columns: Column<User>[] = [
-    { key: 'firstName', header: 'Name', render: (u) => `${u.firstName} ${u.lastName}` },
+    { key: 'firstName', header: 'Name', render: (u) => <span className="flex items-center gap-2">{`${u.firstName} ${u.lastName}`}{isSuperAdmin(u) && <Badge variant="warning">Super Admin</Badge>}</span> },
     { key: 'email', header: 'Email' },
     { key: 'roles', header: 'Roles', render: (u) => <div className="flex gap-1 flex-wrap">{u.roles?.map((r: any) => <Badge key={r._id || r} variant="info">{r.displayName || r.name || r}</Badge>)}</div> },
     { key: 'isActive', header: 'Status', render: (u) => <Badge variant={u.isActive ? 'success' : 'danger'}>{u.isActive ? 'Active' : 'Inactive'}</Badge> },
     { key: 'actions', header: 'Actions', render: (u) => (
       <div className="flex gap-2">
         <PermissionGuard permission={PERMISSIONS.USER_UPDATE}><Link to={`/admin/users/${u._id}/edit`}><Button variant="ghost" size="sm"><Edit className="h-4 w-4" /></Button></Link></PermissionGuard>
-        <PermissionGuard permission={PERMISSIONS.USER_ACTIVATE}><Button variant="ghost" size="sm" onClick={() => activateUser.mutate(u._id)}>{u.isActive ? <ToggleRight className="h-4 w-4 text-green-600" /> : <ToggleLeft className="h-4 w-4 text-gray-400" />}</Button></PermissionGuard>
-        <PermissionGuard permission={PERMISSIONS.USER_DELETE}><Button variant="ghost" size="sm" onClick={() => setDeleteId(u._id)}><Trash2 className="h-4 w-4 text-red-500" /></Button></PermissionGuard>
+        {!isSuperAdmin(u) && <PermissionGuard permission={PERMISSIONS.USER_ACTIVATE}><Button variant="ghost" size="sm" onClick={() => activateUser.mutate(u._id)} title={u.isActive ? 'Deactivate user' : 'Activate user'}><span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${u.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{u.isActive ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}{u.isActive ? 'On' : 'Off'}</span></Button></PermissionGuard>}
+        {!isSuperAdmin(u) && <PermissionGuard permission={PERMISSIONS.USER_DELETE}><Button variant="ghost" size="sm" onClick={() => setDeleteId(u._id)}><Trash2 className="h-4 w-4 text-red-500" /></Button></PermissionGuard>}
       </div>
     )},
   ];

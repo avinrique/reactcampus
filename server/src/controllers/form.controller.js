@@ -8,8 +8,12 @@ const createForm = asyncHandler(async (req, res) => {
 });
 
 const getForms = asyncHandler(async (req, res) => {
-  const result = await formService.getForms(req.query);
-  ApiResponse.success(res, 'Forms retrieved successfully', result);
+  const result = await formService.getForms(req.query, {
+    page: req.query.page,
+    limit: req.query.limit,
+    sort: req.query.sort,
+  });
+  ApiResponse.paginated(res, 'Forms retrieved successfully', result);
 });
 
 const getFormById = asyncHandler(async (req, res) => {

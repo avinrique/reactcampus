@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   Search, FileText, SlidersHorizontal,
-  ChevronRight, Home, X, Monitor, Calendar,
+  ChevronRight, Home, X, Monitor, Calendar, ArrowRight,
 } from 'lucide-react';
 import { usePublicExams } from '../hooks/usePublicExams';
+import { usePublicCategories } from '@/features/categories/hooks/useCategories';
 import { Spinner } from '@/components/ui/Spinner';
 import { Pagination } from '@/components/ui/Pagination';
 import { EXAM_TYPES } from '@/config/constants';
@@ -14,13 +15,17 @@ export default function ExamListingPage() {
   const page = Number(searchParams.get('page')) || 1;
   const search = searchParams.get('search') || '';
   const examType = searchParams.get('examType') || '';
+  const category = searchParams.get('category') || '';
 
   const [searchInput, setSearchInput] = useState(search);
   const [showFilters, setShowFilters] = useState(false);
 
+  const { data: categoriesData } = usePublicCategories();
+
   const params: Record<string, any> = { page, limit: 12 };
   if (search) params.search = search;
   if (examType) params.examType = examType;
+  if (category) params.category = category;
 
   const { data, isLoading } = usePublicExams(params);
 
@@ -42,28 +47,28 @@ export default function ExamListingPage() {
     setSearchInput('');
   };
 
-  const hasFilters = search || examType;
+  const hasFilters = search || examType || category;
 
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-brand-500 to-brand-400 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <nav className="flex items-center gap-1.5 text-sm text-brand-100 mb-4">
+      <div className="bg-gradient-to-br from-brand-800 via-brand-700 to-brand-600 bg-noise text-white relative">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 py-10 md:py-14">
+          <nav className="flex items-center gap-1.5 text-sm text-brand-200 mb-4">
             <Link to="/" className="hover:text-white transition-colors"><Home className="w-3.5 h-3.5" /></Link>
             <ChevronRight className="w-3.5 h-3.5" />
             <span className="text-white font-medium">Exams</span>
           </nav>
           <h1 className="text-2xl md:text-3xl font-bold mb-2">Explore Entrance Exams</h1>
-          <p className="text-brand-100 text-sm md:text-base">
+          <p className="text-brand-200 text-sm md:text-base">
             Browse {data?.pagination?.total ? `${data.pagination.total}+` : ''} exams. Find eligibility, dates, and exam patterns.
           </p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Search & Filter Bar */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+        {/* Search & Filter Bar - overlapping banner */}
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-4 mb-6 -mt-6 relative z-20">
           <div className="flex flex-col md:flex-row gap-3">
             <form onSubmit={handleSearch} className="flex gap-2 flex-1">
               <div className="relative flex-1">
@@ -73,10 +78,10 @@ export default function ExamListingPage() {
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   placeholder="Search exams by name..."
-                  className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                  className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent"
                 />
               </div>
-              <button type="submit" className="px-5 py-2.5 bg-brand-500 text-white text-sm font-medium rounded-lg hover:bg-brand-600 transition-colors">
+              <button type="submit" className="px-5 py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-sm font-medium rounded-lg hover:from-brand-600 hover:to-brand-700 transition-all shadow-md shadow-brand-500/20">
                 Search
               </button>
             </form>
@@ -92,25 +97,38 @@ export default function ExamListingPage() {
               Filters
               {hasFilters && (
                 <span className="w-5 h-5 bg-brand-500 text-white text-xs rounded-full flex items-center justify-center">
-                  {[examType, search].filter(Boolean).length}
+                  {[examType, category, search].filter(Boolean).length}
                 </span>
               )}
             </button>
           </div>
 
           {showFilters && (
-            <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className="mt-4 pt-4 border-t border-gray-100 animate-scale-in">
               <div className="flex flex-wrap gap-3">
                 <div className="flex-1 min-w-[200px]">
                   <label className="block text-xs font-medium text-gray-500 mb-1.5">Exam Type</label>
                   <select
                     value={examType}
                     onChange={(e) => updateParam('examType', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent capitalize"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent capitalize"
                   >
                     <option value="">All Types</option>
                     {EXAM_TYPES.map((t) => (
                       <option key={t} value={t} className="capitalize">{t.replace('_', ' ')}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex-1 min-w-[200px]">
+                  <label className="block text-xs font-medium text-gray-500 mb-1.5">Category</label>
+                  <select
+                    value={category}
+                    onChange={(e) => updateParam('category', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent capitalize"
+                  >
+                    <option value="">All Categories</option>
+                    {(categoriesData || []).map((c: any) => (
+                      <option key={c._id} value={c.slug} className="capitalize">{c.name}</option>
                     ))}
                   </select>
                 </div>
@@ -129,7 +147,7 @@ export default function ExamListingPage() {
 
         {/* Active Filter Tags */}
         {hasFilters && (
-          <div className="flex flex-wrap items-center gap-2 mb-4">
+          <div className="flex flex-wrap items-center gap-2 mb-4 animate-scale-in">
             <span className="text-xs text-gray-500 font-medium">Active:</span>
             {search && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-brand-50 text-brand-700 text-xs rounded-full border border-brand-200">
@@ -141,6 +159,12 @@ export default function ExamListingPage() {
               <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-brand-50 text-brand-700 text-xs rounded-full border border-brand-200 capitalize">
                 {examType.replace('_', ' ')}
                 <button onClick={() => updateParam('examType', '')}><X className="w-3 h-3" /></button>
+              </span>
+            )}
+            {category && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-brand-50 text-brand-700 text-xs rounded-full border border-brand-200 capitalize">
+                {category.replace('-', ' ')}
+                <button onClick={() => updateParam('category', '')}><X className="w-3 h-3" /></button>
               </span>
             )}
           </div>
@@ -175,58 +199,77 @@ export default function ExamListingPage() {
                 <Link
                   key={exam._id}
                   to={`/exams/${exam.slug}`}
-                  className="group block bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all overflow-hidden"
+                  className="group block bg-white rounded-xl shadow-sm border border-gray-200 card-hover overflow-hidden"
                 >
-                  <div className="flex flex-col sm:flex-row">
-                    <div className="hidden sm:block w-1.5 bg-gradient-to-b from-purple-500 to-purple-400 flex-shrink-0" />
-                    <div className="flex-1 p-5">
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-lg bg-purple-500 flex items-center justify-center flex-shrink-0">
-                          <FileText className="w-6 h-6 text-white" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-gray-900 group-hover:text-brand-600 transition-colors text-base mb-1">
-                            {exam.name}
-                          </h3>
-
-                          <div className="flex flex-wrap items-center gap-2 mb-2">
-                            <span className="px-2.5 py-0.5 bg-purple-50 text-purple-700 text-xs rounded-full font-medium capitalize">
-                              {exam.examType?.replace('_', ' ')}
-                            </span>
-                            {exam.conductedBy && (
-                              <span className="text-xs text-gray-500">
-                                by <span className="font-medium text-gray-700">{exam.conductedBy}</span>
+                  <div className="p-5">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center flex-shrink-0 shadow-md">
+                        <FileText className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-3">
+                          {/* Left: name/type */}
+                          <div className="min-w-0 flex-1">
+                            <h3 className="font-bold text-gray-900 group-hover:text-brand-600 transition-colors text-base mb-1">
+                              {exam.name}
+                            </h3>
+                            <div className="flex flex-wrap items-center gap-2 mb-2">
+                              <span className="px-2.5 py-0.5 bg-brand-50 text-brand-700 text-xs rounded-full font-medium capitalize border border-brand-100">
+                                {exam.examType?.replace('_', ' ')}
                               </span>
-                            )}
+                              {exam.categories?.map((cat: string) => (
+                                <span key={cat} className="px-2.5 py-0.5 bg-purple-50 text-purple-700 text-xs rounded-full font-medium capitalize border border-purple-100">
+                                  {cat}
+                                </span>
+                              ))}
+                              {exam.conductedBy && (
+                                <span className="text-xs text-gray-500">
+                                  by <span className="font-medium text-gray-700">{exam.conductedBy}</span>
+                                </span>
+                              )}
+                            </div>
                           </div>
-
-                          <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500">
+                          {/* Right: pattern stats */}
+                          <div className="hidden sm:flex items-center gap-3 text-xs text-gray-500 flex-shrink-0">
                             {exam.pattern?.mode && (
-                              <span className="flex items-center gap-1 capitalize">
+                              <span className="flex items-center gap-1 capitalize px-2 py-1 bg-gray-50 rounded-lg">
                                 <Monitor className="w-3 h-3 text-gray-400" />
                                 {exam.pattern.mode}
                               </span>
                             )}
                             {exam.pattern?.duration && (
-                              <span className="flex items-center gap-1">
+                              <span className="flex items-center gap-1 px-2 py-1 bg-gray-50 rounded-lg">
                                 <Calendar className="w-3 h-3 text-gray-400" />
                                 {exam.pattern.duration}
                               </span>
                             )}
-                            {exam.pattern?.totalMarks && (
-                              <span>Total Marks: {exam.pattern.totalMarks}</span>
-                            )}
                           </div>
+                        </div>
 
-                          {exam.importantDates?.length > 0 && (
-                            <div className="mt-2 pt-2 border-t border-gray-100">
-                              <span className="text-xs text-brand-500 font-medium">
-                                {exam.importantDates.length} important date{exam.importantDates.length > 1 ? 's' : ''} listed
-                              </span>
-                            </div>
+                        <div className="flex flex-wrap items-center gap-3 sm:hidden text-xs text-gray-500 mt-1">
+                          {exam.pattern?.mode && (
+                            <span className="flex items-center gap-1 capitalize">
+                              <Monitor className="w-3 h-3 text-gray-400" />
+                              {exam.pattern.mode}
+                            </span>
+                          )}
+                          {exam.pattern?.duration && (
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3 h-3 text-gray-400" />
+                              {exam.pattern.duration}
+                            </span>
                           )}
                         </div>
+
+                        {exam.importantDates?.length > 0 && (
+                          <div className="mt-2 pt-2 border-t border-gray-100">
+                            <span className="px-2 py-0.5 bg-amber-50 text-amber-700 text-xs rounded-full font-medium border border-amber-100">
+                              {exam.importantDates.length} important date{exam.importantDates.length > 1 ? 's' : ''}
+                            </span>
+                          </div>
+                        )}
                       </div>
+                      <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-brand-500 transition-colors flex-shrink-0 mt-1" />
                     </div>
                   </div>
                 </Link>

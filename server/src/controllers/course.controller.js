@@ -1,5 +1,6 @@
 const asyncHandler = require('../middlewares/asyncHandler');
 const courseService = require('../services/course.service');
+const College = require('../models/College.model');
 const ApiResponse = require('../utils/ApiResponse');
 
 const createCourse = asyncHandler(async (req, res) => {
@@ -42,10 +43,18 @@ const deleteCourse = asyncHandler(async (req, res) => {
   ApiResponse.success(res, 'Course deleted successfully');
 });
 
+const getCollegesByCourse = asyncHandler(async (req, res) => {
+  const colleges = await College.find({ courses: req.params.id, deletedAt: null })
+    .select('name slug type location ranking established fees logo accreditation status')
+    .sort({ name: 1 });
+  ApiResponse.success(res, 'Colleges retrieved', colleges);
+});
+
 module.exports = {
   createCourse,
   getCourses,
   getCourseById,
   updateCourse,
   deleteCourse,
+  getCollegesByCourse,
 };

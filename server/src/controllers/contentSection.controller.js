@@ -8,7 +8,7 @@ const create = asyncHandler(async (req, res) => {
 });
 
 const getByCollege = asyncHandler(async (req, res) => {
-  const sections = await contentSectionService.getByCollege(req.params.collegeId);
+  const sections = await contentSectionService.getByCollege(req.query.college, req.query.exam, req.query.course);
   ApiResponse.success(res, 'Content sections retrieved successfully', sections);
 });
 

@@ -26,6 +26,12 @@ const PERMISSIONS = [
   { key: 'college:manage-courses', resource: 'college', action: 'manage-courses', description: 'Add/remove courses from colleges', group: 'College Management' },
   { key: 'college:manage-exams', resource: 'college', action: 'manage-exams', description: 'Add/remove exams from colleges', group: 'College Management' },
 
+  // Category management
+  { key: 'category:create', resource: 'category', action: 'create', description: 'Create categories', group: 'Category Management' },
+  { key: 'category:read', resource: 'category', action: 'read', description: 'View categories', group: 'Category Management' },
+  { key: 'category:update', resource: 'category', action: 'update', description: 'Update categories', group: 'Category Management' },
+  { key: 'category:delete', resource: 'category', action: 'delete', description: 'Delete categories', group: 'Category Management' },
+
   // Course management
   { key: 'course:create', resource: 'course', action: 'create', description: 'Create courses', group: 'Course Management' },
   { key: 'course:read', resource: 'course', action: 'read', description: 'View courses (admin)', group: 'Course Management' },
@@ -67,6 +73,11 @@ const PERMISSIONS = [
   { key: 'review:moderate', resource: 'review', action: 'moderate', description: 'Approve/reject reviews', group: 'Review Management' },
   { key: 'review:delete', resource: 'review', action: 'delete', description: 'Delete reviews', group: 'Review Management' },
 
+  // Discussion management
+  { key: 'discussion:read', resource: 'discussion', action: 'read', description: 'View discussions (admin)', group: 'Discussion Management' },
+  { key: 'discussion:moderate', resource: 'discussion', action: 'moderate', description: 'Approve/reject discussions', group: 'Discussion Management' },
+  { key: 'discussion:delete', resource: 'discussion', action: 'delete', description: 'Delete discussions', group: 'Discussion Management' },
+
   // SEO management
   { key: 'seo:create', resource: 'seo', action: 'create', description: 'Create SEO entries', group: 'SEO Management' },
   { key: 'seo:read', resource: 'seo', action: 'read', description: 'View SEO entries', group: 'SEO Management' },
@@ -80,9 +91,27 @@ const PERMISSIONS = [
   { key: 'page:delete', resource: 'page', action: 'delete', description: 'Delete pages', group: 'Page Management' },
   { key: 'page:publish', resource: 'page', action: 'publish', description: 'Publish/unpublish pages', group: 'Page Management' },
 
+  // Content Assignment
+  { key: 'college:read-assigned', resource: 'college', action: 'read-assigned', description: 'View assigned colleges only', group: 'Content Assignment' },
+  { key: 'college:update-assigned', resource: 'college', action: 'update-assigned', description: 'Update assigned colleges only', group: 'Content Assignment' },
+  { key: 'college:delete-assigned', resource: 'college', action: 'delete-assigned', description: 'Delete assigned colleges only', group: 'Content Assignment' },
+  { key: 'college:publish-assigned', resource: 'college', action: 'publish-assigned', description: 'Publish assigned colleges only', group: 'Content Assignment' },
+  { key: 'page:read-assigned', resource: 'page', action: 'read-assigned', description: 'View assigned pages only', group: 'Content Assignment' },
+  { key: 'page:update-assigned', resource: 'page', action: 'update-assigned', description: 'Update assigned pages only', group: 'Content Assignment' },
+  { key: 'page:delete-assigned', resource: 'page', action: 'delete-assigned', description: 'Delete assigned pages only', group: 'Content Assignment' },
+  { key: 'page:publish-assigned', resource: 'page', action: 'publish-assigned', description: 'Publish assigned pages only', group: 'Content Assignment' },
+  { key: 'assignment:create', resource: 'assignment', action: 'create', description: 'Create content assignments', group: 'Content Assignment' },
+  { key: 'assignment:read', resource: 'assignment', action: 'read', description: 'View content assignments', group: 'Content Assignment' },
+  { key: 'assignment:update', resource: 'assignment', action: 'update', description: 'Update content assignments', group: 'Content Assignment' },
+  { key: 'assignment:delete', resource: 'assignment', action: 'delete', description: 'Delete content assignments', group: 'Content Assignment' },
+
   // Dashboard
   { key: 'dashboard:view', resource: 'dashboard', action: 'view', description: 'View dashboard', group: 'Dashboard' },
   { key: 'dashboard:analytics', resource: 'dashboard', action: 'analytics', description: 'View analytics', group: 'Dashboard' },
+
+  // Site Settings
+  { key: 'site-settings:read', resource: 'site-settings', action: 'read', description: 'View site settings', group: 'Site Settings' },
+  { key: 'site-settings:update', resource: 'site-settings', action: 'update', description: 'Update site settings', group: 'Site Settings' },
 
   // Audit log
   { key: 'audit:read', resource: 'audit', action: 'read', description: 'View audit logs', group: 'Audit' },

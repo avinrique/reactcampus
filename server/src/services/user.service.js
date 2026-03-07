@@ -1,9 +1,18 @@
 const User = require('../models/User.model');
+const Role = require('../models/Role.model');
 const Permission = require('../models/Permission.model');
 const AuditLog = require('../models/AuditLog.model');
 const ApiError = require('../utils/ApiError');
 const { paginate } = require('../utils/pagination');
 const permissionCache = require('../permissions/permissionCache');
+
+/**
+ * Check if a user has the super_admin role.
+ */
+const _isSuperAdmin = async (userId) => {
+  const user = await User.findById(userId).populate('roles', 'name');
+  return user?.roles?.some((r) => r.name === 'super_admin') || false;
+};
 
 /**
  * Create a new user.
@@ -98,6 +107,14 @@ const updateUser = async (id, data, userId = null) => {
     }
   }
 
+  // Check for duplicate email when email is being changed
+  if (updates.email && updates.email !== user.email) {
+    const existing = await User.findOne({ email: updates.email, _id: { $ne: id } });
+    if (existing) {
+      throw new ApiError(409, 'A user with this email already exists');
+    }
+  }
+
   if (data.password) {
     updates.passwordHash = data.password;
   }
@@ -123,6 +140,17 @@ const deleteUser = async (id, userId = null) => {
   const user = await User.findById(id);
   if (!user) {
     throw new ApiError(404, 'User not found');
+  }
+
+  // Prevent users from deleting themselves
+  if (userId && id.toString() === userId.toString()) {
+    throw new ApiError(403, 'You cannot delete your own account');
+  }
+
+  // Prevent anyone from deleting a super_admin
+  const targetIsSuperAdmin = await _isSuperAdmin(id);
+  if (targetIsSuperAdmin) {
+    throw new ApiError(403, 'Super admin account cannot be deleted');
   }
 
   user.deletedAt = new Date();
@@ -151,19 +179,30 @@ const activateUser = async (id, isActive, userId = null) => {
     throw new ApiError(404, 'User not found');
   }
 
-  user.isActive = isActive;
+  // Prevent users from deactivating themselves
+  if (userId && id.toString() === userId.toString()) {
+    throw new ApiError(403, 'You cannot change your own activation status');
+  }
+
+  // Prevent anyone from deactivating a super_admin
+  const targetIsSuperAdmin = await _isSuperAdmin(id);
+  if (targetIsSuperAdmin) {
+    throw new ApiError(403, 'Super admin account cannot be deactivated');
+  }
+
+  user.isActive = typeof isActive === 'boolean' ? isActive : !user.isActive;
   await user.save();
 
-  if (!isActive) {
+  if (!user.isActive) {
     permissionCache.invalidate(user._id);
   }
 
   await AuditLog.create({
     user: userId,
-    action: isActive ? 'activated' : 'deactivated',
+    action: user.isActive ? 'activated' : 'deactivated',
     resource: 'user',
     resourceId: user._id,
-    details: { isActive },
+    details: { isActive: user.isActive },
   });
 
   return user;
@@ -178,6 +217,12 @@ const assignRoles = async (targetUserId, roleIds, requestingUserPermissions, req
   const user = await User.findById(targetUserId);
   if (!user) {
     throw new ApiError(404, 'User not found');
+  }
+
+  // Prevent anyone other than the super_admin themselves from changing super_admin roles
+  const targetIsSuperAdmin = await _isSuperAdmin(targetUserId);
+  if (targetIsSuperAdmin && (!requestingUserId || targetUserId.toString() !== requestingUserId.toString())) {
+    throw new ApiError(403, 'Only the super admin can modify their own roles');
   }
 
   // Gather all permission keys for the roles being assigned

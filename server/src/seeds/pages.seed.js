@@ -354,8 +354,95 @@ const pages = [
   },
 ];
 
+const staticPages = [
+  {
+    title: 'Privacy Policy',
+    slug: 'privacy-policy',
+    description: '<p>This Privacy Policy describes how Campus Option collects, uses, and protects your personal information when you use our platform.</p>',
+    contentBlocks: [
+      {
+        title: 'Information We Collect',
+        contentType: 'richtext',
+        content: '<p>We collect information you provide directly to us, including:</p><ul><li><strong>Personal Information:</strong> Name, email address, phone number when you create an account or submit forms</li><li><strong>Usage Data:</strong> Pages visited, features used, time spent on the platform</li><li><strong>Device Information:</strong> Browser type, operating system, IP address</li></ul>',
+        order: 0,
+      },
+      {
+        title: 'How We Use Your Information',
+        contentType: 'richtext',
+        content: '<p>We use the collected information to:</p><ul><li>Provide and improve our education discovery services</li><li>Send relevant college recommendations and updates</li><li>Respond to your inquiries and support requests</li><li>Analyze usage patterns to enhance user experience</li><li>Comply with legal obligations</li></ul>',
+        order: 1,
+      },
+      {
+        title: 'Data Protection',
+        contentType: 'richtext',
+        content: '<p>We implement appropriate technical and organizational measures to protect your personal data against unauthorized access, alteration, disclosure, or destruction. Your data is stored securely and access is restricted to authorized personnel only.</p>',
+        order: 2,
+      },
+      {
+        title: 'Your Rights',
+        contentType: 'richtext',
+        content: '<p>You have the right to:</p><ul><li>Access your personal data</li><li>Correct inaccurate data</li><li>Request deletion of your data</li><li>Opt-out of marketing communications</li><li>Lodge a complaint with a data protection authority</li></ul>',
+        order: 3,
+      },
+      {
+        title: 'Contact Us',
+        contentType: 'richtext',
+        content: '<p>If you have questions about this Privacy Policy, please contact us at <strong>info@campusoption.com</strong>.</p><p>Last updated: February 2026</p>',
+        order: 4,
+      },
+    ],
+    collegeFilter: { enabled: false, filterBy: 'all', courses: [], exams: [], collegeType: '', state: '', city: '' },
+    sidebarLinks: [],
+    metaTitle: 'Privacy Policy - Campus Option',
+    metaDescription: 'Read the Campus Option privacy policy to understand how we collect, use, and protect your personal information.',
+    metaKeywords: ['privacy policy', 'data protection', 'campusoption privacy'],
+  },
+  {
+    title: 'Terms of Use',
+    slug: 'terms-of-use',
+    description: '<p>These Terms of Use govern your access to and use of the Campus Option platform. By using our services, you agree to be bound by these terms.</p>',
+    contentBlocks: [
+      {
+        title: 'Acceptance of Terms',
+        contentType: 'richtext',
+        content: '<p>By accessing or using Campus Option, you agree to comply with and be bound by these Terms of Use. If you do not agree to these terms, please do not use our platform.</p>',
+        order: 0,
+      },
+      {
+        title: 'Use of Services',
+        contentType: 'richtext',
+        content: '<p>You agree to use our services only for lawful purposes and in accordance with these terms. You must not:</p><ul><li>Use the platform for any illegal or unauthorized purpose</li><li>Attempt to gain unauthorized access to our systems</li><li>Scrape or collect data without our express permission</li><li>Interfere with or disrupt the platform\'s functionality</li><li>Submit false or misleading information</li></ul>',
+        order: 1,
+      },
+      {
+        title: 'Intellectual Property',
+        contentType: 'richtext',
+        content: '<p>All content on Campus Option, including text, graphics, logos, and software, is the property of Campus Option or its content suppliers and is protected by intellectual property laws. You may not reproduce, distribute, or create derivative works without our prior written consent.</p>',
+        order: 2,
+      },
+      {
+        title: 'Disclaimer',
+        contentType: 'richtext',
+        content: '<p>Campus Option provides information about educational institutions for informational purposes only. While we strive for accuracy, we do not guarantee the completeness or accuracy of all information. College details, fees, rankings, and other data may change without notice. Users should verify information directly with institutions.</p>',
+        order: 3,
+      },
+      {
+        title: 'Contact',
+        contentType: 'richtext',
+        content: '<p>For questions about these Terms of Use, please contact us at <strong>info@campusoption.com</strong>.</p><p>Last updated: February 2026</p>',
+        order: 4,
+      },
+    ],
+    collegeFilter: { enabled: false, filterBy: 'all', courses: [], exams: [], collegeType: '', state: '', city: '' },
+    sidebarLinks: [],
+    metaTitle: 'Terms of Use - Campus Option',
+    metaDescription: 'Read the Campus Option terms of use to understand the rules and guidelines for using our education platform.',
+    metaKeywords: ['terms of use', 'terms and conditions', 'campusoption terms'],
+  },
+];
+
 const seedPages = async () => {
-  const admin = await User.findOne({ email: 'admin@reactcampus.com' });
+  const admin = await User.findOne({ email: 'admin@campusoption.com' });
 
   for (const data of pages) {
     const slug = slugify(data.title, { lower: true, strict: true });
@@ -366,7 +453,16 @@ const seedPages = async () => {
     );
   }
 
-  logger.info(`Seeded ${pages.length} pages`);
+  // Seed static pages (privacy policy, terms of use)
+  for (const data of staticPages) {
+    await Page.findOneAndUpdate(
+      { slug: data.slug },
+      { ...data, status: 'published', createdBy: admin?._id || null },
+      { upsert: true, setDefaultsOnInsert: true }
+    );
+  }
+
+  logger.info(`Seeded ${pages.length + staticPages.length} pages`);
 };
 
 module.exports = seedPages;

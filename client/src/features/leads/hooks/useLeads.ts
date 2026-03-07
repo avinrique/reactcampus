@@ -17,6 +17,10 @@ export function useCreateLead() {
   const qc = useQueryClient(); const toast = useToast();
   return useMutation({ mutationFn: (data: CreateLeadRequest) => leadApi.create(data), onSuccess: () => { qc.invalidateQueries({ queryKey: queryKeys.leads.all }); toast.success('Lead created'); }, onError: (err: any) => toast.error(err.response?.data?.message || 'Failed') });
 }
+export function useUpdateLead() {
+  const qc = useQueryClient(); const toast = useToast();
+  return useMutation({ mutationFn: ({ id, data }: { id: string; data: UpdateLeadRequest }) => leadApi.update(id, data), onSuccess: () => { qc.invalidateQueries({ queryKey: queryKeys.leads.all }); toast.success('Lead updated'); }, onError: (err: any) => toast.error(err.response?.data?.message || 'Failed') });
+}
 export function useDeleteLead() {
   const qc = useQueryClient(); const toast = useToast();
   return useMutation({ mutationFn: (id: string) => leadApi.delete(id), onSuccess: () => { qc.invalidateQueries({ queryKey: queryKeys.leads.all }); toast.success('Lead deleted'); }, onError: (err: any) => toast.error(err.response?.data?.message || 'Failed') });
@@ -32,4 +36,8 @@ export function useAssignLead() {
 export function useAddLeadNote() {
   const qc = useQueryClient(); const toast = useToast();
   return useMutation({ mutationFn: ({ id, data }: { id: string; data: AddLeadNoteRequest }) => leadApi.addNote(id, data), onSuccess: () => { qc.invalidateQueries({ queryKey: queryKeys.leads.all }); toast.success('Note added'); }, onError: (err: any) => toast.error(err.response?.data?.message || 'Failed') });
+}
+export function useBulkLeadAction() {
+  const qc = useQueryClient(); const toast = useToast();
+  return useMutation({ mutationFn: (data: { ids: string[]; action: string; value?: string }) => leadApi.bulkAction(data), onSuccess: (_data, variables) => { qc.invalidateQueries({ queryKey: queryKeys.leads.all }); toast.success(`Bulk ${variables.action} completed`); }, onError: (err: any) => toast.error(err.response?.data?.message || 'Bulk action failed') });
 }

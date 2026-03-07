@@ -6,6 +6,7 @@ const collegeSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, lowercase: true },
     type: { type: String, enum: COLLEGE_TYPES, required: true },
+    categories: [{ type: String }],
     description: { type: String, default: '' },
     logo: { type: String, default: '' },
     coverImage: { type: String, default: '' },
@@ -32,6 +33,10 @@ const collegeSchema = new mongoose.Schema(
     accreditation: { type: String, default: '' },
     affiliation: { type: String, default: '' },
     facilities: [{ type: String }],
+    pageFeatures: {
+      faq: { type: Boolean, default: true },
+      discussion: { type: Boolean, default: false },
+    },
     status: { type: String, enum: COLLEGE_STATUS, default: 'draft' },
     deletedAt: { type: Date, default: null },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

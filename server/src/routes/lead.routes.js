@@ -11,6 +11,7 @@ router.get('/', authenticate, authorize('lead:read'), ctrl.getLeads);
 // Static routes must come before /:id to avoid being caught by the param route
 router.get('/stats', authenticate, authorize('lead:view-stats'), ctrl.getLeadStats);
 router.get('/export', authenticate, authorize('lead:export'), ctrl.exportLeads);
+router.post('/bulk', authenticate, authorize('lead:manage'), validate(schema.bulkAction), ctrl.bulkAction);
 
 router.get('/:id', authenticate, authorize('lead:read'), ctrl.getLeadById);
 router.patch('/:id', authenticate, authorize('lead:update'), validate(schema.updateLead), ctrl.updateLead);

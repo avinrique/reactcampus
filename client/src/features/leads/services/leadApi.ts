@@ -38,6 +38,16 @@ export const leadApi = {
   },
   export: async (params: Record<string, any> = {}) => {
     const res = await api.get('/leads/export', { params, responseType: 'blob' });
-    return res.data;
+    const blob = new Blob([res.data], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'leads.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  },
+  bulkAction: async (data: { ids: string[]; action: string; value?: string }) => {
+    const res = await api.post<ApiResponse<{ count: number }>>('/leads/bulk', data);
+    return res.data.data;
   },
 };
