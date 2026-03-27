@@ -9,18 +9,24 @@ ReactCampus is a full-stack college discovery platform (CampusOption-style) with
 ## Development Commands
 
 ```bash
+# Both servers (from root)
+npm run dev:all          # Start backend + frontend concurrently
+
 # Backend (from root)
-npm run dev              # Start Express server with nodemon (default port 5000)
+npm run dev              # Start Express server with nodemon
 npm run seed             # Seed database (permissions, roles, admin, colleges, etc.)
+npm run restart          # Kill port 5050, restart server
 npm start                # Production start
 
 # Frontend (from client/)
-cd client && npm run dev     # Start Vite dev server on port 3000 (proxies /api to :5050)
-cd client && npm run build   # Production build
-cd client && npm run lint    # ESLint check
+cd client && npm run dev     # Vite dev server on port 3000
+cd client && npm run build   # tsc + vite build
+cd client && npm run lint    # ESLint
 ```
 
-**Note:** The Vite proxy in `client/vite.config.ts` forwards `/api` requests to `localhost:5050`, but the server default port in `.env.example` is 5000. Ensure these match.
+**Port config:** Vite proxies `/api` to `localhost:5050`. The server defaults to port 5000 via `server/src/config/index.js` but the `restart` script targets port 5050. Set `PORT=5050` in your `.env` to match the proxy, or update `client/vite.config.ts`.
+
+**No test framework** is configured — there are no unit or integration tests.
 
 ## Architecture
 
@@ -39,6 +45,8 @@ Each resource follows: **Route → Controller → Service → Model**
 - `middlewares/` — `authenticate`, `authorize`, `authorizeAny`, `asyncHandler`, `errorHandler`, `validateRequest`
 - `permissions/` — `permissionRegistry.js` defines all permissions; `permissionLoader.js` syncs to DB on startup; `permissionCache.js` is an LRU cache
 
+**Auth** is self-contained in `server/src/auth/` (auth.routes, auth.controller, auth.service, auth.validation) — it doesn't follow the top-level directory split.
+
 ### Frontend Layers (client/src/)
 Feature-based organization: each feature in `features/` has `pages/`, `hooks/`, `services/` subdirs.
 - `stores/authStore.ts` — Zustand store for auth state (user, permissions, tokens)
@@ -51,6 +59,8 @@ Feature-based organization: each feature in `features/` has `pages/`, `hooks/`, 
 - `router/` — `adminRoutes.tsx` (protected, permission-guarded), `publicRoutes.tsx`
 - `types/` — TypeScript interfaces for all entities and API responses
 
+**Path alias:** `@` maps to `client/src/` (configured in `vite.config.ts`). All client imports use `@/` prefix.
+
 ### Two Layouts
 - **PublicLayout** — Header + Footer, public-facing pages at `/`, `/colleges`, `/courses`, `/exams`
 - **AdminLayout** — Sidebar + TopBar, admin dashboard at `/admin/*`
@@ -58,10 +68,10 @@ Feature-based organization: each feature in `features/` has `pages/`, `hooks/`, 
 ## Key Patterns
 
 ### Authentication Flow
-JWT with refresh token rotation. Access tokens (15min) in localStorage. Axios interceptor queues failed requests during refresh. Server uses token family tracking to detect reuse attacks. Auth logic lives in `server/src/auth/`.
+JWT with refresh token rotation. Access tokens (15min) in localStorage. Axios interceptor queues failed requests during refresh. Server uses token family tracking to detect reuse attacks.
 
 ### RBAC
-50+ permissions defined in `server/src/permissions/permissionRegistry.js`. Frontend mirrors them in `client/src/config/permissions.ts`. Middleware: `authorize(...perms)` = AND logic, `authorizeAny(...perms)` = OR logic. Routes wrapped with `PermissionGuard` on client.
+50+ permissions defined in `server/src/permissions/permissionRegistry.js`. Frontend mirrors them in `client/src/config/permissions.ts`. Middleware: `authorize(...perms)` = ALL required (AND), `authorizeAny(...perms)` = any one sufficient (OR). Routes wrapped with `PermissionGuard` on client.
 
 ### Content Sections
 Polymorphic content model (`ContentSection`) attachable to colleges, courses, or exams. Types: `richtext`, `table`, `faq`, `gallery`, `list`. Organized by tabs (Overview, Placements, Admission, etc.).

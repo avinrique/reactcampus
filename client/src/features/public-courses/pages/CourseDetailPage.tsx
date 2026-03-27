@@ -88,7 +88,7 @@ function SectionRenderer({ section }: { section: ContentSection }) {
         <div className="overflow-x-auto rounded-lg border border-gray-200">
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
-              <tr className="bg-gray-900">
+              <tr className="bg-gradient-to-r from-brand-800 to-brand-900">
                 {content.headers.map((h: string, i: number) => (
                   <th key={i} className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">{h}</th>
                 ))}
@@ -312,7 +312,7 @@ export default function CourseDetailPage() {
 
           {/* Header card */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="h-2 bg-gradient-to-r from-brand-500 to-brand-600" />
+            <div className="h-1.5 bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600" />
             <div className="p-5 md:p-6">
               <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                 <div className="w-14 h-14 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-brand-500/20">
@@ -346,7 +346,7 @@ export default function CourseDetailPage() {
 
             {/* Stat boxes */}
             {stats.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 border-t border-gray-100">
+              <div className="grid grid-cols-2 md:grid-cols-3 border-t border-gray-100 bg-gray-50/50">
                 {stats.map((stat, i) => {
                   const Icon = stat.icon;
                   return (
@@ -515,20 +515,20 @@ export default function CourseDetailPage() {
           {/* Sidebar */}
           <div className="w-full lg:w-80 flex-shrink-0 space-y-4">
             {/* CTA Card */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-brand-500 p-5">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 border-l-4 border-l-brand-500 p-5">
               <h3 className="font-semibold text-gray-900 mb-1">Interested in this course?</h3>
               <p className="text-xs text-gray-500 mb-4">Get details on fees, eligibility, and colleges</p>
-              <button className="w-full py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg shadow-md shadow-brand-500/20 hover:shadow-lg transition-all text-sm font-medium mb-2">
+              <button className="w-full py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl shadow-md shadow-brand-500/20 hover:shadow-lg transition-all text-sm font-medium mb-2">
                 Apply Now
               </button>
-              <button className="w-full py-2.5 border border-brand-500 text-brand-600 rounded-lg hover:bg-brand-50 transition-colors text-sm font-medium">
+              <button className="w-full py-2.5 border border-brand-500 text-brand-600 rounded-xl hover:bg-brand-50 transition-colors text-sm font-medium">
                 Download Brochure
               </button>
             </div>
 
             {/* Quick Links (tabs) — only if sections exist */}
             {hasSections && tabs.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-accent-500 p-5">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 border-l-4 border-l-accent-500 p-5">
                 <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                   <span className="w-1 h-5 bg-accent-500 rounded-full" />
                   Quick Links
@@ -549,7 +549,7 @@ export default function CourseDetailPage() {
             )}
 
             {/* Course Details */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-gray-400 p-5">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 border-l-4 border-l-gray-400 p-5">
               <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                 <span className="w-1 h-5 bg-gray-400 rounded-full" />
                 Course Details
@@ -581,7 +581,7 @@ export default function CourseDetailPage() {
             </div>
 
             {/* Explore More */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-brand-500 p-5">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 border-l-4 border-l-brand-500 p-5">
               <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                 <span className="w-1 h-5 bg-brand-500 rounded-full" />
                 Explore More

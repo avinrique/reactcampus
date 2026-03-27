@@ -55,15 +55,21 @@ export default function CollegeListingPage() {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header Banner */}
-      <div className="bg-gradient-to-br from-brand-800 via-brand-700 to-brand-600 bg-noise text-white relative">
-        <div className="relative z-10 max-w-7xl mx-auto px-4 py-10 md:py-14">
-          <nav className="flex items-center gap-1.5 text-sm text-brand-200 mb-4">
+      <div className="bg-gradient-to-br from-brand-900 via-brand-800 to-brand-700 text-white relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-white/20 blur-3xl" />
+          <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-brand-300/30 blur-3xl" />
+        </div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-brand-600/20 via-transparent to-transparent" />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 py-12 md:py-16">
+          <nav className="flex items-center gap-1.5 text-sm text-brand-300 mb-5">
             <Link to="/" className="hover:text-white transition-colors"><Home className="w-3.5 h-3.5" /></Link>
             <ChevronRight className="w-3.5 h-3.5" />
-            <span className="text-white font-medium">Colleges</span>
+            <span className="text-white/90 font-medium">Colleges</span>
           </nav>
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">Explore Top Colleges in India</h1>
-          <p className="text-brand-200 text-sm md:text-base">
+          <h1 className="text-3xl md:text-4xl font-extrabold mb-3 tracking-tight">Explore Top Colleges in India</h1>
+          <p className="text-brand-200/80 text-sm md:text-base max-w-2xl leading-relaxed">
             Browse {data?.pagination?.total ? `${data.pagination.total}+` : ''} colleges across India. Filter by type, location, and more.
           </p>
         </div>
@@ -71,20 +77,20 @@ export default function CollegeListingPage() {
 
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Search & Filter Bar - overlapping banner */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-4 mb-6 -mt-6 relative z-20">
+        <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100 p-5 mb-6 -mt-8 relative z-20">
           <div className="flex flex-col md:flex-row gap-3">
             <form onSubmit={handleSearch} className="flex gap-2 flex-1">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="text"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   placeholder="Search colleges by name..."
-                  className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent"
+                  className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-300 focus:bg-white transition-colors"
                 />
               </div>
-              <button type="submit" className="px-5 py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-sm font-medium rounded-lg hover:from-brand-600 hover:to-brand-700 transition-all shadow-md shadow-brand-500/20">
+              <button type="submit" className="px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-sm font-semibold rounded-2xl hover:from-brand-600 hover:to-brand-700 transition-all shadow-md shadow-brand-500/20 hover:shadow-lg hover:shadow-brand-500/30">
                 Search
               </button>
             </form>
@@ -217,13 +223,15 @@ export default function CollegeListingPage() {
         {isLoading ? (
           <div className="flex justify-center py-16"><Spinner size="lg" /></div>
         ) : !data?.data.length ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-            <GraduationCap className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <h3 className="text-lg font-semibold text-gray-700 mb-1">No colleges found</h3>
-            <p className="text-sm text-gray-500 mb-4">Try adjusting your filters or search terms.</p>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-16 text-center">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 flex items-center justify-center mx-auto mb-5">
+              <GraduationCap className="w-10 h-10 text-gray-300" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-1.5">No colleges found</h3>
+            <p className="text-sm text-gray-500 mb-5 max-w-sm mx-auto">Try adjusting your filters or search terms to discover more colleges.</p>
             {hasFilters && (
-              <button onClick={clearFilters} className="text-brand-500 hover:text-brand-600 text-sm font-medium">
-                Clear All Filters
+              <button onClick={clearFilters} className="inline-flex items-center gap-1.5 px-4 py-2 text-brand-600 hover:text-brand-700 bg-brand-50 hover:bg-brand-100 text-sm font-medium rounded-lg transition-colors">
+                <X className="w-3.5 h-3.5" /> Clear All Filters
               </button>
             )}
           </div>
@@ -234,8 +242,9 @@ export default function CollegeListingPage() {
                 <Link
                   key={college._id}
                   to={`/colleges/${college.slug}`}
-                  className="group block bg-white rounded-xl shadow-sm border border-gray-200 card-hover overflow-hidden"
+                  className="group block bg-white rounded-xl border border-gray-200 hover:border-brand-200 hover:shadow-lg hover:shadow-brand-500/5 transition-all duration-300 overflow-hidden"
                 >
+                  <div className="h-0.5 bg-gradient-to-r from-brand-400 to-brand-600 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex-1 p-5">
                     <div className="flex items-start gap-4">
                       {college.logo ? (
@@ -297,7 +306,7 @@ export default function CollegeListingPage() {
               ))}
             </div>
             {data.pagination && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-6 py-5">
                 <Pagination
                   page={data.pagination.page}
                   totalPages={data.pagination.pages}

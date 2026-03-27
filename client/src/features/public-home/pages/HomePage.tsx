@@ -5,6 +5,7 @@ import {
   Building2, ArrowRight, Award, TrendingUp, Users, Star,
   GraduationCap, Phone, Stethoscope, Scale, Palette, FlaskConical,
   Briefcase, Calculator, Shield, GitCompare, Headphones, MessageCircle,
+  Sparkles, ChevronRight,
 } from 'lucide-react';
 import { usePublicColleges } from '@/features/public-colleges/hooks/usePublicColleges';
 import { usePublicCourses } from '@/features/public-courses/hooks/usePublicCourses';
@@ -126,13 +127,14 @@ export default function HomePage() {
         <div className="absolute bottom-10 left-[5%] w-48 h-48 bg-accent-400/10 blob-2 animate-float-delay pointer-events-none" />
         <div className="absolute top-1/2 right-[30%] w-32 h-32 bg-brand-300/8 blob-1 animate-float-delay pointer-events-none" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 py-20 md:py-28">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 py-20 md:py-28 lg:py-32">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Left - Text */}
             <div className="animate-fade-in-up">
-              <p className="text-accent-300 text-sm font-semibold tracking-wide uppercase mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 border border-white/15 rounded-full text-xs font-medium text-brand-200 mb-6 backdrop-blur-sm">
+                <Sparkles className="w-3.5 h-3.5 text-accent-400" />
                 India's Trusted Education Platform
-              </p>
+              </div>
               <h1 className="heading-display">
                 {heroTitle}{' '}
                 <span className="text-accent-300">{heroHighlight}</span>
@@ -143,7 +145,7 @@ export default function HomePage() {
 
               {/* Search - glassmorphic */}
               <form onSubmit={handleSearch} className="mt-8">
-                <div className="flex bg-white/95 backdrop-blur-sm rounded-2xl overflow-hidden shadow-2xl shadow-black/20">
+                <div className="flex bg-white/95 backdrop-blur-sm rounded-2xl overflow-hidden shadow-2xl shadow-black/20 ring-1 ring-white/20">
                   <div className="relative flex-1">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
@@ -151,14 +153,15 @@ export default function HomePage() {
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       placeholder={heroPlaceholder}
-                      className="w-full pl-12 pr-4 py-4 text-gray-800 placeholder-gray-400 focus:outline-none text-sm bg-transparent"
+                      className="w-full pl-12 pr-4 py-4 md:py-4.5 text-gray-800 placeholder-gray-400 focus:outline-none text-sm bg-transparent"
                     />
                   </div>
                   <button
                     type="submit"
-                    className="px-7 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-sm font-semibold hover:from-brand-600 hover:to-brand-700 transition-all"
+                    className="px-7 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-sm font-semibold hover:from-brand-600 hover:to-brand-700 transition-all flex items-center gap-2"
                   >
-                    Search
+                    <Search className="w-4 h-4 md:hidden" />
+                    <span className="hidden md:inline">Search</span>
                   </button>
                 </div>
               </form>
@@ -170,7 +173,7 @@ export default function HomePage() {
                   <Link
                     key={cat.label}
                     to={cat.to}
-                    className="px-3 py-1 text-xs font-medium text-brand-200 bg-white/10 border border-white/15 rounded-full hover:bg-white/20 hover:text-white transition-colors"
+                    className="px-3.5 py-1.5 text-xs font-medium text-brand-200 bg-white/8 border border-white/12 rounded-full hover:bg-white/15 hover:text-white hover:border-white/25 transition-all"
                   >
                     {cat.label}
                   </Link>
@@ -185,10 +188,10 @@ export default function HomePage() {
                 <img
                   src="https://images.unsplash.com/photo-1562774053-701939374585?w=600&h=400&fit=crop&q=80"
                   alt="College campus"
-                  className="w-full h-[340px] object-cover"
+                  className="w-full h-[360px] object-cover"
                 />
                 {/* Gradient overlay on image */}
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-950/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-950/70 via-brand-950/20 to-transparent" />
 
                 {/* Stats strip at bottom of image */}
                 <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -199,7 +202,7 @@ export default function HomePage() {
                       return (
                         <div
                           key={stat.label}
-                          className="bg-white/15 backdrop-blur-md rounded-xl p-3 text-center border border-white/10"
+                          className="bg-white/12 backdrop-blur-md rounded-xl p-3 text-center border border-white/10 hover:bg-white/18 transition-colors"
                         >
                           <div className={`w-8 h-8 rounded-lg ${accent.bg} flex items-center justify-center mx-auto mb-1.5`}>
                             <Icon className={`w-4 h-4 ${accent.text}`} />
@@ -214,26 +217,26 @@ export default function HomePage() {
               </div>
 
               {/* Floating accent card - top right */}
-              <div className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-xl p-3 animate-fade-in-up-delay-3 z-10">
+              <div className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-xl shadow-gray-900/10 p-3.5 animate-fade-in-up-delay-3 z-10 ring-1 ring-gray-100">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/25">
                     <TrendingUp className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500">Placement Rate</div>
+                    <div className="text-[11px] text-gray-500 font-medium">Placement Rate</div>
                     <div className="text-sm font-bold text-gray-900">95%+ Average</div>
                   </div>
                 </div>
               </div>
 
               {/* Floating accent card - bottom left */}
-              <div className="absolute -bottom-3 -left-4 bg-white rounded-2xl shadow-xl p-3 animate-fade-in-up-delay-4 z-10">
+              <div className="absolute -bottom-3 -left-4 bg-white rounded-2xl shadow-xl shadow-gray-900/10 p-3.5 animate-fade-in-up-delay-4 z-10 ring-1 ring-gray-100">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/25">
                     <Star className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500">Trusted by</div>
+                    <div className="text-[11px] text-gray-500 font-medium">Trusted by</div>
                     <div className="text-sm font-bold text-gray-900">35K+ Students</div>
                   </div>
                 </div>
@@ -244,7 +247,7 @@ export default function HomePage() {
       </section>
 
       {/* Mobile Stats - visible on small screens */}
-      <section className="md:hidden border-b border-gray-200 bg-gray-50">
+      <section className="md:hidden border-b border-gray-200 bg-gray-50/80">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-2 divide-x divide-gray-200">
             {stats.map((stat: any) => {
@@ -265,11 +268,16 @@ export default function HomePage() {
 
       {/* Browse by Stream */}
       {settings?.sectionVisibility?.browseByStream !== false && (
-        <section className="py-10 border-b border-gray-100">
+        <section className="py-12 md:py-14">
           <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-xl font-bold text-gray-900">Browse by Stream</h2>
-              <Link to="/colleges" className="text-brand-600 hover:text-brand-700 text-sm font-medium">View All</Link>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="heading-section text-gray-900">Browse by Stream</h2>
+                <p className="text-gray-500 text-sm mt-1">Find colleges based on your preferred field</p>
+              </div>
+              <Link to="/colleges" className="hidden sm:flex items-center gap-1.5 text-brand-600 hover:text-brand-700 text-sm font-semibold transition-colors">
+                View All <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
             <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-6 scrollbar-hide">
               {STREAMS.map(stream => {
@@ -278,10 +286,10 @@ export default function HomePage() {
                   <Link
                     key={stream.label}
                     to={stream.to}
-                    className="group flex-shrink-0 w-36 md:w-auto flex flex-col items-center gap-2.5 py-5 px-4 rounded-xl bg-white border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all"
+                    className={`group flex-shrink-0 w-36 md:w-auto flex flex-col items-center gap-3 py-6 px-4 rounded-2xl bg-white border border-gray-200 hover:border-transparent hover:shadow-lg hover:shadow-gray-900/5 hover:-translate-y-1 transition-all duration-300`}
                   >
-                    <div className={`w-11 h-11 rounded-lg ${stream.bg} flex items-center justify-center`}>
-                      <Icon className="w-5 h-5 text-white" />
+                    <div className={`w-12 h-12 rounded-xl ${stream.bg} flex items-center justify-center shadow-lg shadow-${stream.bg}/25 group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className="w-5.5 h-5.5 text-white" />
                     </div>
                     <div className="text-center">
                       <p className="text-sm font-semibold text-gray-800">{stream.label}</p>
@@ -297,16 +305,20 @@ export default function HomePage() {
 
       {/* Featured Colleges */}
       {settings?.sectionVisibility?.featuredColleges !== false && (
-        <section className="py-14">
+        <section className="py-14 md:py-16 bg-gradient-to-b from-gray-50/80 to-white">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between mb-8">
               <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-50 border border-brand-100 rounded-full text-xs font-semibold text-brand-600 mb-3">
+                  <Building2 className="w-3.5 h-3.5" />
+                  Top Picks
+                </div>
                 <h2 className="heading-section text-gray-900">Featured Colleges</h2>
                 <p className="text-gray-500 text-sm mt-1">Top-rated colleges handpicked for you</p>
               </div>
               <Link
                 to="/colleges"
-                className="hidden sm:flex items-center gap-1.5 text-brand-600 hover:text-brand-700 text-sm font-semibold"
+                className="hidden sm:flex items-center gap-1.5 text-brand-600 hover:text-brand-700 text-sm font-semibold transition-colors"
               >
                 View All <ArrowRight className="w-4 h-4" />
               </Link>
@@ -319,26 +331,28 @@ export default function HomePage() {
                   <Link
                     key={college._id}
                     to={`/colleges/${college.slug}`}
-                    className={`group bg-white rounded-xl border border-gray-200 border-l-4 border-l-brand-500 card-hover overflow-hidden ${
+                    className={`group bg-white rounded-2xl border border-gray-200 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-500/5 overflow-hidden transition-all duration-300 hover:-translate-y-1 ${
                       idx <= 2 ? `animate-fade-in-up-delay-${idx + 1}` : ''
                     }`}
                   >
+                    {/* Top accent */}
+                    <div className="h-1 bg-gradient-to-r from-brand-400 to-brand-600 opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="p-5">
                       <div className="flex items-start gap-3.5">
                         {college.logo ? (
-                          <img src={college.logo} alt="" className="w-14 h-14 rounded-lg ring-4 ring-white shadow-lg object-contain bg-white flex-shrink-0 p-1" />
+                          <img src={college.logo} alt="" className="w-14 h-14 rounded-xl ring-1 ring-gray-100 shadow-sm object-contain bg-white flex-shrink-0 p-1" />
                         ) : (
-                          <div className="w-14 h-14 rounded-lg bg-brand-50 flex items-center justify-center flex-shrink-0 ring-4 ring-white shadow-lg">
+                          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-brand-50 to-brand-100 flex items-center justify-center flex-shrink-0">
                             <Building2 className="w-6 h-6 text-brand-500" />
                           </div>
                         )}
                         <div className="min-w-0 flex-1">
-                          <h3 className="font-bold text-gray-900 text-lg leading-snug group-hover:text-brand-600 transition-colors line-clamp-2">
+                          <h3 className="font-bold text-gray-900 text-[15px] leading-snug group-hover:text-brand-600 transition-colors line-clamp-2">
                             {college.name}
                           </h3>
                           {college.location && (
                             <p className="flex items-center gap-1 text-xs text-gray-500 mt-1.5">
-                              <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+                              <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-gray-400" />
                               {college.location.city}{college.location.state ? `, ${college.location.state}` : ''}
                             </p>
                           )}
@@ -347,13 +361,13 @@ export default function HomePage() {
 
                       <div className="flex flex-wrap gap-2 mt-4">
                         {college.ranking && (
-                          <span className="px-2.5 py-1 bg-amber-50 text-amber-700 text-xs rounded-md font-medium flex items-center gap-1 border border-amber-100">
+                          <span className="px-2.5 py-1 bg-amber-50 text-amber-700 text-[11px] rounded-lg font-semibold flex items-center gap-1 border border-amber-100">
                             <Award className="w-3 h-3" />
                             Rank #{college.ranking}
                           </span>
                         )}
                         {college.accreditation && (
-                          <span className="px-2.5 py-1 bg-green-50 text-green-700 text-xs rounded-md font-medium border border-green-100">
+                          <span className="px-2.5 py-1 bg-green-50 text-green-700 text-[11px] rounded-lg font-semibold border border-green-100">
                             {college.accreditation}
                           </span>
                         )}
@@ -361,21 +375,19 @@ export default function HomePage() {
 
                       <div className="flex items-center justify-between pt-4 mt-4 border-t border-gray-100">
                         {college.fees?.max > 0 ? (
-                          <span className="text-sm text-gray-700 font-medium flex items-center gap-1.5">
+                          <span className="text-sm text-gray-700 font-semibold flex items-center gap-1.5">
                             <TrendingUp className="w-3.5 h-3.5 text-green-500" />
                             ₹{college.fees.max >= 100000
                               ? `${(college.fees.max / 100000).toFixed(1)}L`
                               : `${(college.fees.max / 1000).toFixed(0)}K`}
-                            <span className="text-xs text-gray-400 font-normal">/ year</span>
+                            <span className="text-[11px] text-gray-400 font-normal">/ year</span>
                           </span>
                         ) : (
                           <span />
                         )}
-                        {college.established && (
-                          <span className="text-xs text-gray-500">
-                            Est. {college.established}
-                          </span>
-                        )}
+                        <span className="flex items-center gap-1 text-xs text-brand-500 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                          View Details <ChevronRight className="w-3.5 h-3.5" />
+                        </span>
                       </div>
                     </div>
                   </Link>
@@ -384,7 +396,7 @@ export default function HomePage() {
             )}
             <Link
               to="/colleges"
-              className="sm:hidden flex items-center justify-center gap-1.5 text-brand-600 hover:text-brand-700 text-sm font-semibold mt-5"
+              className="sm:hidden flex items-center justify-center gap-1.5 text-brand-600 hover:text-brand-700 text-sm font-semibold mt-6"
             >
               View All Colleges <ArrowRight className="w-4 h-4" />
             </Link>
@@ -394,11 +406,20 @@ export default function HomePage() {
 
       {/* Popular Courses */}
       {settings?.sectionVisibility?.featuredCourses !== false && (
-        <section className="py-10">
+        <section className="py-12 md:py-14">
           <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-xl font-bold text-gray-900">Popular Courses</h2>
-              <Link to="/courses" className="text-brand-600 hover:text-brand-700 text-sm font-medium">View All</Link>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full text-xs font-semibold text-blue-600 mb-3">
+                  <BookOpen className="w-3.5 h-3.5" />
+                  Trending
+                </div>
+                <h2 className="heading-section text-gray-900">Popular Courses</h2>
+                <p className="text-gray-500 text-sm mt-1">Explore top courses across streams</p>
+              </div>
+              <Link to="/courses" className="hidden sm:flex items-center gap-1.5 text-brand-600 hover:text-brand-700 text-sm font-semibold transition-colors">
+                View All <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
             {!courses ? (
               <div className="flex justify-center py-12"><Spinner /></div>
@@ -411,22 +432,22 @@ export default function HomePage() {
                     <Link
                       key={course._id}
                       to={`/courses/${course.slug}`}
-                      className="group flex gap-4 p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50/50 transition-colors"
+                      className="group flex gap-4 p-4 bg-white rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-md hover:shadow-gray-900/5 transition-all duration-300"
                     >
-                      <div className={`w-10 h-10 rounded-lg ${colors.iconBg} flex items-center justify-center flex-shrink-0 mt-0.5`}>
+                      <div className={`w-11 h-11 rounded-xl ${colors.iconBg} flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm`}>
                         <GraduationCap className="w-5 h-5 text-white" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <h3 className="text-[15px] font-semibold text-gray-900 group-hover:text-brand-600 transition-colors leading-tight line-clamp-1">
                           {course.name}
                         </h3>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-gray-500 mt-1.5">
                           {course.level && <span className="capitalize">{course.level}</span>}
                           {course.duration && <span> · {course.duration.value} {course.duration.unit}</span>}
                           {course.stream && <span> · {course.stream}</span>}
                         </p>
                         {course.fees?.amount > 0 && (
-                          <p className="text-sm font-semibold text-gray-800 mt-2">
+                          <p className="text-sm font-bold text-gray-800 mt-2.5">
                             ₹{course.fees.amount >= 100000
                               ? `${(course.fees.amount / 100000).toFixed(1)}L`
                               : `${(course.fees.amount / 1000).toFixed(0)}K`}
@@ -439,22 +460,32 @@ export default function HomePage() {
                 })}
               </div>
             )}
+            <Link
+              to="/courses"
+              className="sm:hidden flex items-center justify-center gap-1.5 text-brand-600 hover:text-brand-700 text-sm font-semibold mt-5"
+            >
+              View All Courses <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </section>
       )}
 
       {/* Popular Exams */}
       {settings?.sectionVisibility?.featuredExams !== false && (
-        <section className="py-14 bg-white">
+        <section className="py-14 md:py-16 bg-gradient-to-b from-gray-50/80 to-white">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between mb-8">
               <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-50 border border-purple-100 rounded-full text-xs font-semibold text-purple-600 mb-3">
+                  <FileText className="w-3.5 h-3.5" />
+                  Upcoming
+                </div>
                 <h2 className="heading-section text-gray-900">Popular Exams</h2>
                 <p className="text-gray-500 text-sm mt-1">Upcoming entrance exams you should know about</p>
               </div>
               <Link
                 to="/exams"
-                className="hidden sm:flex items-center gap-1.5 text-brand-600 hover:text-brand-700 text-sm font-semibold"
+                className="hidden sm:flex items-center gap-1.5 text-brand-600 hover:text-brand-700 text-sm font-semibold transition-colors"
               >
                 View All <ArrowRight className="w-4 h-4" />
               </Link>
@@ -467,7 +498,7 @@ export default function HomePage() {
                   <Link
                     key={exam._id}
                     to={`/exams/${exam.slug}`}
-                    className="group flex items-center gap-4 p-5 bg-white rounded-xl border border-gray-200 card-hover"
+                    className="group flex items-center gap-4 p-5 bg-white rounded-xl border border-gray-200 hover:border-purple-200 hover:shadow-lg hover:shadow-purple-500/5 transition-all duration-300"
                   >
                     <div className={`w-12 h-12 rounded-xl ${EXAM_COLORS[idx % EXAM_COLORS.length]} flex items-center justify-center flex-shrink-0 shadow-md`}>
                       <FileText className="w-5 h-5 text-white" />
@@ -477,7 +508,7 @@ export default function HomePage() {
                         {exam.name}
                       </h3>
                       <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                        <span className="px-2 py-0.5 bg-purple-50 text-purple-700 text-xs rounded-md font-medium capitalize">
+                        <span className="px-2.5 py-0.5 bg-purple-50 text-purple-700 text-[11px] rounded-lg font-semibold capitalize border border-purple-100">
                           {exam.examType?.replace('_', ' ')}
                         </span>
                         {exam.conductedBy && (
@@ -491,7 +522,7 @@ export default function HomePage() {
                         )}
                       </div>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-purple-500 flex-shrink-0 transition-colors" />
+                    <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-purple-500 group-hover:translate-x-0.5 flex-shrink-0 transition-all" />
                   </Link>
                 ))}
               </div>
@@ -508,29 +539,34 @@ export default function HomePage() {
 
       {/* Why Choose Us */}
       {settings?.sectionVisibility?.whyChooseUs !== false && (
-        <section className="py-14" style={{ background: 'linear-gradient(135deg, rgba(240,247,252,1), white 50%, rgba(255,247,237,0.3))' }}>
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-12 items-start">
+        <section className="py-16 md:py-20 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-brand-50/60 via-white to-accent-50/30" />
+          <div className="relative max-w-7xl mx-auto px-4">
+            <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-start">
               {/* Left */}
               <div>
-                <h2 className="heading-section text-gray-900 mb-2">Why Choose Campus Option?</h2>
-                <p className="text-gray-500 text-sm mb-6">Trusted by thousands of students across India</p>
-                <div className="w-16 h-1 bg-gradient-to-r from-brand-500 to-accent-400 rounded-full" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-50 border border-brand-100 rounded-full text-xs font-semibold text-brand-600 mb-4">
+                  <Shield className="w-3.5 h-3.5" />
+                  Why Us
+                </div>
+                <h2 className="heading-section text-gray-900 mb-3">Why Choose Campus Option?</h2>
+                <p className="text-gray-500 text-sm mb-6 max-w-md">Trusted by thousands of students across India for accurate, unbiased college information.</p>
+                <div className="w-20 h-1 bg-gradient-to-r from-brand-500 to-accent-400 rounded-full" />
               </div>
               {/* Right - numbered timeline */}
               <div className="relative">
                 {/* Connecting line */}
-                <div className="absolute left-[23px] top-4 bottom-4 w-px bg-gray-200" />
-                <div className="space-y-6">
+                <div className="absolute left-[23px] top-6 bottom-6 w-px bg-gradient-to-b from-brand-200 via-brand-300 to-brand-200" />
+                <div className="space-y-7">
                   {TRUST_POINTS.map((point, i) => {
                     const Icon = point.icon;
                     return (
-                      <div key={point.title} className="flex gap-5 relative">
-                        <div className="flex-shrink-0 w-12 h-12 rounded-full bg-white border-2 border-brand-200 flex items-center justify-center z-10 shadow-sm">
+                      <div key={point.title} className="flex gap-5 relative group">
+                        <div className="flex-shrink-0 w-12 h-12 rounded-full bg-white border-2 border-brand-200 group-hover:border-brand-400 flex items-center justify-center z-10 shadow-sm transition-colors">
                           <Icon className="w-5 h-5 text-brand-500" />
                         </div>
                         <div className="pt-1">
-                          <span className="text-xs font-bold text-accent-500 uppercase tracking-wider">0{i + 1}</span>
+                          <span className="text-[11px] font-bold text-accent-500 uppercase tracking-wider">0{i + 1}</span>
                           <h3 className="font-semibold text-gray-900 text-[15px] mt-0.5">{point.title}</h3>
                           <p className="text-sm text-gray-500 leading-relaxed mt-1">{point.desc}</p>
                         </div>
@@ -551,9 +587,9 @@ export default function HomePage() {
           <div className="absolute top-0 right-[10%] w-48 h-48 bg-brand-400/10 blob-1 animate-float pointer-events-none" />
           <div className="absolute bottom-0 left-[10%] w-36 h-36 bg-accent-400/10 blob-2 animate-float-delay pointer-events-none" />
 
-          <div className="relative z-10 max-w-7xl mx-auto px-4 py-16 md:py-20">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 py-20 md:py-24">
             <div className="max-w-3xl mx-auto text-center">
-              <div className="relative inline-block mb-5">
+              <div className="relative inline-block mb-6">
                 <div className="absolute inset-0 bg-brand-400/20 rounded-full blur-xl" />
                 <GraduationCap className="relative w-14 h-14 text-brand-300" />
               </div>
@@ -562,14 +598,14 @@ export default function HomePage() {
               <div className="flex flex-wrap justify-center gap-3 mt-8">
                 <Link
                   to="/colleges"
-                  className="inline-flex items-center gap-2 px-7 py-3.5 bg-white text-brand-700 rounded-xl font-semibold hover:bg-brand-50 transition-colors text-sm shadow-lg shadow-black/10"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-white text-brand-700 rounded-xl font-bold hover:bg-brand-50 transition-colors text-sm shadow-lg shadow-black/10"
                 >
                   <Building2 className="w-4 h-4" />
                   Explore Colleges
                 </Link>
                 <Link
                   to="/contact"
-                  className="inline-flex items-center gap-2 px-7 py-3.5 border border-brand-400 text-brand-200 rounded-xl font-semibold hover:bg-white/10 transition-colors text-sm animate-soft-pulse"
+                  className="inline-flex items-center gap-2 px-8 py-4 border-2 border-brand-400/60 text-brand-200 rounded-xl font-bold hover:bg-white/10 hover:border-brand-400 transition-all text-sm"
                 >
                   <Phone className="w-4 h-4" />
                   Talk to Expert

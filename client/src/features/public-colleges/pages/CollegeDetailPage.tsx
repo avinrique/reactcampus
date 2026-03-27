@@ -158,7 +158,7 @@ function HeroSection({
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
         </div>
       ) : (
-        <div className="h-28 bg-gradient-to-r from-brand-600 via-brand-500 to-brand-400 rounded-t-xl" />
+        <div className="h-32 bg-gradient-to-br from-brand-700 via-brand-600 to-brand-400 rounded-t-xl" />
       )}
 
       <div className="p-5 md:p-6">
@@ -233,7 +233,7 @@ function HeroSection({
 
       {/* Stat boxes */}
       {stats.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 border-t border-gray-100">
+        <div className="grid grid-cols-2 md:grid-cols-4 border-t border-gray-100 bg-gray-50/50">
           {stats.map((stat, i) => {
             const Icon = stat.icon;
             return (
@@ -301,7 +301,7 @@ function StickyTabBar({
                 onClick={() => onTabChange(tab.key)}
                 className={`px-5 py-3 text-sm font-medium border-b-[3px] transition-colors whitespace-nowrap ${
                   activeTab === tab.key
-                    ? 'border-brand-500 text-brand-600 bg-brand-50/50 rounded-t-lg'
+                    ? 'border-brand-500 text-brand-600 bg-brand-50/60 rounded-t-lg'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
@@ -345,7 +345,7 @@ function SectionRenderer({ section }: { section: ContentSection }) {
         <div className="overflow-x-auto rounded-lg border border-gray-200">
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
-              <tr className="bg-gray-900">
+              <tr className="bg-gradient-to-r from-brand-800 to-brand-900">
                 {content.headers.map((h: string, i: number) => (
                   <th key={i} className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">{h}</th>
                 ))}
@@ -441,24 +441,24 @@ function Sidebar({
   return (
     <div className="w-full lg:w-80 flex-shrink-0 space-y-4">
       {/* CTA Card */}
-      <div className={`bg-white rounded-xl shadow-sm border border-gray-200 border-l-4 ${SIDEBAR_ACCENTS[0]} p-5`}>
+      <div className={`bg-white rounded-2xl shadow-sm border border-gray-200 border-l-4 ${SIDEBAR_ACCENTS[0]} p-5`}>
         <h3 className="font-semibold text-gray-900 mb-1">
           Interested in {college.name.length > 30 ? college.name.slice(0, 30) + '...' : college.name}?
         </h3>
         <p className="text-xs text-gray-500 mb-4">Get details on fees, admission, placements</p>
         <button
-          className="w-full py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg shadow-md shadow-brand-500/20 hover:shadow-lg transition-all text-sm font-medium mb-2"
+          className="w-full py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl shadow-md shadow-brand-500/20 hover:shadow-lg transition-all text-sm font-medium mb-2"
           onClick={() => onTabChange('reviews')}
         >
           Apply Now
         </button>
-        <button className="w-full py-2.5 border border-brand-500 text-brand-500 rounded-lg hover:bg-brand-50 transition-colors text-sm font-medium">
+        <button className="w-full py-2.5 border border-brand-500 text-brand-500 rounded-xl hover:bg-brand-50 transition-colors text-sm font-medium">
           Download Brochure
         </button>
       </div>
 
       {/* Quick Links */}
-      <div className={`bg-white rounded-xl shadow-sm border border-gray-200 border-l-4 ${SIDEBAR_ACCENTS[1]} p-5`}>
+      <div className={`bg-white rounded-2xl shadow-sm border border-gray-200 border-l-4 ${SIDEBAR_ACCENTS[1]} p-5`}>
         <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
           <span className="w-1 h-5 bg-accent-500 rounded-full" />
           Quick Links
@@ -479,7 +479,7 @@ function Sidebar({
 
       {/* College Details */}
       {details.length > 0 && (
-        <div className={`bg-white rounded-xl shadow-sm border border-gray-200 border-l-4 ${SIDEBAR_ACCENTS[2]} p-5`}>
+        <div className={`bg-white rounded-2xl shadow-sm border border-gray-200 border-l-4 ${SIDEBAR_ACCENTS[2]} p-5`}>
           <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
             <span className="w-1 h-5 bg-gray-400 rounded-full" />
             College Details
@@ -512,7 +512,7 @@ function Sidebar({
 
       {/* Facilities */}
       {college.facilities?.length > 0 && (
-        <div className={`bg-white rounded-xl shadow-sm border border-gray-200 border-l-4 ${SIDEBAR_ACCENTS[3]} p-5`}>
+        <div className={`bg-white rounded-2xl shadow-sm border border-gray-200 border-l-4 ${SIDEBAR_ACCENTS[3]} p-5`}>
           <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
             <span className="w-1 h-5 bg-emerald-500 rounded-full" />
             Facilities
@@ -784,7 +784,7 @@ export default function CollegeDetailPage() {
                       {reviewsData.data.map((review) => {
                         const ratingColor = review.rating >= 4 ? 'border-l-green-500' : review.rating >= 3 ? 'border-l-amber-500' : 'border-l-red-400';
                         return (
-                          <div key={review._id} className={`border-l-4 ${ratingColor} pl-4 pb-4 border-b border-gray-100 last:border-b-0`}>
+                          <div key={review._id} className={`border-l-4 ${ratingColor} pl-4 pb-4 border-b border-gray-100 last:border-b-0 rounded-xl`}>
                             <div className="flex items-center justify-between mb-2">
                               <div>
                                 <span className="font-medium text-gray-900">{review.authorName}</span>

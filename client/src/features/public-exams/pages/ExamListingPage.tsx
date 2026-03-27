@@ -182,13 +182,15 @@ export default function ExamListingPage() {
         {isLoading ? (
           <div className="flex justify-center py-16"><Spinner size="lg" /></div>
         ) : !data?.data.length ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-            <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <h3 className="text-lg font-semibold text-gray-700 mb-1">No exams found</h3>
-            <p className="text-sm text-gray-500 mb-4">Try adjusting your filters or search terms.</p>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-16 text-center">
+            <div className="w-20 h-20 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-5">
+              <FileText className="w-10 h-10 text-gray-300" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">No exams found</h3>
+            <p className="text-sm text-gray-500 mb-6 max-w-sm mx-auto">Try adjusting your filters or search terms to discover more exams.</p>
             {hasFilters && (
-              <button onClick={clearFilters} className="text-brand-500 hover:text-brand-600 text-sm font-medium">
-                Clear All Filters
+              <button onClick={clearFilters} className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-50 text-brand-600 hover:bg-brand-100 text-sm font-medium rounded-lg transition-colors">
+                <X className="w-3.5 h-3.5" /> Clear All Filters
               </button>
             )}
           </div>
@@ -199,8 +201,9 @@ export default function ExamListingPage() {
                 <Link
                   key={exam._id}
                   to={`/exams/${exam.slug}`}
-                  className="group block bg-white rounded-xl shadow-sm border border-gray-200 card-hover overflow-hidden"
+                  className="group relative block bg-white rounded-2xl shadow-sm border border-gray-200 hover:border-purple-200 hover:shadow-lg hover:shadow-purple-500/5 transition-all duration-300 overflow-hidden"
                 >
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-500 via-brand-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="p-5">
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center flex-shrink-0 shadow-md">
