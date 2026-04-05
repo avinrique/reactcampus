@@ -1,6 +1,6 @@
 """
-Generate a comprehensive Indian colleges dataset with 220+ entries.
-Uses real college names with realistic synthetic metrics.
+Generate a comprehensive Indian colleges dataset with 2000+ entries.
+Uses real college names + realistic synthetic colleges.
 Deliberately includes some missing values and inconsistencies for cleaning practice.
 """
 import csv
@@ -9,7 +9,8 @@ import os
 
 random.seed(42)
 
-# Real Indian colleges with metadata
+# ─── Real Indian colleges with metadata ───────────────────────────────────────
+# (name, city, state, type, established, naac, entrance_exam, intake)
 colleges_data = [
     # IITs
     ("Indian Institute of Technology Bombay", "Mumbai", "Maharashtra", "Government", 1958, "A++", "JEE Advanced", 1000),
@@ -32,7 +33,6 @@ colleges_data = [
     ("Indian Institute of Technology Goa", "Goa", "Goa", "Government", 2016, None, "JEE Advanced", 240),
     ("Indian Institute of Technology Jammu", "Jammu", "Jammu & Kashmir", "Government", 2016, None, "JEE Advanced", 250),
     ("Indian Institute of Technology Dharwad", "Dharwad", "Karnataka", "Government", 2016, None, "JEE Advanced", 230),
-
     # NITs
     ("National Institute of Technology Trichy", "Tiruchirappalli", "Tamil Nadu", "Government", 1964, "A++", "JEE Main", 1100),
     ("National Institute of Technology Surathkal", "Mangalore", "Karnataka", "Government", 1960, "A+", "JEE Main", 900),
@@ -49,7 +49,6 @@ colleges_data = [
     ("National Institute of Technology Srinagar", "Srinagar", "Jammu & Kashmir", "Government", 1960, "B++", "JEE Main", 550),
     ("National Institute of Technology Agartala", "Agartala", "Tripura", "Government", 1965, "A", "JEE Main", 450),
     ("National Institute of Technology Raipur", "Raipur", "Chhattisgarh", "Government", 1956, "A", "JEE Main", 500),
-
     # IISc and IISERs
     ("Indian Institute of Science", "Bangalore", "Karnataka", "Government", 1909, "A++", "KVPY/JEE", 400),
     ("IISER Pune", "Pune", "Maharashtra", "Government", 2006, "A++", "IAT", 200),
@@ -57,8 +56,7 @@ colleges_data = [
     ("IISER Mohali", "Mohali", "Punjab", "Government", 2007, "A+", "IAT", 170),
     ("IISER Bhopal", "Bhopal", "Madhya Pradesh", "Government", 2008, "A+", "IAT", 160),
     ("IISER Thiruvananthapuram", "Thiruvananthapuram", "Kerala", "Government", 2008, "A", "IAT", 150),
-
-    # Top Private Universities
+    # Top Private
     ("BITS Pilani", "Pilani", "Rajasthan", "Private", 1964, "A++", "BITSAT", 1200),
     ("Vellore Institute of Technology", "Vellore", "Tamil Nadu", "Private", 1984, "A++", "VITEEE", 5000),
     ("SRM Institute of Science and Technology", "Chennai", "Tamil Nadu", "Private", 1985, "A++", "SRMJEEE", 4500),
@@ -75,8 +73,7 @@ colleges_data = [
     ("Bennett University", "Greater Noida", "Uttar Pradesh", "Private", 2016, "A", "Own Test", 800),
     ("Plaksha University", "Mohali", "Punjab", "Private", 2021, None, "Own Test", 200),
     ("Azim Premji University", "Bangalore", "Karnataka", "Private", 2010, "A", "Own Test", 400),
-
-    # Deemed Universities
+    # Deemed
     ("Symbiosis International University", "Pune", "Maharashtra", "Deemed", 2002, "A++", "SET", 2500),
     ("RVCE Bangalore", "Bangalore", "Karnataka", "Autonomous", 1963, "A++", "KCET", 1800),
     ("BMS College of Engineering", "Bangalore", "Karnataka", "Autonomous", 1946, "A+", "KCET", 1600),
@@ -97,8 +94,7 @@ colleges_data = [
     ("University of Calcutta", "Kolkata", "West Bengal", "Government", 1857, "A", "CUET", 4000),
     ("University of Mumbai", "Mumbai", "Maharashtra", "Government", 1857, "A++", "Own Entrance", 5000),
     ("Cochin University of Science and Technology", "Kochi", "Kerala", "Government", 1971, "A+", "CUSAT CAT", 1200),
-
-    # Medical Colleges
+    # Medical
     ("All India Institute of Medical Sciences Delhi", "New Delhi", "Delhi", "Government", 1956, "A++", "NEET UG", 200),
     ("Christian Medical College Vellore", "Vellore", "Tamil Nadu", "Private", 1900, "A++", "NEET UG", 150),
     ("Armed Forces Medical College", "Pune", "Maharashtra", "Government", 1948, "A++", "NEET UG", 150),
@@ -108,8 +104,7 @@ colleges_data = [
     ("Kasturba Medical College Manipal", "Manipal", "Karnataka", "Private", 1953, "A++", "NEET UG", 250),
     ("St Johns Medical College", "Bangalore", "Karnataka", "Private", 1963, "A+", "NEET UG", 150),
     ("JIPMER Puducherry", "Puducherry", "Puducherry", "Government", 1823, "A++", "NEET UG", 200),
-
-    # Law Colleges
+    # Law
     ("National Law School Bangalore", "Bangalore", "Karnataka", "Government", 1987, "A++", "CLAT", 120),
     ("NALSAR Hyderabad", "Hyderabad", "Telangana", "Government", 1998, "A++", "CLAT", 100),
     ("National Law Institute University Bhopal", "Bhopal", "Madhya Pradesh", "Government", 1997, "A+", "CLAT", 100),
@@ -117,8 +112,7 @@ colleges_data = [
     ("National Law University Delhi", "New Delhi", "Delhi", "Government", 2008, "A+", "AILET", 120),
     ("Gujarat National Law University", "Gandhinagar", "Gujarat", "Government", 2003, "A", "CLAT", 100),
     ("Rajiv Gandhi National University of Law", "Patiala", "Punjab", "Government", 2006, "A", "CLAT", 80),
-
-    # Management Institutes
+    # Management
     ("Indian Institute of Management Ahmedabad", "Ahmedabad", "Gujarat", "Government", 1961, "A++", "CAT", 400),
     ("Indian Institute of Management Bangalore", "Bangalore", "Karnataka", "Government", 1973, "A++", "CAT", 450),
     ("Indian Institute of Management Calcutta", "Kolkata", "West Bengal", "Government", 1961, "A++", "CAT", 480),
@@ -135,8 +129,7 @@ colleges_data = [
     ("Symbiosis Centre for Management", "Pune", "Maharashtra", "Deemed", 1993, "A+", "SNAP", 800),
     ("Great Lakes Institute of Management", "Chennai", "Tamil Nadu", "Private", 2004, "A", "CAT/XAT", 400),
     ("MICA Ahmedabad", "Ahmedabad", "Gujarat", "Private", 1991, "A+", "MICAT", 200),
-
-    # Arts and Sciences
+    # Arts / Sciences
     ("St Stephens College", "New Delhi", "Delhi", "Private", 1881, "A++", "CUET", 1200),
     ("Lady Shri Ram College", "New Delhi", "Delhi", "Private", 1956, "A++", "CUET", 1500),
     ("Loyola College Chennai", "Chennai", "Tamil Nadu", "Autonomous", 1925, "A++", "Own Entrance", 3000),
@@ -147,15 +140,13 @@ colleges_data = [
     ("Ramjas College Delhi", "New Delhi", "Delhi", "Government", 1917, "A+", "CUET", 1500),
     ("Hansraj College Delhi", "New Delhi", "Delhi", "Government", 1948, "A+", "CUET", 1500),
     ("Miranda House Delhi", "New Delhi", "Delhi", "Government", 1948, "A++", "CUET", 1200),
-
-    # Design & Architecture
+    # Design / Architecture
     ("National Institute of Design Ahmedabad", "Ahmedabad", "Gujarat", "Government", 1961, "A++", "NID DAT", 200),
     ("National Institute of Fashion Technology Delhi", "New Delhi", "Delhi", "Government", 1986, "A+", "NIFT", 400),
     ("School of Planning and Architecture Delhi", "New Delhi", "Delhi", "Government", 1941, "A+", "NATA/JEE", 200),
     ("IIT Bombay IDC School of Design", "Mumbai", "Maharashtra", "Government", 1969, "A++", "CEED", 100),
     ("Srishti Manipal Institute of Art", "Bangalore", "Karnataka", "Private", 1996, "A", "SUAT", 500),
-
-    # More Engineering Colleges
+    # More Engineering
     ("College of Engineering Pune", "Pune", "Maharashtra", "Government", 1854, "A+", "MHT CET", 1200),
     ("PEC Chandigarh", "Chandigarh", "Chandigarh", "Government", 1921, "A+", "JEE Main", 800),
     ("Netaji Subhas University of Technology", "New Delhi", "Delhi", "Government", 1983, "A+", "JEE Main", 1000),
@@ -184,26 +175,22 @@ colleges_data = [
     ("PES University", "Bangalore", "Karnataka", "Private", 1972, "A+", "PESSAT", 2500),
     ("CMR Institute of Technology", "Bangalore", "Karnataka", "Autonomous", 2000, "B++", "KCET", 800),
     ("Woxsen University", "Hyderabad", "Telangana", "Private", 2014, "A", "Own Test", 600),
-
     # Pharmacy
     ("National Institute of Pharmaceutical Education and Research Mohali", "Mohali", "Punjab", "Government", 1998, "A++", "NIPER JEE", 150),
     ("Jamia Hamdard", "New Delhi", "Delhi", "Deemed", 1989, "A+", "Own Entrance", 1000),
     ("Manipal College of Pharmaceutical Sciences", "Manipal", "Karnataka", "Private", 1963, "A+", "MET", 400),
     ("JSS College of Pharmacy", "Mysore", "Karnataka", "Deemed", 1980, "A++", "Own Entrance", 300),
     ("Bombay College of Pharmacy", "Mumbai", "Maharashtra", "Government", 1957, "A+", "MHT CET", 200),
-
     # Agriculture
     ("Indian Agricultural Research Institute", "New Delhi", "Delhi", "Government", 1905, "A++", "ICAR AIEEA", 300),
     ("Tamil Nadu Agricultural University", "Coimbatore", "Tamil Nadu", "Government", 1971, "A+", "TNAU Entrance", 800),
     ("Punjab Agricultural University", "Ludhiana", "Punjab", "Government", 1962, "A+", "Own Entrance", 600),
     ("GB Pant University of Agriculture", "Pantnagar", "Uttarakhand", "Government", 1960, "A++", "JRF", 500),
-
     # Hotel Management
     ("Institute of Hotel Management Delhi", "New Delhi", "Delhi", "Government", 1962, "A+", "NCHM JEE", 300),
     ("Institute of Hotel Management Mumbai", "Mumbai", "Maharashtra", "Government", 1970, "A+", "NCHM JEE", 250),
     ("Welcome Group Graduate School of Hotel Administration", "Manipal", "Karnataka", "Private", 1986, "A", "MET", 200),
-
-    # More Universities
+    # Central Universities
     ("Central University of Rajasthan", "Ajmer", "Rajasthan", "Government", 2009, "A", "CUET", 600),
     ("Central University of Punjab", "Bathinda", "Punjab", "Government", 2009, "B++", "CUET", 400),
     ("Central University of Haryana", "Mahendragarh", "Haryana", "Government", 2009, "B++", "CUET", 350),
@@ -223,7 +210,6 @@ colleges_data = [
     ("Rajiv Gandhi University", "Itanagar", "Arunachal Pradesh", "Government", 1984, "B+", "CUET", 250),
     ("Hemvati Nandan Bahuguna Garhwal University", "Srinagar", "Uttarakhand", "Government", 1973, "A", "CUET", 500),
     ("Kumaun University", "Nainital", "Uttarakhand", "Government", 1973, "B++", "CUET", 400),
-
     # State Universities
     ("Gujarat University", "Ahmedabad", "Gujarat", "Government", 1949, "A+", "Own Entrance", 2000),
     ("Osmania University", "Hyderabad", "Telangana", "Government", 1918, "A", "OUCET", 3000),
@@ -255,7 +241,116 @@ colleges_data = [
     ("Kashmir University", "Srinagar", "Jammu & Kashmir", "Government", 1948, "A", "CUET", 800),
 ]
 
-# Fee ranges by type and prestige (annual in INR)
+# ─── Configuration for synthetic generation ───────────────────────────────────
+
+STATES_CITIES = {
+    "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad", "Thane", "Kolhapur", "Solapur", "Amravati", "Nanded"],
+    "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli", "Erode", "Vellore", "Thanjavur", "Dindigul"],
+    "Karnataka": ["Bangalore", "Mysore", "Mangalore", "Hubli", "Belgaum", "Dharwad", "Shimoga", "Gulbarga", "Davangere", "Bellary"],
+    "Uttar Pradesh": ["Lucknow", "Noida", "Agra", "Varanasi", "Kanpur", "Prayagraj", "Meerut", "Ghaziabad", "Bareilly", "Aligarh"],
+    "Delhi": ["New Delhi", "Delhi"],
+    "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Thrissur", "Kollam", "Kannur", "Palakkad", "Alappuzha"],
+    "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Gandhinagar", "Bhavnagar", "Anand", "Junagadh"],
+    "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur", "Kota", "Ajmer", "Bikaner", "Pilani", "Sikar"],
+    "West Bengal": ["Kolkata", "Howrah", "Durgapur", "Siliguri", "Kharagpur", "Kalyani", "Asansol", "Bardhaman"],
+    "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Khammam", "Ramagundam"],
+    "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Tirupati", "Guntur", "Kakinada", "Nellore", "Rajahmundry"],
+    "Punjab": ["Chandigarh", "Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda", "Mohali", "Phagwara"],
+    "Madhya Pradesh": ["Bhopal", "Indore", "Gwalior", "Jabalpur", "Ujjain", "Sagar", "Rewa", "Satna"],
+    "Haryana": ["Gurugram", "Faridabad", "Sonipat", "Rohtak", "Karnal", "Hisar", "Kurukshetra", "Ambala"],
+    "Bihar": ["Patna", "Gaya", "Muzaffarpur", "Bhagalpur", "Darbhanga", "Purnia", "Begusarai"],
+    "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Berhampur", "Sambalpur", "Puri"],
+    "Jharkhand": ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro", "Hazaribagh", "Deoghar"],
+    "Assam": ["Guwahati", "Silchar", "Dibrugarh", "Jorhat", "Tezpur", "Nagaon"],
+    "Uttarakhand": ["Dehradun", "Haridwar", "Roorkee", "Haldwani", "Nainital", "Pantnagar"],
+    "Himachal Pradesh": ["Shimla", "Dharamsala", "Mandi", "Solan", "Hamirpur", "Kullu"],
+    "Chhattisgarh": ["Raipur", "Bhilai", "Bilaspur", "Korba", "Durg"],
+    "Goa": ["Panaji", "Margao", "Vasco da Gama", "Mapusa"],
+    "Jammu & Kashmir": ["Srinagar", "Jammu", "Anantnag", "Baramulla"],
+    "Chandigarh": ["Chandigarh"],
+    "Puducherry": ["Puducherry", "Karaikal"],
+    "Meghalaya": ["Shillong", "Tura"],
+    "Tripura": ["Agartala"],
+    "Mizoram": ["Aizawl"],
+    "Nagaland": ["Kohima", "Dimapur"],
+    "Sikkim": ["Gangtok", "Namchi"],
+    "Arunachal Pradesh": ["Itanagar", "Naharlagun"],
+    "Manipur": ["Imphal"],
+}
+
+COLLEGE_NAME_TEMPLATES = {
+    "Government": [
+        "Government College of {discipline} {city}",
+        "Government {discipline} College {city}",
+        "{city} Government {discipline} College",
+        "State Institute of {discipline} {city}",
+        "Government Polytechnic {city}",
+        "{state} State {discipline} College {city}",
+        "District {discipline} College {city}",
+        "Government Model College {city}",
+    ],
+    "Private": [
+        "{city} Institute of {discipline}",
+        "{city} College of {discipline}",
+        "Sri {name} Institute of {discipline} {city}",
+        "{name} College of {discipline} and Research {city}",
+        "{name} University {city}",
+        "{name} Institute of {discipline} {city}",
+        "Modern Institute of {discipline} {city}",
+        "Global Academy of {discipline} {city}",
+        "Excel Institute of {discipline} {city}",
+        "Prime College of {discipline} {city}",
+        "{name} Foundation {discipline} College {city}",
+    ],
+    "Deemed": [
+        "{name} Deemed University {city}",
+        "{city} Institute of {discipline} (Deemed)",
+        "Academy of {discipline} {city}",
+        "{name} Academy of {discipline} {city}",
+        "Deemed Institute of {discipline} {city}",
+    ],
+    "Autonomous": [
+        "{city} Autonomous College of {discipline}",
+        "{name} Autonomous Institute {city}",
+        "Autonomous College of {discipline} {city}",
+        "{city} {discipline} Autonomous College",
+    ],
+}
+
+DISCIPLINES = [
+    "Engineering", "Technology", "Science", "Arts", "Commerce", "Management",
+    "Medical Sciences", "Pharmacy", "Education", "Law", "Architecture",
+    "Computer Science", "Information Technology", "Nursing", "Agriculture",
+    "Dental Sciences", "Ayurveda", "Homeopathy", "Veterinary Science",
+    "Fine Arts", "Applied Sciences", "Social Work", "Journalism",
+    "Hotel Management", "Fashion Design", "Physical Education",
+]
+
+INDIAN_NAMES = [
+    "Acharya", "Amrita", "Aryabhatta", "Babasaheb", "Bharati", "Chanakya",
+    "Devi Ahilya", "Galgotias", "Guru Gobind Singh", "Jai Prakash", "Kamla Nehru",
+    "Laxmi", "Mahatma Gandhi", "Nehru", "Patel", "Rajendra Prasad", "Raman",
+    "Saraswati", "Shri Ram", "Subhas", "Tagore", "Vivekananda", "Ambedkar",
+    "Bose", "Chandra", "Dayanand", "Gandhi", "Indira", "Jawaharlal",
+    "Kalam", "Lakshmi", "Meera", "Narayana", "Padmavati", "Radhakrishnan",
+    "Sapru", "Tilak", "Usha", "Vidyasagar", "Swami", "Rani",
+    "Sardar", "Shivaji", "Bhagat Singh", "Aurobindo", "Ramanujan",
+    "Aryabhata", "Bhabha", "Raman", "Srinivasa",
+]
+
+ENTRANCE_EXAMS = [
+    "JEE Main", "JEE Advanced", "NEET UG", "CUET", "CAT", "CLAT",
+    "GATE", "NATA", "MHT CET", "KCET", "TNEA", "WBJEE", "AP EAMCET",
+    "TS EAMCET", "BITSAT", "VITEEE", "SRMJEEE", "COMEDK", "UPSEE",
+    "Own Entrance", "State Level", "University Entrance",
+]
+
+NAAC_GRADES = ["A++", "A+", "A", "B++", "B+", "B"]
+NAAC_WEIGHTS = [0.05, 0.12, 0.25, 0.25, 0.20, 0.13]  # Distribution skewed toward mid grades
+
+TYPES = ["Government", "Private", "Deemed", "Autonomous"]
+TYPE_WEIGHTS = [0.30, 0.40, 0.15, 0.15]  # Private colleges are most common
+
 FEE_RANGES = {
     "Government_top":    (50000, 300000),
     "Government_mid":    (15000, 100000),
@@ -265,58 +360,48 @@ FEE_RANGES = {
     "Private_low":       (100000, 400000),
     "Deemed_top":        (300000, 1500000),
     "Deemed_mid":        (150000, 600000),
+    "Deemed_low":        (80000, 300000),
     "Autonomous_top":    (100000, 500000),
     "Autonomous_mid":    (50000, 250000),
+    "Autonomous_low":    (30000, 150000),
 }
 
-# Placement ranges
 PLACEMENT_RANGES = {
     "Government_top":    (85, 99),
     "Government_mid":    (65, 88),
-    "Government_low":    (40, 70),
+    "Government_low":    (30, 65),
     "Private_top":       (80, 98),
     "Private_mid":       (55, 82),
-    "Private_low":       (35, 65),
+    "Private_low":       (25, 58),
     "Deemed_top":        (75, 95),
     "Deemed_mid":        (50, 78),
+    "Deemed_low":        (25, 55),
     "Autonomous_top":    (70, 92),
     "Autonomous_mid":    (45, 75),
+    "Autonomous_low":    (20, 50),
 }
 
-# Package ranges (in LPA)
 PACKAGE_RANGES = {
     "Government_top":    (12.0, 35.0),
     "Government_mid":    (5.0, 15.0),
-    "Government_low":    (3.0, 8.0),
+    "Government_low":    (2.0, 6.0),
     "Private_top":       (10.0, 30.0),
     "Private_mid":       (4.0, 12.0),
-    "Private_low":       (2.5, 7.0),
+    "Private_low":       (2.0, 5.5),
     "Deemed_top":        (8.0, 22.0),
     "Deemed_mid":        (3.5, 10.0),
+    "Deemed_low":        (2.0, 6.0),
     "Autonomous_top":    (6.0, 18.0),
     "Autonomous_mid":    (3.0, 9.0),
-}
-
-STATES_TO_REGIONS = {
-    "Delhi": "North", "Uttar Pradesh": "North", "Haryana": "North", "Punjab": "North",
-    "Rajasthan": "North", "Himachal Pradesh": "North", "Uttarakhand": "North",
-    "Jammu & Kashmir": "North", "Chandigarh": "North",
-    "Maharashtra": "West", "Gujarat": "West", "Goa": "West", "Madhya Pradesh": "Central",
-    "Chhattisgarh": "Central",
-    "Tamil Nadu": "South", "Karnataka": "South", "Kerala": "South", "Telangana": "South",
-    "Andhra Pradesh": "South", "Puducherry": "South",
-    "West Bengal": "East", "Odisha": "East", "Bihar": "East", "Jharkhand": "East",
-    "Assam": "Northeast", "Meghalaya": "Northeast", "Tripura": "Northeast",
-    "Mizoram": "Northeast", "Nagaland": "Northeast", "Sikkim": "Northeast",
-    "Arunachal Pradesh": "Northeast", "Manipal": "South",
+    "Autonomous_low":    (1.8, 5.0),
 }
 
 FACILITIES = ["Library", "Hostel", "Sports Complex", "Research Labs", "WiFi Campus",
               "Cafeteria", "Gymnasium", "Swimming Pool", "Auditorium", "Hospital",
               "Computer Center", "Placement Cell", "Innovation Hub", "Incubation Center"]
 
+
 def get_tier(name, type_val, naac, intake):
-    """Determine college tier for fee/placement/package ranges"""
     top_keywords = ["IIT ", "IIM ", "IISc", "IISER", "AIIMS", "BITS", "NIT ", "National Law",
                     "VIT", "SRM", "Manipal Academy", "XLRI", "Indian School of Business",
                     "Delhi Technological", "Jadavpur", "Anna University", "NMIMS",
@@ -327,9 +412,11 @@ def get_tier(name, type_val, naac, intake):
         return "mid"
     return "low"
 
-def generate_row(idx, college):
-    name, city, state, type_val, estd, naac, exam, intake = college
-    tier = get_tier(name, type_val, naac, intake)
+
+def generate_row(name, city, state, type_val, estd, naac, exam, intake, is_synthetic=False):
+    tier = get_tier(name, type_val, naac, intake) if not is_synthetic else random.choice(["top", "mid", "mid", "low", "low", "low"])
+    if is_synthetic and naac in ("A++", "A+"):
+        tier = random.choice(["top", "mid", "mid"])
     key = f"{type_val}_{tier}"
 
     fee_range = FEE_RANGES.get(key, FEE_RANGES.get(f"{type_val}_mid", (50000, 300000)))
@@ -337,65 +424,63 @@ def generate_row(idx, college):
     pkg_range = PACKAGE_RANGES.get(key, PACKAGE_RANGES.get(f"{type_val}_mid", (4, 10)))
 
     avg_fee = random.randint(*fee_range)
-    hostel_fee = random.randint(30000, 150000)
+    hostel_fee = random.randint(20000, 180000)
     placement_rate = round(random.uniform(*plc_range), 1)
     avg_package = round(random.uniform(*pkg_range), 2)
-    highest_package = round(avg_package * random.uniform(2.5, 6.0), 2)
+    highest_package = round(avg_package * random.uniform(2.0, 7.0), 2)
 
-    faculty_count = random.randint(80, 1200)
+    faculty_count = random.randint(40, 1500)
     student_faculty_ratio = round(intake / faculty_count, 1) if faculty_count > 0 else None
-    courses_offered = random.randint(15, 200)
-    companies = random.randint(30, 600)
-    campus_area = round(random.uniform(5, 2500), 1)
-    acceptance_rate = round(random.uniform(2, 70), 1)
+    courses_offered = random.randint(5, 250)
+    companies = random.randint(10, 700)
+    campus_area = round(random.uniform(2, 2500), 1)
+    acceptance_rate = round(random.uniform(1, 85), 1)
 
-    # NIRF ranking - not all colleges have one
     nirf = None
-    if random.random() > 0.15:  # 85% have ranking
+    if random.random() > 0.25:
         if tier == "top":
-            nirf = random.randint(1, 50)
+            nirf = random.randint(1, 100)
         elif tier == "mid":
-            nirf = random.randint(30, 150)
+            nirf = random.randint(50, 250)
         else:
-            nirf = random.randint(100, 300)
+            nirf = random.randint(150, 500)
 
-    # Facilities - random subset
-    num_facilities = random.randint(5, len(FACILITIES))
+    num_facilities = random.randint(3, len(FACILITIES))
     facilities = random.sample(FACILITIES, num_facilities)
 
-    has_library = "Library" in facilities
-    has_hostel = "Hostel" in facilities
-    has_sports = "Sports Complex" in facilities
-    has_wifi = "WiFi Campus" in facilities
-    has_lab = "Research Labs" in facilities
-    has_hospital = "Hospital" in facilities
+    scholarship = random.choice([True, True, True, False])
 
-    scholarship = random.choice([True, True, True, False])  # 75% have scholarships
-
-    # Deliberately introduce some missing values and inconsistencies
-    if random.random() < 0.05:
-        avg_fee = None  # ~5% missing fees
-    if random.random() < 0.03:
-        placement_rate = None  # ~3% missing placement
+    # Deliberately introduce missing values (~5-8% per column)
+    if random.random() < 0.06:
+        avg_fee = None
     if random.random() < 0.04:
-        avg_package = None  # ~4% missing package
+        placement_rate = None
+    if random.random() < 0.05:
+        avg_package = None
         highest_package = None
-    if random.random() < 0.02:
+    if random.random() < 0.03:
         faculty_count = None
         student_faculty_ratio = None
+    if random.random() < 0.07:
+        nirf = None
+    if random.random() < 0.04:
+        campus_area = None
 
-    # Some state name inconsistencies
+    # State name inconsistencies (~4%)
     state_val = state
-    if random.random() < 0.03:
-        inconsistencies = {"Delhi": "New Delhi", "Tamil Nadu": "Tamilnadu",
-                          "West Bengal": "W. Bengal", "Uttar Pradesh": "UP",
-                          "Karnataka": "karnataka"}
+    if random.random() < 0.04:
+        inconsistencies = {
+            "Delhi": "New Delhi", "Tamil Nadu": "Tamilnadu", "West Bengal": "W. Bengal",
+            "Uttar Pradesh": "UP", "Karnataka": "karnataka", "Maharashtra": "maharashtra",
+            "Andhra Pradesh": "A.P.", "Madhya Pradesh": "M.P.", "Himachal Pradesh": "H.P.",
+            "Jammu & Kashmir": "J&K",
+        }
         state_val = inconsistencies.get(state, state)
 
-    # Some type inconsistencies
+    # Type inconsistencies (~3%)
     type_out = type_val
     if random.random() < 0.03:
-        type_inconsistencies = {"Government": "Govt", "Private": "private", "Deemed": "deemed"}
+        type_inconsistencies = {"Government": "Govt", "Private": "private", "Deemed": "deemed", "Autonomous": "autonomous"}
         type_out = type_inconsistencies.get(type_val, type_val)
 
     return {
@@ -417,30 +502,79 @@ def generate_row(idx, college):
         "highest_package_lpa": highest_package,
         "companies_visiting": companies,
         "campus_area_acres": campus_area,
-        "has_library": has_library,
-        "has_hostel": has_hostel,
-        "has_sports": has_sports,
-        "has_wifi": has_wifi,
-        "has_lab": has_lab,
-        "has_hospital": has_hospital,
+        "has_library": "Library" in facilities,
+        "has_hostel": "Hostel" in facilities,
+        "has_sports": "Sports Complex" in facilities,
+        "has_wifi": "WiFi Campus" in facilities,
+        "has_lab": "Research Labs" in facilities,
+        "has_hospital": "Hospital" in facilities,
         "acceptance_rate": acceptance_rate,
         "entrance_exams_accepted": exam,
         "total_intake": intake,
     }
 
 
+def generate_synthetic_name(type_val, used_names):
+    """Generate a unique synthetic college name."""
+    for _ in range(100):
+        state = random.choice(list(STATES_CITIES.keys()))
+        city = random.choice(STATES_CITIES[state])
+        discipline = random.choice(DISCIPLINES)
+        name_part = random.choice(INDIAN_NAMES)
+        templates = COLLEGE_NAME_TEMPLATES[type_val]
+        template = random.choice(templates)
+        name = template.format(discipline=discipline, city=city, state=state, name=name_part)
+        if name not in used_names:
+            return name, city, state
+    # Fallback with counter
+    name = f"{random.choice(INDIAN_NAMES)} Institute of {random.choice(DISCIPLINES)} {random.randint(1, 999)}"
+    state = random.choice(list(STATES_CITIES.keys()))
+    city = random.choice(STATES_CITIES[state])
+    return name, city, state
+
+
 def main():
+    TARGET_ROWS = 2100
     output_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "datasets", "raw")
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "indian_colleges_dataset.csv")
 
     rows = []
-    for idx, college in enumerate(colleges_data):
-        rows.append(generate_row(idx, college))
+    used_names = set()
 
-    # Add a couple of duplicate rows (for cleaning notebook to catch)
-    rows.append(generate_row(0, colleges_data[0]))  # duplicate IIT Bombay
-    rows.append(generate_row(2, colleges_data[2]))  # duplicate IIT Madras
+    # 1. Add all real colleges (~211)
+    for college in colleges_data:
+        name = college[0]
+        used_names.add(name)
+        rows.append(generate_row(*college))
+
+    # 2. Generate synthetic colleges to reach target
+    synthetic_needed = TARGET_ROWS - len(rows)
+    print(f"Real colleges: {len(rows)}, generating {synthetic_needed} synthetic colleges...")
+
+    for i in range(synthetic_needed):
+        type_val = random.choices(TYPES, weights=TYPE_WEIGHTS, k=1)[0]
+        name, city, state = generate_synthetic_name(type_val, used_names)
+        used_names.add(name)
+
+        naac = random.choices(NAAC_GRADES, weights=NAAC_WEIGHTS, k=1)[0]
+        # ~8% missing NAAC
+        if random.random() < 0.08:
+            naac = None
+
+        estd = random.randint(1850, 2023)
+        exam = random.choice(ENTRANCE_EXAMS)
+        intake = random.randint(60, 8000)
+
+        rows.append(generate_row(name, city, state, type_val, estd, naac, exam, intake, is_synthetic=True))
+
+    # 3. Add some deliberate duplicates (~15)
+    for i in range(15):
+        idx = random.randint(0, len(colleges_data) - 1)
+        rows.append(generate_row(*colleges_data[idx]))
+
+    # Shuffle to mix real and synthetic
+    random.shuffle(rows)
 
     fieldnames = list(rows[0].keys())
 
@@ -450,7 +584,7 @@ def main():
         writer.writerows(rows)
 
     print(f"Dataset created: {output_path}")
-    print(f"Total rows: {len(rows)} (including 2 intentional duplicates)")
+    print(f"Total rows: {len(rows)} (including {len(colleges_data)} real + {synthetic_needed} synthetic + 15 duplicates)")
     print(f"Columns: {len(fieldnames)}")
     print(f"Columns: {', '.join(fieldnames)}")
 

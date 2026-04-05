@@ -1,84 +1,85 @@
 {
-  "total_colleges": 211,
+  "total_colleges": 2100,
   "tier_distribution": {
-    "Tier 3": 107,
-    "Tier 2": 85,
-    "Tier 1": 10,
-    "Tier 4": 9
+    "Tier 3": 1159,
+    "Tier 2": 659,
+    "Tier 4": 231,
+    "Tier 1": 51
   },
   "type_distribution": {
-    "Government": 147,
-    "Private": 37,
-    "Deemed": 14,
-    "Autonomous": 13
+    "Private": 795,
+    "Government": 699,
+    "Deemed": 313,
+    "Autonomous": 293
   },
-  "states_covered": 31,
-  "avg_score": 53.5,
-  "avg_placement_rate": 69.0,
-  "avg_package": 9.17,
+  "states_covered": 37,
+  "avg_score": 50.0,
+  "avg_placement_rate": 62.4,
+  "avg_package": 8.41,
   "score_by_type": {
-    "Autonomous": 47.5,
-    "Deemed": 55.6,
-    "Government": 54.5,
-    "Private": 50.9
+    "Autonomous": 45.1,
+    "Deemed": 49.2,
+    "Government": 53.5,
+    "Private": 49.1
   },
   "score_by_region": {
-    "Central": 59.0,
-    "East": 50.4,
-    "North": 53.9,
-    "Northeast": 41.9,
-    "South": 54.8,
-    "West": 56.1
+    "Central": 49.0,
+    "East": 49.9,
+    "North": 50.3,
+    "Northeast": 48.9,
+    "Other": 48.6,
+    "South": 50.7,
+    "West": 51.1
   },
   "top_10": [
     {
-      "name": "National Law School Bangalore",
-      "score": 89.8,
+      "name": "Government College of Science Jammu",
+      "score": 87.5,
       "tier": "Tier 1"
     },
     {
-      "name": "National Law Institute University Bhopal",
-      "score": 86.4,
+      "name": "New Delhi Government Agriculture College",
+      "score": 85.1,
+      "tier": "Tier 1"
+    },
+    {
+      "name": "Government College of Law Sikar",
+      "score": 83.9,
+      "tier": "Tier 1"
+    },
+    {
+      "name": "Gangtok Government Arts College",
+      "score": 83.4,
+      "tier": "Tier 1"
+    },
+    {
+      "name": "Assam State Applied Sciences College Guwahati",
+      "score": 83.2,
+      "tier": "Tier 1"
+    },
+    {
+      "name": "National Law School Bangalore",
+      "score": 82.8,
       "tier": "Tier 1"
     },
     {
       "name": "IISER Mohali",
-      "score": 84.1,
+      "score": 82.6,
       "tier": "Tier 1"
     },
     {
-      "name": "Jadavpur University",
-      "score": 83.7,
+      "name": "IISER Pune",
+      "score": 81.6,
       "tier": "Tier 1"
     },
     {
-      "name": "BITS Pilani",
+      "name": "Government College of Fashion Design Tezpur",
+      "score": 81.4,
+      "tier": "Tier 1"
+    },
+    {
+      "name": "Government College of Fashion Design Dehradun",
       "score": 81.2,
-      "tier": "Tier 1"
-    },
-    {
-      "name": "IISER Kolkata",
-      "score": 79.3,
-      "tier": "Tier 1"
-    },
-    {
-      "name": "Indian School of Business",
-      "score": 78.3,
-      "tier": "Tier 1"
-    },
-    {
-      "name": "National Law University Delhi",
-      "score": 78.2,
-      "tier": "Tier 1"
-    },
-    {
-      "name": "Manipal Academy of Higher Education",
-      "score": 76.0,
-      "tier": "Tier 1"
-    },
-    {
-      "name": "IIT Bombay IDC School of Design",
-      "score": 75.1,
       "tier": "Tier 1"
     }
   ]
