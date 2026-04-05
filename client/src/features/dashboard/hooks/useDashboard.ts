@@ -22,3 +22,10 @@ export function useDashboardActivity() {
     queryFn: dashboardApi.getActivity,
   });
 }
+
+export function useDashboardAnalytics() {
+  return useQuery({
+    queryKey: queryKeys.dashboard.analytics,
+    queryFn: dashboardApi.getAnalytics,
+  });
+}

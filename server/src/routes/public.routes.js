@@ -592,4 +592,14 @@ router.post(
   })
 );
 
+// College Insights (public analytics)
+router.get(
+  '/college-insights',
+  asyncHandler(async (req, res) => {
+    const analyticsService = require('../services/analytics.service');
+    const insights = await analyticsService.getPublicInsights();
+    ApiResponse.success(res, 'College insights retrieved successfully', insights);
+  })
+);
+
 module.exports = router;

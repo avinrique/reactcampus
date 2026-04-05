@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { PERMISSIONS } from '@/config/permissions';
 import {
   LayoutDashboard,
+  BarChart3,
   Building2,
   GraduationCap,
   FileText,
@@ -39,6 +40,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Dashboard', path: '/admin', icon: <LayoutDashboard className="h-5 w-5" />, permission: PERMISSIONS.DASHBOARD_VIEW },
+  { label: 'Analytics', path: '/admin/analytics', icon: <BarChart3 className="h-5 w-5" />, permission: PERMISSIONS.DASHBOARD_ANALYTICS },
   { label: 'Categories', path: '/admin/categories', icon: <Tag className="h-5 w-5" />, permission: PERMISSIONS.CATEGORY_READ },
   { label: 'Colleges', path: '/admin/colleges', icon: <Building2 className="h-5 w-5" />, anyPermission: [PERMISSIONS.COLLEGE_READ, PERMISSIONS.COLLEGE_READ_ASSIGNED] },
   { label: 'Courses', path: '/admin/courses', icon: <GraduationCap className="h-5 w-5" />, permission: PERMISSIONS.COURSE_READ },

@@ -37,6 +37,7 @@ const AssignmentFormPage = lazy(() => import('@/features/assignments/pages/Assig
 const SiteSettingsPage = lazy(() => import('@/features/site-settings/pages/SiteSettingsPage'));
 const ProfilePage = lazy(() => import('@/features/settings/pages/ProfilePage'));
 const ChangePasswordPage = lazy(() => import('@/features/settings/pages/ChangePasswordPage'));
+const AnalyticsPage = lazy(() => import('@/features/dashboard/pages/AnalyticsPage'));
 
 export const adminRoutes: RouteObject = {
   path: 'admin',
@@ -46,6 +47,7 @@ export const adminRoutes: RouteObject = {
       element: <AdminLayout />,
       children: [
         { index: true, element: <PermissionGuard permission={PERMISSIONS.DASHBOARD_VIEW} fallback={<AccessDenied />}><DashboardPage /></PermissionGuard> },
+        { path: 'analytics', element: <PermissionGuard permission={PERMISSIONS.DASHBOARD_ANALYTICS} fallback={<AccessDenied />}><AnalyticsPage /></PermissionGuard> },
         { path: 'users', element: <PermissionGuard permission={PERMISSIONS.USER_READ} fallback={<AccessDenied />}><UserListPage /></PermissionGuard> },
         { path: 'users/new', element: <PermissionGuard permission={PERMISSIONS.USER_CREATE} fallback={<AccessDenied />}><UserFormPage /></PermissionGuard> },
         { path: 'users/:id/edit', element: <PermissionGuard permission={PERMISSIONS.USER_UPDATE} fallback={<AccessDenied />}><UserFormPage /></PermissionGuard> },

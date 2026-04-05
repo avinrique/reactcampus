@@ -9,6 +9,7 @@ const seedColleges = require('./colleges.seed');
 const seedContentSections = require('./contentSections.seed');
 const seedPages = require('./pages.seed');
 const seedSiteSettings = require('./siteSettings.seed');
+const seedCollegeScores = require('./collegeScores.seed');
 
 const run = async () => {
   await connectDB();
@@ -20,6 +21,7 @@ const run = async () => {
   await seedContentSections();
   await seedPages();
   await seedSiteSettings();
+  await seedCollegeScores();
   logger.info('All seeds completed');
   process.exit(0);
 };

@@ -11,6 +11,7 @@ import { usePublicColleges } from '@/features/public-colleges/hooks/usePublicCol
 import { usePublicCourses } from '@/features/public-courses/hooks/usePublicCourses';
 import { usePublicExams } from '@/features/public-exams/hooks/usePublicExams';
 import { usePublicSiteSettings } from '../hooks/useSiteSettings';
+import { CollegeInsightsSection } from '../components/CollegeInsightsSection';
 import { PageFormOverlay } from '@/features/public-forms/components/PageFormOverlay';
 import { Spinner } from '@/components/ui/Spinner';
 import type { LucideIcon } from 'lucide-react';
@@ -536,6 +537,9 @@ export default function HomePage() {
           </div>
         </section>
       )}
+
+      {/* College Insights — Data Analytics Section */}
+      <CollegeInsightsSection />
 
       {/* Why Choose Us */}
       {settings?.sectionVisibility?.whyChooseUs !== false && (

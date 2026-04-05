@@ -90,6 +90,7 @@ export const queryKeys = {
     stats: ['dashboard', 'stats'] as const,
     pipeline: ['dashboard', 'pipeline'] as const,
     activity: ['dashboard', 'activity'] as const,
+    analytics: ['dashboard', 'analytics'] as const,
   },
   public: {
     colleges: {
@@ -125,5 +126,6 @@ export const queryKeys = {
     siteSettings: {
       detail: ['public', 'site-settings'] as const,
     },
+    insights: ['public', 'college-insights'] as const,
   },
 };
