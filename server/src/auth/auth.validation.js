@@ -18,7 +18,7 @@ const login = {
 
 const refreshToken = {
   body: Joi.object({
-    refreshToken: Joi.string().required(),
+    refreshToken: Joi.string().optional(), // Now optional — prefer httpOnly cookie
   }),
 };
 

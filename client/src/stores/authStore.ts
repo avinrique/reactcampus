@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { User } from '@/types/user';
+import { setAccessToken } from '@/lib/axios';
 
 interface AuthState {
   user: User | null;
@@ -25,8 +26,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   setLoading: (loading) => set({ isLoading: loading }),
 
   logout: () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    setAccessToken(null);
     set({ user: null, permissions: [], isAuthenticated: false, isLoading: false });
   },
 

@@ -36,7 +36,8 @@ export const authApi = {
     return res.data;
   },
 
-  logout: async (refreshToken: string) => {
-    await api.post('/auth/logout', { refreshToken });
+  logout: async () => {
+    // Cookie is sent automatically — no need to pass refreshToken in body
+    await api.post('/auth/logout');
   },
 };

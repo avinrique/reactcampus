@@ -6,6 +6,7 @@ const Review = require('../models/Review.model');
 const AuditLog = require('../models/AuditLog.model');
 const ApiError = require('../utils/ApiError');
 const { paginate } = require('../utils/pagination');
+const { stripHtmlDeep } = require('../utils/sanitize');
 
 /* ------------------------------------------------------------------ */
 /*  Field-level validation helpers                                     */
@@ -120,6 +121,12 @@ const _validateField = (field, value) => {
  * Submit a form: validate, save submission, and execute post-submit actions.
  */
 const submitForm = async (formId, { data, pageContext, submittedBy, ip, userAgent }) => {
+  // 0. Validate data exists and sanitize to prevent stored XSS
+  if (!data || typeof data !== 'object') {
+    throw new ApiError(400, 'Request body must include a "data" object with form field values');
+  }
+  data = stripHtmlDeep(data);
+
   // 1. Load form and verify it is published
   const form = await DynamicForm.findById(formId);
   if (!form) {

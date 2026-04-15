@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { authApi } from '../services/authApi';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from '@/hooks/useToast';
+import { setAccessToken } from '@/lib/axios';
 import type { LoginRequest } from '@/types/auth';
 
 export function useLogin() {
@@ -13,8 +14,7 @@ export function useLogin() {
   return useMutation({
     mutationFn: (data: LoginRequest) => authApi.login(data),
     onSuccess: async (data) => {
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
+      setAccessToken(data.accessToken);
       const meData = await authApi.me();
       setAuth(meData.user, meData.permissions);
       toast.success('Login successful');

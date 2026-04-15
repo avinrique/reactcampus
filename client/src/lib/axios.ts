@@ -4,7 +4,17 @@ import type { RefreshResponse } from '@/types/auth';
 const api = axios.create({
   baseURL: '/api/v1',
   headers: { 'Content-Type': 'application/json' },
+  withCredentials: true, // send httpOnly cookies on every request
 });
+
+// In-memory token — never touches localStorage
+let accessToken: string | null = null;
+
+export const setAccessToken = (token: string | null) => {
+  accessToken = token;
+};
+
+export const getAccessToken = () => accessToken;
 
 let isRefreshing = false;
 let failedQueue: Array<{
@@ -24,9 +34,8 @@ const processQueue = (error: unknown, token: string | null = null) => {
 };
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
   }
   return config;
 });
@@ -49,24 +58,21 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       isRefreshing = true;
 
-      const refreshToken = localStorage.getItem('refreshToken');
-      if (!refreshToken) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        window.location.href = '/login';
+      if (!accessToken) {
+        // No token was set — user is not logged in, don't attempt refresh
         return Promise.reject(error);
       }
 
       try {
-        const { data } = await axios.post<{ data: RefreshResponse }>('/api/v1/auth/refresh', {
-          refreshToken,
-        });
+        // Cookie is sent automatically via withCredentials
+        const { data } = await axios.post<{ data: RefreshResponse }>(
+          '/api/v1/auth/refresh',
+          {},
+          { withCredentials: true }
+        );
 
         const newAccessToken = data.data.accessToken;
-        const newRefreshToken = data.data.refreshToken;
-
-        localStorage.setItem('accessToken', newAccessToken);
-        localStorage.setItem('refreshToken', newRefreshToken);
+        setAccessToken(newAccessToken);
 
         api.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
@@ -75,8 +81,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        setAccessToken(null);
         window.location.href = '/login';
         return Promise.reject(refreshError);
       } finally {

@@ -5,25 +5,29 @@ import { queryClient } from '@/lib/queryClient';
 import { router } from '@/router';
 import { useAuthStore } from '@/stores/authStore';
 import { authApi } from '@/features/auth/services/authApi';
+import { setAccessToken } from '@/lib/axios';
 import { ToastContainer } from '@/components/ui/Toast';
 import { Spinner } from '@/components/ui/Spinner';
+import axios from 'axios';
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   const { setAuth, setLoading } = useAuthStore();
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
-    authApi
-      .me()
-      .then((data) => setAuth(data.user, data.permissions))
+    // Try to restore session via refresh token cookie
+    axios
+      .post<{ data: { accessToken: string } }>(
+        '/api/v1/auth/refresh',
+        {},
+        { withCredentials: true }
+      )
+      .then(({ data }) => {
+        setAccessToken(data.data.accessToken);
+        return authApi.me();
+      })
+      .then((meData) => setAuth(meData.user, meData.permissions))
       .catch(() => {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        setAccessToken(null);
         setLoading(false);
       });
   }, [setAuth, setLoading]);

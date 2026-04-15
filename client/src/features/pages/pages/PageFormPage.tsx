@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { usePage, useCreatePage, useUpdatePage } from '../hooks/usePages';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -8,13 +8,24 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
 import { Card } from '@/components/ui/Card';
 import { LoadingOverlay } from '@/components/ui/LoadingOverlay';
-import { Plus, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
+import { RichTextEditor } from '@/components/editors/RichTextEditor';
+import { FaqEditor } from '@/components/editors/FaqEditor';
+import { TableEditor } from '@/components/editors/TableEditor';
+import { ListEditor } from '@/components/editors/ListEditor';
+import { Plus, Trash2, ChevronUp, ChevronDown, FileText, HelpCircle, Table, List } from 'lucide-react';
 import type { CreatePageRequest, PageContentBlock, PageSidebarGroup } from '@/types/page';
+
+interface BlockFormData {
+  title: string;
+  contentType: 'richtext' | 'table' | 'faq' | 'list';
+  content: any;
+  order: number;
+}
 
 interface PageFormData {
   title: string;
   description: string;
-  contentBlocks: PageContentBlock[];
+  contentBlocks: BlockFormData[];
   collegeFilter: {
     enabled: boolean;
     filterBy: string;
@@ -37,6 +48,13 @@ const CONTENT_TYPE_OPTIONS = [
   { label: 'List', value: 'list' },
 ];
 
+const CONTENT_TYPE_ICONS: Record<string, typeof FileText> = {
+  richtext: FileText,
+  table: Table,
+  faq: HelpCircle,
+  list: List,
+};
+
 const FILTER_BY_OPTIONS = [
   { label: 'All', value: 'all' },
   { label: 'Course', value: 'course' },
@@ -45,6 +63,36 @@ const FILTER_BY_OPTIONS = [
   { label: 'State', value: 'state' },
   { label: 'City', value: 'city' },
 ];
+
+function getDefaultContent(type: string) {
+  switch (type) {
+    case 'richtext': return '';
+    case 'table': return { headers: ['Column 1', 'Column 2'], rows: [['', '']] };
+    case 'faq': return [];
+    case 'list': return [];
+    default: return '';
+  }
+}
+
+function normalizeBlockContent(block: any): BlockFormData {
+  const ct = block.contentType || 'richtext';
+  let content = block.content;
+
+  if (ct === 'faq' && !Array.isArray(content)) {
+    content = content?.items || [];
+  }
+  if (ct === 'list' && !Array.isArray(content)) {
+    content = content?.items || [];
+  }
+  if (ct === 'table' && (!content || !content.headers)) {
+    content = { headers: ['Column 1'], rows: [['']] };
+  }
+  if (ct === 'richtext' && typeof content !== 'string') {
+    content = content || '';
+  }
+
+  return { title: block.title || '', contentType: ct, content, order: block.order || 0 };
+}
 
 export default function PageFormPage() {
   const { id } = useParams();
@@ -57,7 +105,7 @@ export default function PageFormPage() {
   const createPage = useCreatePage();
   const updatePage = useUpdatePage();
 
-  const { register, handleSubmit, reset, control, watch } = useForm<PageFormData>({
+  const { register, handleSubmit, reset, control, watch, setValue } = useForm<PageFormData>({
     defaultValues: {
       title: '',
       description: '',
@@ -91,7 +139,7 @@ export default function PageFormPage() {
       reset({
         title: page.title,
         description: page.description || '',
-        contentBlocks: page.contentBlocks || [],
+        contentBlocks: (page.contentBlocks || []).map(normalizeBlockContent),
         collegeFilter: {
           enabled: page.collegeFilter?.enabled || false,
           filterBy: page.collegeFilter?.filterBy || 'all',
@@ -113,7 +161,17 @@ export default function PageFormPage() {
     const payload: CreatePageRequest = {
       title: data.title,
       description: data.description || '',
-      contentBlocks: data.contentBlocks.map((b, i) => ({ ...b, order: i })),
+      contentBlocks: data.contentBlocks.map((b, i) => {
+        let content = b.content;
+        // Wrap arrays back into object format for faq/list if needed
+        if (b.contentType === 'faq' && Array.isArray(content)) {
+          content = content;
+        }
+        if (b.contentType === 'list' && Array.isArray(content)) {
+          content = content;
+        }
+        return { ...b, content, order: i };
+      }),
       collegeFilter: {
         enabled: data.collegeFilter.enabled,
         filterBy: data.collegeFilter.filterBy as any,
@@ -148,7 +206,22 @@ export default function PageFormPage() {
           <div className="p-6 space-y-4">
             <h2 className="text-lg font-semibold">Basic Information</h2>
             <Input label="Title" {...register('title', { required: true })} disabled={isView} />
-            <Textarea label="Description (HTML supported)" {...register('description')} disabled={isView} />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
+              <Controller
+                name="description"
+                control={control}
+                render={({ field }) => (
+                  <RichTextEditor
+                    value={field.value}
+                    onChange={field.onChange}
+                    disabled={isView}
+                    placeholder="Write a description for this page..."
+                    minHeight="120px"
+                  />
+                )}
+              />
+            </div>
           </div>
         </Card>
 
@@ -171,42 +244,105 @@ export default function PageFormPage() {
               )}
             </div>
 
-            {blockFields.map((field, index) => (
-              <div key={field.id} className="border rounded-lg p-4 space-y-3 bg-gray-50">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-600">Block {index + 1}</span>
-                  {!isView && (
-                    <div className="flex gap-1">
-                      {index > 0 && (
-                        <Button type="button" variant="ghost" size="sm" onClick={() => swapBlocks(index, index - 1)}>
-                          <ChevronUp className="h-4 w-4" />
-                        </Button>
-                      )}
-                      {index < blockFields.length - 1 && (
-                        <Button type="button" variant="ghost" size="sm" onClick={() => swapBlocks(index, index + 1)}>
-                          <ChevronDown className="h-4 w-4" />
-                        </Button>
-                      )}
-                      <Button type="button" variant="ghost" size="sm" onClick={() => removeBlock(index)}>
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
+            {blockFields.map((field, index) => {
+              const contentType = watch(`contentBlocks.${index}.contentType`);
+              const Icon = CONTENT_TYPE_ICONS[contentType] || FileText;
+
+              return (
+                <div key={field.id} className="border rounded-lg overflow-hidden bg-gray-50">
+                  {/* Block Header */}
+                  <div className="flex items-center justify-between px-4 py-3 bg-white border-b">
+                    <div className="flex items-center gap-2">
+                      <Icon className="h-4 w-4 text-blue-500" />
+                      <span className="text-sm font-medium text-gray-600">Block {index + 1}</span>
+                      <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full capitalize">{contentType}</span>
                     </div>
-                  )}
+                    {!isView && (
+                      <div className="flex gap-1">
+                        {index > 0 && (
+                          <Button type="button" variant="ghost" size="sm" onClick={() => swapBlocks(index, index - 1)}>
+                            <ChevronUp className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {index < blockFields.length - 1 && (
+                          <Button type="button" variant="ghost" size="sm" onClick={() => swapBlocks(index, index + 1)}>
+                            <ChevronDown className="h-4 w-4" />
+                          </Button>
+                        )}
+                        <Button type="button" variant="ghost" size="sm" onClick={() => removeBlock(index)}>
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Block Body */}
+                  <div className="p-4 space-y-3">
+                    <Input label="Section Title" {...register(`contentBlocks.${index}.title`)} disabled={isView} />
+
+                    {!isView && (
+                      <Select
+                        label="Content Type"
+                        options={CONTENT_TYPE_OPTIONS}
+                        {...register(`contentBlocks.${index}.contentType`, {
+                          onChange: (e) => {
+                            setValue(`contentBlocks.${index}.content`, getDefaultContent(e.target.value));
+                          },
+                        })}
+                      />
+                    )}
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Content</label>
+                      <Controller
+                        name={`contentBlocks.${index}.content`}
+                        control={control}
+                        render={({ field: contentField }) => {
+                          if (contentType === 'richtext') {
+                            return (
+                              <RichTextEditor
+                                value={contentField.value || ''}
+                                onChange={contentField.onChange}
+                                disabled={isView}
+                                placeholder="Write your content here..."
+                              />
+                            );
+                          }
+                          if (contentType === 'faq') {
+                            return (
+                              <FaqEditor
+                                value={Array.isArray(contentField.value) ? contentField.value : []}
+                                onChange={contentField.onChange}
+                                disabled={isView}
+                              />
+                            );
+                          }
+                          if (contentType === 'table') {
+                            return (
+                              <TableEditor
+                                value={contentField.value || { headers: ['Column 1'], rows: [['']] }}
+                                onChange={contentField.onChange}
+                                disabled={isView}
+                              />
+                            );
+                          }
+                          if (contentType === 'list') {
+                            return (
+                              <ListEditor
+                                value={Array.isArray(contentField.value) ? contentField.value : []}
+                                onChange={contentField.onChange}
+                                disabled={isView}
+                              />
+                            );
+                          }
+                          return <Textarea {...contentField} disabled={isView} />;
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <Input label="Section Title" {...register(`contentBlocks.${index}.title`)} disabled={isView} />
-                <Select
-                  label="Content Type"
-                  options={CONTENT_TYPE_OPTIONS}
-                  {...register(`contentBlocks.${index}.contentType`)}
-                  disabled={isView}
-                />
-                <Textarea
-                  label="Content (HTML for richtext, JSON for table/faq/list)"
-                  {...register(`contentBlocks.${index}.content`)}
-                  disabled={isView}
-                />
-              </div>
-            ))}
+              );
+            })}
 
             {blockFields.length === 0 && (
               <p className="text-gray-400 text-sm text-center py-4">No content blocks yet. Click "Add Block" to start.</p>

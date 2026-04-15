@@ -15,7 +15,6 @@ export interface RegisterRequest {
 export interface AuthResponse {
   user: User;
   accessToken: string;
-  refreshToken: string;
 }
 
 export interface MeResponse {
@@ -25,7 +24,6 @@ export interface MeResponse {
 
 export interface RefreshResponse {
   accessToken: string;
-  refreshToken: string;
 }
 
 export interface ChangePasswordRequest {

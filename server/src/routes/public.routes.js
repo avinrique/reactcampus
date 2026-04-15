@@ -3,6 +3,7 @@ const router = require('express').Router();
 const asyncHandler = require('../middlewares/asyncHandler');
 const validate = require('../middlewares/validateRequest');
 const { optionalAuth } = require('../middlewares/authenticate');
+const { stripHtml } = require('../utils/sanitize');
 const College = require('../models/College.model');
 const Course = require('../models/Course.model');
 const Exam = require('../models/Exam.model');
@@ -579,10 +580,10 @@ router.post(
     const { name, email, phone, message } = req.body;
 
     await Lead.create({
-      name,
-      email,
-      phone: phone || '',
-      data: { message },
+      name: stripHtml(name),
+      email: stripHtml(email),
+      phone: stripHtml(phone || ''),
+      data: { message: stripHtml(message) },
       source: { channel: 'contact_form' },
       status: 'new',
       statusHistory: [{ to: 'new', changedAt: new Date() }],

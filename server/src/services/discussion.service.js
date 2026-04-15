@@ -2,11 +2,17 @@ const Discussion = require('../models/Discussion.model');
 const AuditLog = require('../models/AuditLog.model');
 const ApiError = require('../utils/ApiError');
 const { paginate } = require('../utils/pagination');
+const { stripHtml } = require('../utils/sanitize');
 
 /**
  * Submit a new discussion comment.
  */
 const submitDiscussion = async (data, userId = null) => {
+  // Sanitize user-generated text fields to prevent stored XSS
+  if (data.authorName) data.authorName = stripHtml(data.authorName);
+  if (data.authorEmail) data.authorEmail = stripHtml(data.authorEmail);
+  if (data.content) data.content = stripHtml(data.content);
+
   const discussion = await Discussion.create(data);
 
   await AuditLog.create({

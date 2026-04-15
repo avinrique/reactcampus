@@ -18,12 +18,9 @@ export function TopBar() {
   }, []);
 
   const handleLogout = () => {
-    const refreshToken = localStorage.getItem('refreshToken');
-    if (refreshToken) {
-      import('@/features/auth/services/authApi').then(({ authApi }) =>
-        authApi.logout(refreshToken).catch(() => {})
-      );
-    }
+    import('@/features/auth/services/authApi').then(({ authApi }) =>
+      authApi.logout().catch(() => {})
+    );
     logout();
     navigate('/login');
   };
