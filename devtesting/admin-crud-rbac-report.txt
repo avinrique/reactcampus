@@ -1,0 +1,277 @@
+═══════════════════════════════════════════════════
+  ReactCampus Admin CRUD + RBAC Test Report
+  Generated: 2026-04-15T00:20:01.055Z
+  Run ID: mnzb004c
+═══════════════════════════════════════════════════
+
+Suite                                    Passed Failed  Total
+────────────────────────────────────────────────────────────
+PASS Categories                               6      0      6
+PASS Courses                                  9      0      9
+PASS Exams                                    8      0      8
+PASS Colleges                                18      0     18
+PASS ContentSections                          9      0      9
+PASS Forms                                   14      0     14
+PASS Submissions                              1      0      1
+PASS Leads                                   16      0     16
+PASS Reviews                                  7      0      7
+FAIL Discussions                              3      1      4
+PASS Pages                                    7      0      7
+PASS SEO                                      6      0      6
+PASS SiteSettings                             7      0      7
+PASS Dashboard                                7      0      7
+PASS Assignments                              6      0      6
+FAIL RBAC                                    52      2     54
+PASS Auth                                    10      0     10
+FAIL Edge                                     7      1      8
+PASS Cleanup                                 24      0     24
+────────────────────────────────────────────────────────────
+TOTAL                                       217      4    221
+
+DETAILED RESULTS
+────────────────────────────────────────────────────────────
+
+── Categories ──
+  ✓ Create category
+  ✓ Read category by ID
+  ✓ Update category
+  ✓ Update persisted
+  ✓ List categories
+  ✓ Public categories accessible
+── Courses ──
+  ✓ Create course
+  ✓ Read course by ID
+  ✓ Course has auto-slug
+  ✓ Course has specializations
+  ✓ Update course
+  ✓ Update persisted
+  ✓ Create second course
+  ✓ List courses
+  ✓ Public courses accessible
+── Exams ──
+  ✓ Create exam
+  ✓ Read exam by ID
+  ✓ Exam has auto-slug
+  ✓ Exam has important dates
+  ✓ Exam has pattern
+  ✓ Update exam
+  ✓ List exams
+  ✓ Public exams accessible
+── Colleges ──
+  ✓ Create college
+  ✓ Read college by ID
+  ✓ College has auto-slug
+  ✓ College status is draft
+  ✓ College has facilities
+  ✓ College has fees
+  ✓ Update college
+  ✓ Update persisted (ranking)
+  ✓ Update persisted (accreditation)
+  ✓ Draft college NOT visible publicly
+  ✓ Publish college
+  ✓ Published college visible publicly
+  ✓ Associate courses to college
+  ✓ College has courses populated
+  ✓ Associate exams to college
+  ✓ Archive college
+  ✓ Archived college NOT visible publicly
+  ✓ Re-publish college
+── ContentSections ──
+  ✓ Create richtext section
+  ✓ Create FAQ section
+  ✓ Create table section
+  ✓ List sections for college
+  ✓ Update section
+  ✓ Public: sections visible
+  ✓ Hide section
+  ✓ Hidden section not in public
+  ✓ Create section for course
+── Forms ──
+  ✓ Create lead capture form
+  ✓ Read form by ID
+  ✓ Form has 5 fields
+  ✓ Form status is draft
+  ✓ Update form
+  ✓ Publish form
+  ✓ Public: form schema accessible
+  ✓ Public: form has fields
+  ✓ Public: form has successMessage
+  ✓ Submit form publicly
+  ✓ Form validation catches errors
+  ✓ BUG: unwrapped data returns 500 (should be 400)
+  ✓ Second submission
+── Submissions ──
+  ✓ List submissions
+── Leads ──
+  ✓ Leads auto-created from form
+  ✓ Lead has name from mapping
+  ✓ Lead has email from mapping
+  ✓ Lead status is new
+  ✓ Read lead by ID
+  ✓ Update lead priority
+  ✓ Change lead status
+  ✓ Status updated to contacted
+  ✓ Status history recorded
+  ✓ Add note to lead
+  ✓ Note recorded
+  ✓ Lead stats endpoint
+  ✓ Stats has byStatus
+  ✓ Export CSV
+  ✓ Filter by status
+  ✓ Filter by priority
+── Forms ──
+  ✓ Assign form to pages
+── Reviews ──
+  ✓ Submit review publicly
+  ✓ Review is pending
+  ✓ Pending review NOT visible publicly
+  ✓ Moderate: approve review
+  ✓ Approved review visible publicly
+  ✓ Moderate: reject review
+  ✓ Filter reviews by status
+── Discussions ──
+  ✓ Submit discussion publicly
+  ✓ Discussion is pending
+  ✓ Moderate: approve discussion
+  ✗ Approved discussion visible publicly
+── Pages ──
+  ✓ Create page
+  ✓ Read page by ID
+  ✓ Page has content blocks
+  ✓ Page status is draft
+  ✓ Publish page
+  ✓ Published page visible publicly
+  ✓ Update page
+── SEO ──
+  ✓ Create SEO entry
+  ✓ Read SEO by ID
+  ✓ SEO has meta keywords
+  ✓ Update SEO
+  ✓ Public SEO accessible
+  ✓ List SEO entries
+── SiteSettings ──
+  ✓ Get settings
+  ✓ Has hero
+  ✓ Has footer
+  ✓ Has contact
+  ✓ Update hero settings
+  ✓ Hero title updated
+  ✓ Public site settings accessible
+── Dashboard ──
+  ✓ Get stats
+  ✓ Has totalColleges
+  ✓ Has totalLeads
+  ✓ Has totalCourses
+  ✓ Get pipeline
+  ✓ Get activity
+  ✓ Activity has entries
+── Assignments ──
+  ✓ Create editor user
+  ✓ Create assignment
+  ✓ Read assignment
+  ✓ Assignment has actions
+  ✓ Update assignment
+  ✓ List assignments
+── RBAC ──
+  ✓ List permissions
+  ✓ Create College Viewer role
+  ✓ Assign 1 permission to viewer role
+  ✓ Create Lead Manager role
+  ✓ Assign lead permissions
+  ✓ Create Content Editor role
+  ✓ Assign editor permissions
+  ✓ Create viewer user
+  ✓ Assign viewer role
+  ✓ Create lead manager user
+  ✓ Assign lead mgr role
+  ✓ Create editor user
+  ✓ Assign editor role
+  ✓ Viewer login
+  ✓ Viewer: ALLOW GET /colleges
+  ✓ Viewer: DENY POST /colleges
+  ✓ Viewer: DENY PATCH /colleges
+  ✓ Viewer: DENY DELETE /colleges
+  ✓ Viewer: DENY GET /leads
+  ✓ Viewer: DENY GET /users
+  ✓ Viewer: DENY GET /forms
+  ✓ Viewer: DENY GET /dashboard
+  ✓ Viewer: DENY GET /site-settings
+  ✓ Lead Mgr login
+  ✓ LeadMgr: ALLOW GET /leads
+  ✓ LeadMgr: ALLOW GET /leads/:id
+  ✓ LeadMgr: ALLOW PATCH /leads/:id
+  ✓ LeadMgr: ALLOW change status
+  ✓ LeadMgr: ALLOW add notes
+  ✓ LeadMgr: DENY GET /colleges
+  ✓ LeadMgr: DENY GET /users
+  ✓ LeadMgr: DENY DELETE /leads
+  ✓ LeadMgr: DENY GET /dashboard
+  ✓ Editor login
+  ✓ Editor: ALLOW GET /colleges
+  ✓ Editor: ALLOW PATCH /colleges
+  ✓ Editor: DENY POST /colleges (no create)
+  ✓ Editor: DENY DELETE /colleges
+  ✓ Editor: ALLOW POST /content-sections
+  ✗ Editor: ALLOW GET /content-sections
+  ✗ Editor: ALLOW POST /pages
+  ✓ Editor: DENY GET /leads
+  ✓ Editor: DENY GET /forms
+  ✓ Editor: DENY GET /reviews
+  ✓ No token: DENY GET /colleges
+  ✓ No token: DENY GET /leads
+  ✓ No token: DENY POST /colleges
+  ✓ No token: DENY GET /dashboard
+  ✓ Invalid token rejected
+  ✓ Deactivate viewer user
+  ✓ Deactivated user login rejected
+  ✓ Reactivate user
+  ✓ Reactivated user can login
+  ✓ Cannot delete system role
+── Auth ──
+  ✓ Register new user
+  ✓ GET /auth/me
+  ✓ Me returns email
+  ✓ Update profile
+  ✓ Change password
+  ✓ Login with new password
+  ✓ Refresh token
+  ✓ Refresh returns new tokens
+  ✓ Logout
+  ✓ Duplicate email rejected
+── Edge ──
+  ✓ Non-existent ObjectId → 404
+  ✓ Invalid ObjectId handled
+  ✓ 404 on unknown route
+  ✓ Validation: empty college rejected
+  ✓ Validation: empty course rejected
+  ✓ Wrong password rejected
+  ✓ Non-existent email rejected
+  ✗ Bulk lead status change — status=400
+── Cleanup ──
+  ✓ Delete editorSection
+  ✓ Delete seo
+  ✓ Delete section1
+  ✓ Delete section2
+  ✓ Delete section3
+  ✓ Delete courseSection
+  ✓ Delete discussion
+  ✓ Delete review
+  ✓ Delete review2
+  ✓ Delete assignment
+  ✓ Delete form
+  ✓ Delete page
+  ✓ Delete exam
+  ✓ Delete course
+  ✓ Delete course2
+  ✓ Delete college
+  ✓ Delete category
+  ✓ Delete user viewerUser
+  ✓ Delete user leadMgrUser
+  ✓ Delete user editorUser
+  ✓ Delete user editorUser2
+  ✓ Delete role viewerRole
+  ✓ Delete role leadMgrRole
+  ✓ Delete role editorRole
+
+Result: 217/221 passed, 4 failed
+Status: SOME TESTS FAILED
