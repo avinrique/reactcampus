@@ -5,6 +5,7 @@ router.use('/users', require('./user.routes'));
 router.use('/roles', require('./role.routes'));
 router.use('/permissions', require('./permission.routes'));
 router.use('/colleges', require('./college.routes'));
+router.use('/cities', require('./city.routes'));
 router.use('/categories', require('./category.routes'));
 router.use('/courses', require('./course.routes'));
 router.use('/exams', require('./exam.routes'));

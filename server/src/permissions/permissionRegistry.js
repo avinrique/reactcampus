@@ -26,6 +26,12 @@ const PERMISSIONS = [
   { key: 'college:manage-courses', resource: 'college', action: 'manage-courses', description: 'Add/remove courses from colleges', group: 'College Management' },
   { key: 'college:manage-exams', resource: 'college', action: 'manage-exams', description: 'Add/remove exams from colleges', group: 'College Management' },
 
+  // City management
+  { key: 'city:create', resource: 'city', action: 'create', description: 'Create cities', group: 'City Management' },
+  { key: 'city:read', resource: 'city', action: 'read', description: 'View cities', group: 'City Management' },
+  { key: 'city:update', resource: 'city', action: 'update', description: 'Update cities', group: 'City Management' },
+  { key: 'city:delete', resource: 'city', action: 'delete', description: 'Delete cities', group: 'City Management' },
+
   // Category management
   { key: 'category:create', resource: 'category', action: 'create', description: 'Create categories', group: 'Category Management' },
   { key: 'category:read', resource: 'category', action: 'read', description: 'View categories', group: 'Category Management' },

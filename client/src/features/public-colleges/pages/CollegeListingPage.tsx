@@ -9,6 +9,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { Pagination } from '@/components/ui/Pagination';
 import { COLLEGE_TYPES } from '@/config/constants';
 import { usePublicCategories } from '@/features/categories/hooks/useCategories';
+import { usePublicCities } from '../hooks/usePublicCities';
 
 export default function CollegeListingPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -31,6 +32,9 @@ export default function CollegeListingPage() {
 
   const { data, isLoading } = usePublicColleges(params);
   const { data: categories = [] } = usePublicCategories();
+  const { data: cities = [] } = usePublicCities();
+
+  const uniqueStates = [...new Set(cities?.map((c) => c.state) || [])].sort();
 
   const updateParam = (key: string, value: string) => {
     const next = new URLSearchParams(searchParams);
@@ -143,23 +147,29 @@ export default function CollegeListingPage() {
                 </div>
                 <div className="flex-1 min-w-[150px]">
                   <label className="block text-xs font-medium text-gray-500 mb-1.5">City</label>
-                  <input
-                    type="text"
+                  <select
                     value={city}
                     onChange={(e) => updateParam('city', e.target.value)}
-                    placeholder="e.g. Bangalore"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent"
-                  />
+                  >
+                    <option value="">All Cities</option>
+                    {cities?.map((c) => (
+                      <option key={c._id} value={c.name}>{c.name} ({c.collegeCount})</option>
+                    ))}
+                  </select>
                 </div>
                 <div className="flex-1 min-w-[150px]">
                   <label className="block text-xs font-medium text-gray-500 mb-1.5">State</label>
-                  <input
-                    type="text"
+                  <select
                     value={state}
                     onChange={(e) => updateParam('state', e.target.value)}
-                    placeholder="e.g. Karnataka"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent"
-                  />
+                  >
+                    <option value="">All States</option>
+                    {uniqueStates.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
               {hasFilters && (

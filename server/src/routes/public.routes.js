@@ -33,6 +33,32 @@ router.get(
   })
 );
 
+// List active cities
+router.get(
+  '/cities',
+  asyncHandler(async (req, res) => {
+    const City = require('../models/City.model');
+    const { state, featured, search } = req.query;
+    const filter = { isActive: true };
+    if (state) filter.state = { $regex: state, $options: 'i' };
+    if (featured === 'true') filter.featured = true;
+    if (search) filter.$text = { $search: search };
+    const cities = await City.find(filter).sort({ featured: -1, collegeCount: -1, name: 1 });
+    ApiResponse.success(res, 'Cities retrieved successfully', cities);
+  })
+);
+
+// Get city by slug
+router.get(
+  '/cities/:slug',
+  asyncHandler(async (req, res) => {
+    const City = require('../models/City.model');
+    const city = await City.findOne({ slug: req.params.slug, isActive: true });
+    if (!city) throw new ApiError(404, 'City not found');
+    ApiResponse.success(res, 'City retrieved successfully', city);
+  })
+);
+
 // List published colleges
 router.get(
   '/colleges',

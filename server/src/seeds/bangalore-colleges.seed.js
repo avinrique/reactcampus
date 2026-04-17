@@ -1,0 +1,893 @@
+const College = require('../models/College.model');
+const User = require('../models/User.model');
+const logger = require('../config/logger');
+const slugify = require('slugify');
+
+// Try to load City model (may not exist yet during migration)
+let City;
+try {
+  City = require('../models/City.model');
+} catch (e) {
+  // City model not yet created — skip city seeding
+}
+
+// 15+ distinct Unsplash campus/education photos for cover images
+const coverImages = [
+  'https://images.unsplash.com/photo-1562774053-701939374585?w=1200&h=400&fit=crop', // campus aerial
+  'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&h=400&fit=crop', // graduation
+  'https://images.unsplash.com/photo-1607237138185-eedd9c632b0b?w=1200&h=400&fit=crop', // university building
+  'https://images.unsplash.com/photo-1523050854058-8df90110c6f1?w=1200&h=400&fit=crop', // campus walkway
+  'https://images.unsplash.com/photo-1592280771190-3e2e4d571952?w=1200&h=400&fit=crop', // college library
+  'https://images.unsplash.com/photo-1574958269340-fa927503f3dd?w=1200&h=400&fit=crop', // lecture hall
+  'https://images.unsplash.com/photo-1580537659466-0a9bfa916a54?w=1200&h=400&fit=crop', // campus garden
+  'https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=1200&h=400&fit=crop', // students studying
+  'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&h=400&fit=crop', // modern campus
+  'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1200&h=400&fit=crop', // campus interior
+  'https://images.unsplash.com/photo-1564981797816-1043664bf78d?w=1200&h=400&fit=crop', // college corridor
+  'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1200&h=400&fit=crop', // building facade
+  'https://images.unsplash.com/photo-1568792923760-d70635a89fdc?w=1200&h=400&fit=crop', // campus lawn
+  'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?w=1200&h=400&fit=crop', // bangalore skyline
+  'https://images.unsplash.com/photo-1590012314607-cda9d9b699ae?w=1200&h=400&fit=crop', // campus trees
+  'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&h=400&fit=crop', // classroom
+];
+
+const bangaloreColleges = [
+  // 1. BMS Institute of Technology and Management
+  {
+    name: 'BMS Institute of Technology and Management',
+    type: 'private',
+    description: 'A premier private engineering college in Bangalore affiliated to VTU, known for strong academics in engineering and management with excellent placement records.',
+    location: { address: 'Doddaballapur Main Road, Avalahalli, Yelahanka', city: 'Bangalore', state: 'Karnataka', pincode: '560064', coordinates: { type: 'Point', coordinates: [77.5466, 13.1025] } },
+    fees: { min: 150000, max: 700000, currency: 'INR' },
+    established: 2002,
+    website: 'https://www.bmsit.ac.in',
+    accreditation: 'NAAC A / NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium', 'Gymnasium'],
+    logo: 'https://ui-avatars.com/api/?name=BMSIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[0],
+  },
+  // 2. BMS College of Engineering
+  {
+    name: 'BMS College of Engineering',
+    type: 'autonomous',
+    description: 'One of the oldest and most prestigious engineering colleges in Karnataka, established in 1946 by the late Sri. B.M. Sreenivasaiah, with a legacy of academic excellence and innovation.',
+    location: { address: 'Bull Temple Road, Basavanagudi', city: 'Bangalore', state: 'Karnataka', pincode: '560019', coordinates: { type: 'Point', coordinates: [77.5649, 12.9416] } },
+    fees: { min: 150000, max: 800000, currency: 'INR' },
+    established: 1946,
+    website: 'https://www.bmsce.ac.in',
+    accreditation: 'NAAC A+ / NBA',
+    affiliation: 'Visvesvaraya Technological University (Autonomous)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Research Labs', 'Auditorium', 'Gymnasium', 'Innovation Centre', 'Computer Labs'],
+    logo: 'https://ui-avatars.com/api/?name=BMSCE&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[1],
+  },
+  // 3. RV College of Engineering (already exists as rvce-bangalore)
+  {
+    name: 'RVCE Bangalore',
+    type: 'autonomous',
+    description: 'One of the earliest self-financing engineering colleges in India, established by the Rashtreeya Sikshana Samithi Trust. Consistently ranked among the top engineering colleges in Karnataka.',
+    location: { address: 'Mysore Road, RV Vidyanikethan Post', city: 'Bangalore', state: 'Karnataka', pincode: '560059', coordinates: { type: 'Point', coordinates: [77.4988, 12.9236] } },
+    fees: { min: 200000, max: 900000, currency: 'INR' },
+    established: 1963,
+    website: 'https://www.rvce.edu.in',
+    accreditation: 'NAAC A+ / NBA',
+    affiliation: 'Visvesvaraya Technological University (Autonomous)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Research Labs', 'Auditorium', 'Gymnasium', 'Swimming Pool', 'Computer Labs'],
+    logo: 'https://ui-avatars.com/api/?name=RVCE&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[2],
+  },
+  // 4. PES University
+  {
+    name: 'PES University',
+    type: 'deemed',
+    description: 'A top-ranked private university in Bangalore known for its engineering, management, and life sciences programs. Recognized for strong industry partnerships and research output.',
+    location: { address: '100 Feet Ring Road, BSK III Stage', city: 'Bangalore', state: 'Karnataka', pincode: '560085', coordinates: { type: 'Point', coordinates: [77.5355, 12.9343] } },
+    fees: { min: 300000, max: 1500000, currency: 'INR' },
+    established: 1972,
+    website: 'https://www.pes.edu',
+    accreditation: 'NAAC A / NBA',
+    affiliation: 'Private University (UGC Recognized)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Research Labs', 'Auditorium', 'Gymnasium', 'Innovation Centre', 'Computer Labs', 'Incubation Centre'],
+    logo: 'https://ui-avatars.com/api/?name=PESU&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[3],
+  },
+  // 5. MS Ramaiah Institute of Technology
+  {
+    name: 'MS Ramaiah Institute of Technology',
+    type: 'autonomous',
+    description: 'A leading autonomous engineering institute affiliated to VTU, established by the Gokula Education Foundation. Renowned for excellent placements and robust industry connections.',
+    location: { address: 'MSR Nagar, MSRIT Post, Mathikere', city: 'Bangalore', state: 'Karnataka', pincode: '560054', coordinates: { type: 'Point', coordinates: [77.5650, 13.0285] } },
+    fees: { min: 200000, max: 900000, currency: 'INR' },
+    established: 1962,
+    website: 'https://www.msrit.edu',
+    accreditation: 'NAAC A+ / NBA',
+    affiliation: 'Visvesvaraya Technological University (Autonomous)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Research Labs', 'Auditorium', 'Gymnasium', 'Computer Labs', 'Placement Cell'],
+    logo: 'https://ui-avatars.com/api/?name=MSRIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[4],
+  },
+  // 6. Bangalore Institute of Technology
+  {
+    name: 'Bangalore Institute of Technology',
+    type: 'autonomous',
+    description: 'A well-established engineering college in the heart of Bangalore, known for producing skilled engineers since 1979 with strong academic traditions and research focus.',
+    location: { address: 'K.R. Road, V.V. Puram', city: 'Bangalore', state: 'Karnataka', pincode: '560004', coordinates: { type: 'Point', coordinates: [77.5745, 12.9507] } },
+    fees: { min: 100000, max: 600000, currency: 'INR' },
+    established: 1979,
+    website: 'https://www.bit-bangalore.edu.in',
+    accreditation: 'NAAC A / NBA',
+    affiliation: 'Visvesvaraya Technological University (Autonomous)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium', 'Gymnasium'],
+    logo: 'https://ui-avatars.com/api/?name=BIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[5],
+  },
+  // 7. Sir M Visvesvaraya Institute of Technology
+  {
+    name: 'Sir M Visvesvaraya Institute of Technology',
+    type: 'private',
+    description: 'A reputed private engineering college affiliated to VTU, named after the legendary engineer Sir M. Visvesvaraya. Known for quality technical education and placement opportunities.',
+    location: { address: 'Krishnadevaraya Nagar, Hunasamaranahalli', city: 'Bangalore', state: 'Karnataka', pincode: '562157', coordinates: { type: 'Point', coordinates: [77.5980, 13.1146] } },
+    fees: { min: 150000, max: 700000, currency: 'INR' },
+    established: 1986,
+    website: 'https://www.sirmvit.edu',
+    accreditation: 'NAAC A / NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium', 'Gymnasium', 'Placement Cell'],
+    logo: 'https://ui-avatars.com/api/?name=SirMVIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[6],
+  },
+  // 8. Dayananda Sagar College of Engineering
+  {
+    name: 'Dayananda Sagar College of Engineering',
+    type: 'autonomous',
+    description: 'A premier autonomous engineering college under the Dayananda Sagar Institutions umbrella, offering quality education in engineering and technology with strong placement records.',
+    location: { address: 'Shavige Malleshwara Hills, Kumaraswamy Layout', city: 'Bangalore', state: 'Karnataka', pincode: '560078', coordinates: { type: 'Point', coordinates: [77.5621, 12.9114] } },
+    fees: { min: 200000, max: 800000, currency: 'INR' },
+    established: 1979,
+    website: 'https://www.dsce.edu.in',
+    accreditation: 'NAAC A / NBA',
+    affiliation: 'Visvesvaraya Technological University (Autonomous)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Research Labs', 'Auditorium', 'Gymnasium', 'Computer Labs', 'Placement Cell'],
+    logo: 'https://ui-avatars.com/api/?name=DSCE&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[7],
+  },
+  // 9. New Horizon College of Engineering
+  {
+    name: 'New Horizon College of Engineering',
+    type: 'autonomous',
+    description: 'A leading autonomous engineering college in Bangalore established in 2001, known for its vibrant campus life, modern infrastructure, and excellent placement opportunities.',
+    location: { address: 'Outer Ring Road, Marathahalli, Bellandur', city: 'Bangalore', state: 'Karnataka', pincode: '560103', coordinates: { type: 'Point', coordinates: [77.6678, 12.9350] } },
+    fees: { min: 200000, max: 800000, currency: 'INR' },
+    established: 2001,
+    website: 'https://www.newhorizonindia.edu',
+    accreditation: 'NAAC A / NBA',
+    affiliation: 'Visvesvaraya Technological University (Autonomous)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium', 'Gymnasium', 'Innovation Lab'],
+    logo: 'https://ui-avatars.com/api/?name=NHCE&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[8],
+  },
+  // 10. Nitte Meenakshi Institute of Technology
+  {
+    name: 'Nitte Meenakshi Institute of Technology',
+    type: 'autonomous',
+    description: 'An autonomous engineering college under Nitte Education Trust affiliated to VTU, recognized for its academic rigor, research initiatives, and consistent placement track record.',
+    location: { address: 'Govindapura, Yelahanka', city: 'Bangalore', state: 'Karnataka', pincode: '560064', coordinates: { type: 'Point', coordinates: [77.5802, 13.0920] } },
+    fees: { min: 200000, max: 800000, currency: 'INR' },
+    established: 2001,
+    website: 'https://www.nmit.ac.in',
+    accreditation: 'NAAC A / NBA',
+    affiliation: 'Visvesvaraya Technological University (Autonomous)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium', 'Gymnasium', 'Research Centre'],
+    logo: 'https://ui-avatars.com/api/?name=NMIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[9],
+  },
+  // 11. CMR Institute of Technology
+  {
+    name: 'CMR Institute of Technology',
+    type: 'private',
+    description: 'A well-known private engineering college in Bangalore affiliated to VTU, part of the CMR Group of Institutions known for quality education and holistic development.',
+    location: { address: 'No. 132, AECS Layout, ITPL Main Road, Kundalahalli', city: 'Bangalore', state: 'Karnataka', pincode: '560037', coordinates: { type: 'Point', coordinates: [77.7160, 12.9910] } },
+    fees: { min: 150000, max: 700000, currency: 'INR' },
+    established: 2000,
+    website: 'https://www.cmrit.ac.in',
+    accreditation: 'NAAC A / NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium', 'Gymnasium'],
+    logo: 'https://ui-avatars.com/api/?name=CMRIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[10],
+  },
+  // 12. Reva University
+  {
+    name: 'Reva University',
+    type: 'private',
+    description: 'A multi-disciplinary private university in Bangalore established by the Rukmini Educational Charitable Trust, offering programs across engineering, arts, science, commerce, and management.',
+    location: { address: 'Rukmini Knowledge Park, Kattigenahalli, Yelahanka', city: 'Bangalore', state: 'Karnataka', pincode: '560064', coordinates: { type: 'Point', coordinates: [77.5668, 13.1169] } },
+    fees: { min: 150000, max: 800000, currency: 'INR' },
+    established: 2012,
+    website: 'https://www.rfreva.edu.in',
+    accreditation: 'NAAC A / NBA',
+    affiliation: 'Private University (UGC Recognized)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Research Labs', 'Auditorium', 'Gymnasium', 'Swimming Pool', 'Computer Labs'],
+    logo: 'https://ui-avatars.com/api/?name=REVA&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[11],
+  },
+  // 13. JSS Academy of Technical Education
+  {
+    name: 'JSS Academy of Technical Education Bangalore',
+    type: 'private',
+    description: 'A reputed engineering college affiliated to VTU, run by JSS Mahavidyapeetha, known for quality technical education and strong ties to the JSS educational ecosystem.',
+    location: { address: 'Dr. Vishnuvardhana Road, Uttarahalli-Kengeri Main Road', city: 'Bangalore', state: 'Karnataka', pincode: '560060', coordinates: { type: 'Point', coordinates: [77.5087, 12.9095] } },
+    fees: { min: 120000, max: 600000, currency: 'INR' },
+    established: 1997,
+    website: 'https://www.jssateb.ac.in',
+    accreditation: 'NAAC A / NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=JSSATE&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[12],
+  },
+  // 14. Sapthagiri College of Engineering
+  {
+    name: 'Sapthagiri College of Engineering',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU, located in North Bangalore, offering undergraduate and postgraduate programs in engineering and management.',
+    location: { address: 'No. 14/5, Chikkasandra, Hesaraghatta Main Road', city: 'Bangalore', state: 'Karnataka', pincode: '560057', coordinates: { type: 'Point', coordinates: [77.5123, 13.0812] } },
+    fees: { min: 100000, max: 500000, currency: 'INR' },
+    established: 2001,
+    website: 'https://www.sapthagiri.edu.in',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=SCE&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[13],
+  },
+  // 15. Global Academy of Technology
+  {
+    name: 'Global Academy of Technology',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU, known for its focus on holistic education combining technical skills with personality development and industry readiness.',
+    location: { address: 'Ideal Homes Township, Rajarajeshwari Nagar', city: 'Bangalore', state: 'Karnataka', pincode: '560098', coordinates: { type: 'Point', coordinates: [77.5100, 12.9213] } },
+    fees: { min: 120000, max: 550000, currency: 'INR' },
+    established: 2001,
+    website: 'https://www.gat.ac.in',
+    accreditation: 'NAAC B++ / NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium', 'Placement Cell'],
+    logo: 'https://ui-avatars.com/api/?name=GAT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[14],
+  },
+  // 16. Don Bosco Institute of Technology
+  {
+    name: 'Don Bosco Institute of Technology',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU, run by the Don Bosco Society. Known for its emphasis on discipline, value-based education, and student mentorship programs.',
+    location: { address: 'Kumbalagodu, Mysore Road', city: 'Bangalore', state: 'Karnataka', pincode: '560074', coordinates: { type: 'Point', coordinates: [77.4837, 12.8810] } },
+    fees: { min: 100000, max: 500000, currency: 'INR' },
+    established: 2001,
+    website: 'https://www.dbit.co.in',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium', 'Chapel'],
+    logo: 'https://ui-avatars.com/api/?name=DBIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[15],
+  },
+  // 17. Atria Institute of Technology
+  {
+    name: 'Atria Institute of Technology',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU in Bangalore, offering quality education in various engineering disciplines with a focus on industry-oriented learning.',
+    location: { address: 'AECS Layout, Anandanagar, Hebbal', city: 'Bangalore', state: 'Karnataka', pincode: '560024', coordinates: { type: 'Point', coordinates: [77.5912, 13.0367] } },
+    fees: { min: 120000, max: 550000, currency: 'INR' },
+    established: 2000,
+    website: 'https://www.atria.edu',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=AIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[0],
+  },
+  // 18. HKBK College of Engineering
+  {
+    name: 'HKBK College of Engineering',
+    type: 'private',
+    description: 'A well-established private engineering college affiliated to VTU, providing affordable quality technical education with a focus on practical skills and employability.',
+    location: { address: '22/1, Nagawara, Arabian College Road', city: 'Bangalore', state: 'Karnataka', pincode: '560045', coordinates: { type: 'Point', coordinates: [77.6100, 13.0400] } },
+    fees: { min: 100000, max: 500000, currency: 'INR' },
+    established: 1997,
+    website: 'https://www.hkbk.edu.in',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=HKBK&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[1],
+  },
+  // 19. East Point College of Engineering and Technology
+  {
+    name: 'East Point College of Engineering and Technology',
+    type: 'private',
+    description: 'Part of the East Point Group of Institutions, a private engineering college affiliated to VTU offering undergraduate and postgraduate programs with modern infrastructure.',
+    location: { address: 'Bidarahalli, Virgonagar Post', city: 'Bangalore', state: 'Karnataka', pincode: '560049', coordinates: { type: 'Point', coordinates: [77.7275, 13.0088] } },
+    fees: { min: 100000, max: 500000, currency: 'INR' },
+    established: 1999,
+    website: 'https://www.eastpoint.ac.in',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium', 'Gymnasium'],
+    logo: 'https://ui-avatars.com/api/?name=EPCET&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[2],
+  },
+  // 20. Acharya Institute of Technology
+  {
+    name: 'Acharya Institute of Technology',
+    type: 'private',
+    description: 'A prominent private engineering college affiliated to VTU, part of the Acharya Institutes campus known for its sprawling green campus and comprehensive engineering programs.',
+    location: { address: 'Soladevanahalli, Hesaraghatta Road', city: 'Bangalore', state: 'Karnataka', pincode: '560107', coordinates: { type: 'Point', coordinates: [77.4904, 13.0704] } },
+    fees: { min: 120000, max: 600000, currency: 'INR' },
+    established: 2000,
+    website: 'https://www.acharya.ac.in/ait',
+    accreditation: 'NAAC A / NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium', 'Gymnasium', 'Swimming Pool'],
+    logo: 'https://ui-avatars.com/api/?name=AIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[3],
+  },
+  // 21. MVJ College of Engineering
+  {
+    name: 'MVJ College of Engineering',
+    type: 'autonomous',
+    description: 'One of the well-established autonomous engineering colleges in Bangalore affiliated to VTU, known for strong academics, experienced faculty, and good placement records.',
+    location: { address: 'Near ITPB, Whitefield, Channasandra', city: 'Bangalore', state: 'Karnataka', pincode: '560067', coordinates: { type: 'Point', coordinates: [77.7493, 12.9851] } },
+    fees: { min: 150000, max: 700000, currency: 'INR' },
+    established: 1982,
+    website: 'https://www.mvjce.edu.in',
+    accreditation: 'NAAC A / NBA',
+    affiliation: 'Visvesvaraya Technological University (Autonomous)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium', 'Gymnasium', 'Placement Cell'],
+    logo: 'https://ui-avatars.com/api/?name=MVJCE&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[4],
+  },
+  // 22. The Oxford College of Engineering
+  {
+    name: 'The Oxford College of Engineering',
+    type: 'private',
+    description: 'A reputed private engineering college affiliated to VTU, part of the Oxford Educational Institutions. Known for its heritage and consistent academic performance.',
+    location: { address: 'Bommanahalli, Hosur Road', city: 'Bangalore', state: 'Karnataka', pincode: '560068', coordinates: { type: 'Point', coordinates: [77.6236, 12.8950] } },
+    fees: { min: 120000, max: 600000, currency: 'INR' },
+    established: 1974,
+    website: 'https://www.theoxford.edu',
+    accreditation: 'NAAC B++ / NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=TOCE&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[5],
+  },
+  // 23. BNM Institute of Technology
+  {
+    name: 'BNM Institute of Technology',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU, known for its modern campus, experienced faculty, and focus on research and innovation in engineering education.',
+    location: { address: '12th Main Road, 27th Cross, BSK 2nd Stage, Banashankari', city: 'Bangalore', state: 'Karnataka', pincode: '560070', coordinates: { type: 'Point', coordinates: [77.5573, 12.9272] } },
+    fees: { min: 120000, max: 550000, currency: 'INR' },
+    established: 2001,
+    website: 'https://www.bnmit.org',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium', 'Gymnasium'],
+    logo: 'https://ui-avatars.com/api/?name=BNMIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[6],
+  },
+  // 24. Sambhram Institute of Technology
+  {
+    name: 'Sambhram Institute of Technology',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU located in the outskirts of Bangalore, offering engineering programs with a focus on affordable quality education.',
+    location: { address: 'M.S. Palya, Vidyanagar, Jalahalli East', city: 'Bangalore', state: 'Karnataka', pincode: '560097', coordinates: { type: 'Point', coordinates: [77.5449, 13.0543] } },
+    fees: { min: 80000, max: 400000, currency: 'INR' },
+    established: 2001,
+    website: 'https://www.sambhram.org',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=SIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[7],
+  },
+  // 25. RNS Institute of Technology
+  {
+    name: 'RNS Institute of Technology',
+    type: 'private',
+    description: 'A well-known private engineering college affiliated to VTU, established by the RNS Group, recognized for its competent faculty and consistent placement record.',
+    location: { address: 'Dr. Vishnuvardhana Road, RR Nagar Post, Channasandra', city: 'Bangalore', state: 'Karnataka', pincode: '560098', coordinates: { type: 'Point', coordinates: [77.5076, 12.9176] } },
+    fees: { min: 150000, max: 650000, currency: 'INR' },
+    established: 2001,
+    website: 'https://www.rnsit.ac.in',
+    accreditation: 'NAAC A / NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium', 'Gymnasium', 'Placement Cell'],
+    logo: 'https://ui-avatars.com/api/?name=RNSIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[8],
+  },
+  // 26. Jain University
+  {
+    name: 'Jain University',
+    type: 'deemed',
+    description: 'A prestigious deemed-to-be university in Bangalore offering a wide range of programs across engineering, management, humanities, sciences, and commerce with a focus on research.',
+    location: { address: 'No. 44/4, District Fund Road, Jayanagar 9th Block', city: 'Bangalore', state: 'Karnataka', pincode: '560069', coordinates: { type: 'Point', coordinates: [77.5828, 12.9252] } },
+    fees: { min: 150000, max: 1000000, currency: 'INR' },
+    established: 1990,
+    website: 'https://www.jainuniversity.ac.in',
+    accreditation: 'NAAC A / UGC',
+    affiliation: 'Deemed University (UGC Recognized)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Research Labs', 'Auditorium', 'Gymnasium', 'Swimming Pool', 'Computer Labs', 'Incubation Centre'],
+    logo: 'https://ui-avatars.com/api/?name=JU&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[9],
+  },
+  // 27. Alliance University
+  {
+    name: 'Alliance University',
+    type: 'private',
+    description: 'A private university in Bangalore established by Act of the Karnataka State Legislature, known for its management, engineering, and law programs with strong international partnerships.',
+    location: { address: 'Chandapura-Anekal Main Road, Anekal', city: 'Bangalore', state: 'Karnataka', pincode: '562106', coordinates: { type: 'Point', coordinates: [77.6944, 12.7886] } },
+    fees: { min: 200000, max: 1200000, currency: 'INR' },
+    established: 2010,
+    website: 'https://www.alliance.edu.in',
+    accreditation: 'NAAC A+ / UGC',
+    affiliation: 'Private University (State Act)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Research Labs', 'Auditorium', 'Gymnasium', 'Computer Labs', 'Moot Court'],
+    logo: 'https://ui-avatars.com/api/?name=AU&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[10],
+  },
+  // 28. Presidency University Bangalore
+  {
+    name: 'Presidency University Bangalore',
+    type: 'private',
+    description: 'A private university in Bangalore offering programs in engineering, management, law, design, and commerce. Known for its modern campus and industry-relevant curriculum.',
+    location: { address: 'Itgalpura, Rajankunte, Yelahanka', city: 'Bangalore', state: 'Karnataka', pincode: '560064', coordinates: { type: 'Point', coordinates: [77.5128, 13.1405] } },
+    fees: { min: 150000, max: 800000, currency: 'INR' },
+    established: 2013,
+    website: 'https://www.presidencyuniversity.in',
+    accreditation: 'NAAC A / UGC',
+    affiliation: 'Private University (State Act)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium', 'Gymnasium', 'Incubation Centre'],
+    logo: 'https://ui-avatars.com/api/?name=PU&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[11],
+  },
+  // 29. Christ University (already exists as christ-university)
+  {
+    name: 'Christ University',
+    type: 'deemed',
+    description: 'A prestigious deemed university in Bangalore known for its strong emphasis on holistic education, discipline, and academic excellence across arts, science, commerce, engineering, and management.',
+    location: { address: 'Hosur Road, Bhavani Nagar, S.G. Palya', city: 'Bangalore', state: 'Karnataka', pincode: '560029', coordinates: { type: 'Point', coordinates: [77.6070, 12.9352] } },
+    fees: { min: 100000, max: 800000, currency: 'INR' },
+    established: 1969,
+    website: 'https://www.christuniversity.in',
+    accreditation: 'NAAC A++ / UGC',
+    affiliation: 'Deemed University (UGC Recognized)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Research Labs', 'Auditorium', 'Gymnasium', 'Swimming Pool', 'Computer Labs', 'Amphitheatre'],
+    logo: 'https://ui-avatars.com/api/?name=CU&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[12],
+  },
+  // 30. Indian Institute of Science (already exists as indian-institute-of-science-bangalore)
+  {
+    name: 'Indian Institute of Science Bangalore',
+    type: 'public',
+    description: 'India\'s premier research institution for science and engineering, consistently ranked number one in the country for research output and academic excellence since 1909.',
+    location: { address: 'CV Raman Rd, Devasandra Layout, Malleshwaram', city: 'Bangalore', state: 'Karnataka', pincode: '560012', coordinates: { type: 'Point', coordinates: [77.5685, 13.0219] } },
+    fees: { min: 50000, max: 500000, currency: 'INR' },
+    established: 1909,
+    website: 'https://www.iisc.ac.in',
+    accreditation: 'NAAC A++ / NBA',
+    affiliation: 'Autonomous (Institute of National Importance)',
+    facilities: ['Library', 'Hostel', 'Research Labs', 'WiFi Campus', 'Cafeteria', 'Gymnasium', 'Auditorium', 'Hospital', 'Sports Complex', 'Swimming Pool'],
+    logo: 'https://ui-avatars.com/api/?name=IISc&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[13],
+  },
+  // 31. St Joseph's College of Engineering (St Joseph's College, Bangalore - founded 1882)
+  {
+    name: 'St Josephs College Bangalore',
+    type: 'private',
+    description: 'One of the oldest and most renowned colleges in Bangalore, established in 1882 by the French Foreign Missions. Offers undergraduate and postgraduate programs in arts, science, and commerce.',
+    location: { address: '36, Lalbagh Road', city: 'Bangalore', state: 'Karnataka', pincode: '560027', coordinates: { type: 'Point', coordinates: [77.5832, 12.9491] } },
+    fees: { min: 50000, max: 300000, currency: 'INR' },
+    established: 1882,
+    website: 'https://www.sjc.ac.in',
+    accreditation: 'NAAC A++ / UGC',
+    affiliation: 'Bangalore University (Autonomous)',
+    facilities: ['Library', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Auditorium', 'Computer Labs', 'Chapel', 'Botanical Garden'],
+    logo: 'https://ui-avatars.com/api/?name=SJC&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[14],
+  },
+  // 32. Mount Carmel College
+  {
+    name: 'Mount Carmel College Bangalore',
+    type: 'autonomous',
+    description: 'A premier autonomous women\'s college in Bangalore established in 1948, affiliated to Bangalore University. Renowned for its strong arts, science, and commerce programs.',
+    location: { address: 'No. 58, Palace Road, Vasanth Nagar', city: 'Bangalore', state: 'Karnataka', pincode: '560052', coordinates: { type: 'Point', coordinates: [77.5904, 12.9918] } },
+    fees: { min: 50000, max: 250000, currency: 'INR' },
+    established: 1948,
+    website: 'https://www.mccblr.edu.in',
+    accreditation: 'NAAC A+ / UGC',
+    affiliation: 'Bangalore University (Autonomous)',
+    facilities: ['Library', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Auditorium', 'Computer Labs', 'Chapel', 'Hostel'],
+    logo: 'https://ui-avatars.com/api/?name=MCC&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[15],
+  },
+  // 33. Kristu Jayanti College
+  {
+    name: 'Kristu Jayanti College',
+    type: 'autonomous',
+    description: 'A leading autonomous college in Bangalore affiliated to Bangalore University, run by the Bodhi Niketan Trust of the Carmelites of Mary Immaculate. Offers diverse programs in arts, science, commerce, and management.',
+    location: { address: 'K. Narayanapura, Kothanur Post', city: 'Bangalore', state: 'Karnataka', pincode: '560077', coordinates: { type: 'Point', coordinates: [77.6508, 13.0526] } },
+    fees: { min: 80000, max: 400000, currency: 'INR' },
+    established: 1999,
+    website: 'https://www.kristujayanti.edu.in',
+    accreditation: 'NAAC A++ / UGC',
+    affiliation: 'Bangalore University (Autonomous)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Auditorium', 'Computer Labs', 'Gymnasium', 'Chapel'],
+    logo: 'https://ui-avatars.com/api/?name=KJC&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[0],
+  },
+  // 34. Jyoti Nivas College
+  {
+    name: 'Jyoti Nivas College Bangalore',
+    type: 'autonomous',
+    description: 'A prominent autonomous women\'s college in Bangalore established in 1966, affiliated to Bangalore University. Known for its vibrant campus life and strong academic traditions in arts, science, and commerce.',
+    location: { address: 'Hosur Road, 1st Phase, BTM Layout', city: 'Bangalore', state: 'Karnataka', pincode: '560095', coordinates: { type: 'Point', coordinates: [77.6134, 12.9195] } },
+    fees: { min: 40000, max: 200000, currency: 'INR' },
+    established: 1966,
+    website: 'https://www.jyotinivas.org',
+    accreditation: 'NAAC A+ / UGC',
+    affiliation: 'Bangalore University (Autonomous)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Auditorium', 'Computer Labs', 'Chapel'],
+    logo: 'https://ui-avatars.com/api/?name=JNC&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[1],
+  },
+  // 35. National Institute of Fashion Technology Bangalore
+  {
+    name: 'National Institute of Fashion Technology Bangalore',
+    type: 'public',
+    description: 'The Bangalore campus of NIFT, India\'s premier fashion education institute. Offers programs in fashion design, technology, and management with excellent industry linkages.',
+    location: { address: 'Hennur Main Road, BSNL Layout', city: 'Bangalore', state: 'Karnataka', pincode: '560043', coordinates: { type: 'Point', coordinates: [77.6327, 13.0340] } },
+    fees: { min: 100000, max: 500000, currency: 'INR' },
+    established: 1986,
+    website: 'https://www.nift.ac.in/bangalore',
+    accreditation: 'AICTE / Ministry of Textiles',
+    affiliation: 'National Institute of Fashion Technology (Statutory Body)',
+    facilities: ['Library', 'Hostel', 'WiFi Campus', 'Cafeteria', 'Design Studios', 'Computer Labs', 'Auditorium', 'Resource Centre'],
+    logo: 'https://ui-avatars.com/api/?name=NIFT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[2],
+  },
+  // 36. Indian Institute of Management Bangalore
+  {
+    name: 'Indian Institute of Management Bangalore',
+    type: 'public',
+    description: 'One of India\'s top management institutes, IIMB is renowned for its world-class MBA programs, executive education, cutting-edge research, and a lush green campus spread over 100 acres.',
+    location: { address: 'Bannerghatta Road, Bilekahalli', city: 'Bangalore', state: 'Karnataka', pincode: '560076', coordinates: { type: 'Point', coordinates: [77.6025, 12.8882] } },
+    fees: { min: 500000, max: 2500000, currency: 'INR' },
+    established: 1973,
+    website: 'https://www.iimb.ac.in',
+    accreditation: 'AACSB / EQUIS / AMBA',
+    affiliation: 'Autonomous (Institute of National Importance)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Research Labs', 'Auditorium', 'Gymnasium', 'Swimming Pool', 'Computer Labs', 'Incubation Centre'],
+    logo: 'https://ui-avatars.com/api/?name=IIMB&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[3],
+  },
+  // 37. National Law School of India University
+  {
+    name: 'National Law School of India University',
+    type: 'public',
+    description: 'India\'s premier law university and the first National Law University, NLSIU is consistently ranked as the top law school in India. Known for its rigorous academic program and distinguished alumni.',
+    location: { address: 'Nagarbhavi, Post Bag 7201', city: 'Bangalore', state: 'Karnataka', pincode: '560072', coordinates: { type: 'Point', coordinates: [77.5053, 12.9615] } },
+    fees: { min: 200000, max: 700000, currency: 'INR' },
+    established: 1987,
+    website: 'https://www.nls.ac.in',
+    accreditation: 'NAAC A / BCI',
+    affiliation: 'National Law School (Statutory Body)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Moot Court', 'Auditorium', 'Computer Labs', 'Legal Aid Clinic'],
+    logo: 'https://ui-avatars.com/api/?name=NLSIU&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[4],
+  },
+  // 38. International Institute of Information Technology Bangalore
+  {
+    name: 'International Institute of Information Technology Bangalore',
+    type: 'deemed',
+    description: 'A leading deemed university focused on IT and allied areas, IIIT-B is known for its research-driven approach, strong industry partnerships, and excellent placement record in the tech sector.',
+    location: { address: '26/C, Electronics City Phase 1, Hosur Road', city: 'Bangalore', state: 'Karnataka', pincode: '560100', coordinates: { type: 'Point', coordinates: [77.6630, 12.8446] } },
+    fees: { min: 300000, max: 1200000, currency: 'INR' },
+    established: 1999,
+    website: 'https://www.iiitb.ac.in',
+    accreditation: 'NAAC A / UGC',
+    affiliation: 'Deemed University (UGC Recognized)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Research Labs', 'Auditorium', 'Computer Labs', 'Innovation Centre'],
+    logo: 'https://ui-avatars.com/api/?name=IIITB&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[5],
+  },
+  // 39. University Visvesvaraya College of Engineering
+  {
+    name: 'University Visvesvaraya College of Engineering',
+    type: 'public',
+    description: 'One of the oldest engineering colleges in India, established in 1917 and named after Sir M. Visvesvaraya. A constituent college of Bangalore University with a proud heritage of engineering education.',
+    location: { address: 'K.R. Circle, Dr. B.R. Ambedkar Veedhi', city: 'Bangalore', state: 'Karnataka', pincode: '560001', coordinates: { type: 'Point', coordinates: [77.5920, 12.9770] } },
+    fees: { min: 30000, max: 200000, currency: 'INR' },
+    established: 1917,
+    website: 'https://www.uvce.ac.in',
+    accreditation: 'NBA',
+    affiliation: 'Bangalore University',
+    facilities: ['Library', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium', 'Research Labs'],
+    logo: 'https://ui-avatars.com/api/?name=UVCE&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[6],
+  },
+  // 40. RV Institute of Technology and Management
+  {
+    name: 'RV Institute of Technology and Management',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU under the Rashtreeya Sikshana Samithi Trust, offering quality engineering and management programs on its well-equipped campus.',
+    location: { address: 'JP Nagar 8th Phase, Gottigere Post', city: 'Bangalore', state: 'Karnataka', pincode: '560076', coordinates: { type: 'Point', coordinates: [77.5770, 12.8870] } },
+    fees: { min: 120000, max: 600000, currency: 'INR' },
+    established: 2007,
+    website: 'https://www.rvitm.edu.in',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=RVITM&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[7],
+  },
+  // 41. Sai Vidya Institute of Technology
+  {
+    name: 'Sai Vidya Institute of Technology',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU, located in North Bangalore, offering undergraduate programs in various engineering streams with modern facilities.',
+    location: { address: 'No. 29, Rajiv Gandhi Nagar, Jakkur', city: 'Bangalore', state: 'Karnataka', pincode: '560064', coordinates: { type: 'Point', coordinates: [77.5862, 13.0828] } },
+    fees: { min: 100000, max: 450000, currency: 'INR' },
+    established: 2001,
+    website: 'https://www.saividya.ac.in',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=SVIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[8],
+  },
+  // 42. AMC Engineering College
+  {
+    name: 'AMC Engineering College',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU, located in South Bangalore, providing affordable engineering education with a strong emphasis on practical learning.',
+    location: { address: '18th KM, Bannerghatta Road', city: 'Bangalore', state: 'Karnataka', pincode: '560083', coordinates: { type: 'Point', coordinates: [77.5975, 12.8548] } },
+    fees: { min: 80000, max: 400000, currency: 'INR' },
+    established: 1998,
+    website: 'https://www.amcec.edu.in',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=AMCEC&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[9],
+  },
+  // 43. Vemana Institute of Technology
+  {
+    name: 'Vemana Institute of Technology',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU, run by the Vemana Institute of Technology Trust. Offers undergraduate programs in key engineering disciplines.',
+    location: { address: '3rd Block, Koramangala', city: 'Bangalore', state: 'Karnataka', pincode: '560034', coordinates: { type: 'Point', coordinates: [77.6292, 12.9355] } },
+    fees: { min: 100000, max: 450000, currency: 'INR' },
+    established: 2000,
+    website: 'https://www.vemanait.edu.in',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=VIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[10],
+  },
+  // 44. Sri Venkateshwara College of Engineering
+  {
+    name: 'Sri Venkateshwara College of Engineering Bangalore',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU, offering undergraduate and postgraduate programs in engineering and management with focus on industry-oriented education.',
+    location: { address: 'Vidyanagar, Hoskote Road, Virgo Nagar Post', city: 'Bangalore', state: 'Karnataka', pincode: '560049', coordinates: { type: 'Point', coordinates: [77.7260, 13.0010] } },
+    fees: { min: 80000, max: 400000, currency: 'INR' },
+    established: 1997,
+    website: 'https://www.svcengg.com',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=SVCE&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[11],
+  },
+  // 45. KS Institute of Technology
+  {
+    name: 'KS Institute of Technology',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU, established in 2008, offering modern infrastructure and industry-relevant curriculum in engineering and technology.',
+    location: { address: 'No. 14, Raghuvanahalli, Kanakapura Road', city: 'Bangalore', state: 'Karnataka', pincode: '560109', coordinates: { type: 'Point', coordinates: [77.5454, 12.8751] } },
+    fees: { min: 100000, max: 500000, currency: 'INR' },
+    established: 2008,
+    website: 'https://www.ksit.ac.in',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=KSIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[12],
+  },
+  // 46. Cambridge Institute of Technology
+  {
+    name: 'Cambridge Institute of Technology Bangalore',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU, offering quality engineering education with a focus on practical training and placement assistance for students.',
+    location: { address: 'K.R. Puram, Tindlu', city: 'Bangalore', state: 'Karnataka', pincode: '560036', coordinates: { type: 'Point', coordinates: [77.6913, 13.0075] } },
+    fees: { min: 100000, max: 500000, currency: 'INR' },
+    established: 1990,
+    website: 'https://www.citech.edu.in',
+    accreditation: 'NAAC B+ / NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium', 'Gymnasium'],
+    logo: 'https://ui-avatars.com/api/?name=CIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[13],
+  },
+  // 47. Yellamma Dasappa Institute of Technology
+  {
+    name: 'Yellamma Dasappa Institute of Technology',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU, located in the heart of Bangalore. Offers undergraduate engineering programs with experienced faculty and decent infrastructure.',
+    location: { address: 'No. 74, Jnana Marga, Siddartha Nagar, Nagarbhavi', city: 'Bangalore', state: 'Karnataka', pincode: '560056', coordinates: { type: 'Point', coordinates: [77.5128, 12.9637] } },
+    fees: { min: 80000, max: 400000, currency: 'INR' },
+    established: 2000,
+    website: 'https://www.ydit.edu.in',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=YDIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[14],
+  },
+  // 48. SJB Institute of Technology
+  {
+    name: 'SJB Institute of Technology',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU, part of the SJB Group of Institutions, offering undergraduate and postgraduate programs in engineering and management.',
+    location: { address: 'BGS Health and Education City, Kengeri', city: 'Bangalore', state: 'Karnataka', pincode: '560060', coordinates: { type: 'Point', coordinates: [77.4882, 12.9060] } },
+    fees: { min: 100000, max: 500000, currency: 'INR' },
+    established: 2001,
+    website: 'https://www.sjbit.edu.in',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=SJBIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[15],
+  },
+  // 49. T John Institute of Technology
+  {
+    name: 'T John Institute of Technology',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU, part of the T John Group of Institutions established in 2002, offering engineering programs with modern teaching methods.',
+    location: { address: '86/1, Gottigere, Bannerghatta Road', city: 'Bangalore', state: 'Karnataka', pincode: '560083', coordinates: { type: 'Point', coordinates: [77.5980, 12.8690] } },
+    fees: { min: 100000, max: 500000, currency: 'INR' },
+    established: 2002,
+    website: 'https://www.tjohngroup.com',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=TJIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[0],
+  },
+  // 50. Nagarjuna College of Engineering and Technology
+  {
+    name: 'Nagarjuna College of Engineering and Technology',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU, located in the Devanahalli area near Bangalore International Airport, offering affordable engineering education.',
+    location: { address: 'Venkatala Village, Muddenahalli Post, Devanahalli', city: 'Bangalore', state: 'Karnataka', pincode: '562110', coordinates: { type: 'Point', coordinates: [77.6984, 13.1870] } },
+    fees: { min: 80000, max: 400000, currency: 'INR' },
+    established: 2001,
+    website: 'https://www.nagarjunacollege.in',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=NCET&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[1],
+  },
+  // 51. City Engineering College
+  {
+    name: 'City Engineering College',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU, offering undergraduate programs in engineering and technology with a focus on providing affordable technical education.',
+    location: { address: 'Doddakallasandra, Kanakapura Road', city: 'Bangalore', state: 'Karnataka', pincode: '560062', coordinates: { type: 'Point', coordinates: [77.5544, 12.8830] } },
+    fees: { min: 70000, max: 350000, currency: 'INR' },
+    established: 2001,
+    website: 'https://www.cityengineeringcollege.ac.in',
+    accreditation: 'NBA',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=CEC&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[2],
+  },
+  // 52. Bangalore Technological Institute
+  {
+    name: 'Bangalore Technological Institute',
+    type: 'private',
+    description: 'A private engineering college affiliated to VTU, providing technical education in engineering disciplines with competent faculty and standard laboratory facilities.',
+    location: { address: 'Kodathi Gate, Sarjapur Road', city: 'Bangalore', state: 'Karnataka', pincode: '560035', coordinates: { type: 'Point', coordinates: [77.6860, 12.8927] } },
+    fees: { min: 70000, max: 350000, currency: 'INR' },
+    established: 2001,
+    website: 'https://www.bfriengineeringcollege.in',
+    accreditation: 'AICTE Approved',
+    affiliation: 'Visvesvaraya Technological University',
+    facilities: ['Library', 'Hostel', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium'],
+    logo: 'https://ui-avatars.com/api/?name=BTI&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[3],
+  },
+  // 53. Dr Ambedkar Institute of Technology
+  {
+    name: 'Dr Ambedkar Institute of Technology',
+    type: 'autonomous',
+    description: 'An autonomous engineering college affiliated to VTU, established in 1979 by the Department of Education, Government of Karnataka. Known for its affordable quality education and experienced faculty.',
+    location: { address: 'Near Jnana Bharathi Campus, Mallathahalli', city: 'Bangalore', state: 'Karnataka', pincode: '560056', coordinates: { type: 'Point', coordinates: [77.5060, 12.9595] } },
+    fees: { min: 50000, max: 300000, currency: 'INR' },
+    established: 1979,
+    website: 'https://www.drait.edu.in',
+    accreditation: 'NAAC A / NBA',
+    affiliation: 'Visvesvaraya Technological University (Autonomous)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Computer Labs', 'Auditorium', 'Research Labs'],
+    logo: 'https://ui-avatars.com/api/?name=DrAIT&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[4],
+  },
+  // 54. Bangalore University
+  {
+    name: 'Bangalore University',
+    type: 'public',
+    description: 'One of the largest universities in India by enrollment, Bangalore University is a state university established in 1964. It affiliates hundreds of colleges across Bangalore and surrounding districts.',
+    location: { address: 'Jnana Bharathi Campus, Mysore Road', city: 'Bangalore', state: 'Karnataka', pincode: '560056', coordinates: { type: 'Point', coordinates: [77.5025, 12.9611] } },
+    fees: { min: 10000, max: 200000, currency: 'INR' },
+    established: 1964,
+    website: 'https://www.bangaloreuniversity.ac.in',
+    accreditation: 'NAAC A+ / UGC',
+    affiliation: 'State University (Karnataka Government)',
+    facilities: ['Library', 'Hostel', 'Sports Complex', 'WiFi Campus', 'Cafeteria', 'Research Labs', 'Auditorium', 'Gymnasium', 'Swimming Pool', 'Computer Labs', 'Hospital'],
+    logo: 'https://ui-avatars.com/api/?name=BU&size=200&background=random&color=fff&bold=true',
+    coverImage: coverImages[5],
+  },
+];
+
+const seedBangaloreColleges = async () => {
+  const admin = await User.findOne({ email: 'admin@campusoption.com' });
+
+  // Seed Bangalore city if City model exists
+  if (City) {
+    await City.findOneAndUpdate(
+      { slug: 'bangalore' },
+      {
+        name: 'Bangalore',
+        slug: 'bangalore',
+        state: 'Karnataka',
+        description:
+          "India's Silicon Valley and the capital of Karnataka, Bangalore is home to over 900 colleges and universities. Known for its thriving IT ecosystem, pleasant climate, and cosmopolitan culture, the city attracts students from across the country seeking world-class education in engineering, management, sciences, arts, and more.",
+        image:
+          'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?w=1200&h=600&fit=crop',
+        featured: true,
+        isActive: true,
+        collegeCount: 55,
+      },
+      { upsert: true, setDefaultsOnInsert: true }
+    );
+    logger.info('Seeded Bangalore city');
+  }
+
+  for (const data of bangaloreColleges) {
+    const slug = slugify(data.name, { lower: true, strict: true });
+    await College.findOneAndUpdate(
+      { slug },
+      { ...data, slug, status: 'published', createdBy: admin?._id || null },
+      { upsert: true, setDefaultsOnInsert: true }
+    );
+  }
+
+  // Update city college count if City model exists
+  if (City) {
+    const count = await College.countDocuments({
+      'location.city': { $regex: 'bangalore', $options: 'i' },
+      status: 'published',
+    });
+    await City.updateOne({ slug: 'bangalore' }, { collegeCount: count });
+    logger.info(`Updated Bangalore college count to ${count}`);
+  }
+
+  logger.info(`Seeded ${bangaloreColleges.length} Bangalore colleges`);
+};
+
+module.exports = seedBangaloreColleges;

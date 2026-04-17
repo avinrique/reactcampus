@@ -10,6 +10,8 @@ const seedContentSections = require('./contentSections.seed');
 const seedPages = require('./pages.seed');
 const seedSiteSettings = require('./siteSettings.seed');
 const seedCollegeScores = require('./collegeScores.seed');
+const seedBangaloreColleges = require('./bangalore-colleges.seed');
+const seedCities = require('./cities.seed');
 
 const run = async () => {
   await connectDB();
@@ -18,6 +20,8 @@ const run = async () => {
   await seedAdmin();
   await seedCategories();
   await seedColleges();
+  await seedBangaloreColleges();
+  await seedCities();
   await seedContentSections();
   await seedPages();
   await seedSiteSettings();

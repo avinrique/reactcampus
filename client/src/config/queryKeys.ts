@@ -115,6 +115,10 @@ export const queryKeys = {
     categories: {
       list: ['public', 'categories', 'list'] as const,
     },
+    cities: {
+      list: (params: Record<string, unknown>) => ['public', 'cities', 'list', params] as const,
+      detail: (slug: string) => ['public', 'cities', slug] as const,
+    },
     forms: {
       detail: (slug: string) => ['public', 'forms', slug] as const,
       forPage: (pageType: string, entityId?: string) => ['public', 'forms', 'for-page', pageType, entityId ?? ''] as const,
