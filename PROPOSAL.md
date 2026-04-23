@@ -187,25 +187,25 @@ Most college portals on the market today are either:
 | Independent Senior Developer | ₹9,00,000 – ₹12,00,000 |
 | **CampusOption Offer — Early Partner Price** | **₹6,50,000** |
 
-### 8.2 Effort Breakdown (For Transparency)
+### 8.2 Effort & Cost Breakdown (For Transparency)
 
-| # | Module | Effort (Person-Days) |
-|---|---|---:|
-| 1 | Architecture, DB design, repo setup | 8 |
-| 2 | Authentication + RBAC + 125-permission registry | 12 |
-| 3 | College / Course / Exam CMS + Content Sections | 22 |
-| 4 | 5 Content Editors (RichText, Table, FAQ, Gallery, List) | 10 |
-| 5 | Dynamic Form Builder + Submission capture | 10 |
-| 6 | Lead Management (List + Kanban pipeline) | 8 |
-| 7 | Public pages — Listings, Detail, Compare, Search | 18 |
-| 8 | Reviews + Discussions + Moderation | 6 |
-| 9 | SEO Manager + Dynamic Pages + Slug routing | 8 |
-| 10 | Analytics dashboard + Recharts visualizations | 5 |
-| 11 | Site Settings + Audit Logs + User Profile | 4 |
-| 12 | UI/UX polish, responsive design, Tailwind theming | 10 |
-| 13 | Testing, security audit, bug fixes | 8 |
-| 14 | Deployment, documentation, handover | 5 |
-| | **Total Effort** | **134 days** |
+| # | Module | Person-Days | Cost (INR) |
+|---|---|---:|---:|
+| 1 | Architecture, DB design, repo setup | 8 | ₹40,000 |
+| 2 | Authentication + RBAC + 125-permission registry | 12 | ₹60,000 |
+| 3 | College / Course / Exam CMS + Content Sections | 22 | ₹1,05,000 |
+| 4 | 5 Content Editors (RichText, Table, FAQ, Gallery, List) | 10 | ₹48,000 |
+| 5 | Dynamic Form Builder + Submission capture | 10 | ₹48,000 |
+| 6 | Lead Management (List + Kanban pipeline) | 8 | ₹38,000 |
+| 7 | Public pages — Listings, Detail, Compare, Search | 18 | ₹87,000 |
+| 8 | Reviews + Discussions + Moderation | 6 | ₹28,000 |
+| 9 | SEO Manager + Dynamic Pages + Slug routing | 8 | ₹38,000 |
+| 10 | Analytics dashboard + Recharts visualizations | 5 | ₹24,000 |
+| 11 | Site Settings + Audit Logs + User Profile | 4 | ₹19,000 |
+| 12 | UI/UX polish, responsive design, Tailwind theming | 10 | ₹48,000 |
+| 13 | Testing, security audit, bug fixes | 8 | ₹38,000 |
+| 14 | Deployment, documentation, handover | 5 | ₹29,000 |
+| | **Total** | **134 days** | **₹6,50,000** |
 
 ### 8.3 Final Pricing
 
@@ -217,14 +217,25 @@ Most college portals on the market today are either:
 
 > *At ₹6.5 lakhs, this works out to roughly ₹4,850 per person-day — less than half of prevailing Bangalore rates for engineers of this calibre. We are able to offer this because we believe in long-term relationships over one-off wins.*
 
-### 8.4 Payment Milestones
+### 8.4 AWS / Hosting & Infrastructure (Separate from Build Cost)
 
-| Milestone | % | Amount |
-|---|---:|---:|
-| Project kickoff | 25% | ₹1,62,500 |
-| Backend + RBAC + Core CMS complete | 25% | ₹1,62,500 |
-| Public-facing + Admin modules complete | 25% | ₹1,62,500 |
-| Deployment + Handover + Sign-off | 25% | ₹1,62,500 |
+The development cost above covers only the engineering work. Hosting the platform on AWS is a separate, recurring cost — paid directly by the client.
+
+| Item | Cost | Notes |
+|---|---:|---|
+| **Initial AWS setup + Testing environment (6 months)** | **₹15,000 (one-time)** | Covers AWS account setup, EC2 + MongoDB Atlas provisioning, domain pointing, SSL, staging environment, and full cost of hosting for the first 6 months while we test and iterate |
+| **Ongoing server (monthly, post-testing)** | **₹6,000 – ₹10,000 / month** | Depends on traffic volume. Low traffic (under 10K monthly visitors): ~₹6,000. Medium traffic (10K–50K): ~₹8,000. Higher (50K+): ~₹10,000+ |
+
+**What's included in the AWS cost:**
+- EC2 instance (t3.small → t3.medium based on load)
+- MongoDB Atlas (shared / M10 cluster)
+- S3 for media uploads
+- CloudFront CDN (optional, for faster delivery)
+- Route 53 DNS
+- Automated daily backups
+- SSL certificate (free via ACM)
+
+> **Note:** AWS bills are paid directly by the client on their own AWS account — we only help with setup and monitoring. This keeps full cost transparency and billing control with you.
 
 ---
 
