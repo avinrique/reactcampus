@@ -179,9 +179,11 @@
     body { background: #fff; font-size: 13px; }
     .wrap { padding: 0 0 20px; max-width: none; }
     .hero { border-radius: 0; }
-    section { break-inside: avoid-page; }
-    .card, .tbl-wrap, .callout, .stat { break-inside: avoid; }
+    .sec-head, .sec-sub { break-after: avoid; }
+    .card, .callout, .stat { break-inside: avoid; }
     .grid2, .grid3 { break-inside: avoid; }
+    tbody tr { break-inside: avoid; }
+    thead { display: table-header-group; }
   }
   @page { margin: 14mm 12mm; size: A4; }
 </style>
